@@ -1,8 +1,8 @@
 SetFactory("OpenCASCADE");
 
 // Setting variables
-R_Omega = 25.0; // radius of the internal domain
-Ngamma = 157; // number of nodes on the domain boundary
+R_Omega = 14; // radius of the internal domain
+Ngamma = 87; // number of nodes on the domain boundary
 minSize = 0.05; // size of the elements inside the spheres
 maxSize = 0.5; // size of the elements far from the spheres
 

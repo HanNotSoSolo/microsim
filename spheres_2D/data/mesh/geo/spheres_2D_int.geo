@@ -4,8 +4,8 @@ SetFactory("OpenCASCADE");
 R_1 = 2; // radius of the first sphere
 R_2 = 2; // radius of the second sphere
 d = 5; // distance between the centres of the spheres
-R_Omega = 35; // radius of the internal domain
-Ngamma = 366; // number of nodes on the domain boundary
+R_Omega = 14; // radius of the internal domain
+Ngamma = 87; // number of nodes on the domain boundary
 minSize = 0.05; // size of the elements inside the spheres
 maxSize = 0.5; // size of the elements far from the spheres
 

@@ -674,8 +674,8 @@ COORSYS = 'cylindrical'
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.001
-maxSize = 0.3
+minSize = 0.05
+maxSize = 0.5
 ''' === END OF VARIABLES DECLARATION ==='''
 
 
