@@ -547,7 +547,7 @@ class ForceOnTwoSpheres:
                       mp.exp(-self.d/lmbda) / self.d**2)
 
 
-            #print(F_ana)
+            print("F_ana =", F_ana)
             epsilon = np.abs((F_ana - grad_yukawa_S1[1]) / F_ana)
 
             # # Calculating the Newton-to-Yukawa target ratio (see [1])
@@ -674,8 +674,8 @@ COORSYS = 'cylindrical'
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.008
-maxSize = 0.1
+minSize = 0.01
+maxSize = 0.5
 ''' === END OF VARIABLES DECLARATION ==='''
 
 
@@ -694,19 +694,19 @@ mesh_int, mesh_ext = FO2S.mesh_generation()
 print("\n === NEWTONIAN GRAVITY ===")
 result_pp_newton = FO2S.get_newton_force(mesh_int, mesh_ext)
 F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton, getNewton=True)
-FO2S.newton_residual_map(result_pp_newton)
+#FO2S.newton_residual_map(result_pp_newton)
 
 # print("\n === ELECTROSTATIC FORCE ===")
 # result_pp_elec = FO2S.get_electrostatic_force(mesh_int, mesh_ext)
 # F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec, getCoulomb=True)
 
-# print("\n === YUKAWA GRAVITY ===")
-# alpha = 1
-# lmbda = 0.01
-# rho_0 = 1000
+print("\n === YUKAWA GRAVITY ===")
+alpha = 1
+lmbda = 0.01
+rho_0 = 1
 
-# result_pp_yukawa= FO2S.get_yukawa_force(mesh_int, mesh_ext, alpha=alpha,
-#                                         lmbda=lmbda, rho_0=rho_0)
-# F_Y, _, epsilon_Y = FO2S.postprocess_force(postprocess_file=result_pp_yukawa,
-#                                            alpha=alpha, lmbda=lmbda,
-#                                            rho_0=rho_0, getYukawa=True)
+result_pp_yukawa= FO2S.get_yukawa_force(mesh_int, mesh_ext, alpha=alpha,
+                                        lmbda=lmbda, rho_0=rho_0)
+F_Y, _, epsilon_Y = FO2S.postprocess_force(postprocess_file=result_pp_yukawa,
+                                           alpha=alpha, lmbda=lmbda,
+                                           rho_0=rho_0, getYukawa=True)
