@@ -91,8 +91,7 @@ class ForceOnTwoSpheres:
         The default is 2.
     SOLVER : str, optional
         Used to solve the equation system. Can be chosen between 'ScipyDirect',
-        'ScipyIterative', 'ScipySuperLU', 'ScipyUmfpack' and 'MUMPS'. Some of
-        them still need to be implemented # TODO. The default is 'ScipyDirect'.
+        'ScipyIterative', 'ScipySuperLU', 'ScipyUmfpack' and 'MUMPS'.
     SHOW_MESH : bool, optional
         If True, a window will appear to show the mesh and the program will
         pause until the window is closed. The default is False.
@@ -309,9 +308,7 @@ class ForceOnTwoSpheres:
         Solves the Klein-Gordon equation applied to the internal and external
         meshes according to the (alpha, lambda) couple given by the user.
         The equation that this method solves is as follows:
-            ƔΔŨ = Ũ + $\tilde{\rho}$
-        The returned value can be U, the "real" potential, or Ũ, the potential
-        after the nondimensionalization.
+            ƔΔU = U + ρ
 
         Parameters
         ----------
@@ -419,15 +416,15 @@ class ForceOnTwoSpheres:
 
         """
 
-        # # Case disjunction: using Taylor's decomposition
-        # if x > 10 :
-        #     phi = 3 * mp.exp(x) / (2 * x**2)
+        # Case disjunction: using Taylor's decomposition
+        if x > 100 :
+            phi = 3 * mp.exp(x) / (2 * x**2)
 
-        # elif x < 0.01:
-        #     phi = 1
+        elif x < 0.001:
+            phi = 1
 
-        # else:
-        phi = 3 * ( x * mp.cosh(x) - mp.sinh(x)) / x**3
+        else:
+            phi = 3 * ( x * mp.cosh(x) - mp.sinh(x)) / x**3
 
         return phi
 
@@ -482,7 +479,7 @@ class ForceOnTwoSpheres:
 
         # Asserting that, if we want Yukawa, we also have all the elements
         if getYukawa:
-            assert type(postprocess_file) == RPP, "First argument must be Newton's results file."
+            assert type(postprocess_file) == RPP, "First argument must be a results file."
 
 
         if getNewton or getYukawa:
@@ -547,7 +544,7 @@ class ForceOnTwoSpheres:
                       mp.exp(-self.d/lmbda) / self.d**2)
 
 
-            print("F_ana =", F_ana)
+            print("Analytically calculated force :", str(F_ana) + " N")
             epsilon = np.abs((F_ana - grad_yukawa_S1[1]) / F_ana)
 
             # # Calculating the Newton-to-Yukawa target ratio (see [1])
@@ -560,15 +557,8 @@ class ForceOnTwoSpheres:
             # epsilon = (N2Y_ana - N2Y_fem) / N2Y_ana
             print("Precision on vertical force: ", epsilon)
 
-            # print("Yukawa on S1", grad_yukawa_S1[1])
-            # print("Newton on S1:", grad_newton_S1[1])
-            # print("Yukawa on S2:", grad_yukawa_S2[1])
-            # print("Newton on S2:", grad_newton_S2[1])
 
-            # epsilon=1
-
-
-            return grad_yukawa_S1[1], grad_yukawa_S2[1], epsilon
+            return grad_yukawa_S1[1], grad_yukawa_S2[1], F_ana, epsilon
 
         else:
 
@@ -638,75 +628,75 @@ class ForceOnTwoSpheres:
 
 # %% Testing the class
 
-#def test():
-"""
-Feel free to use this as an example of use case, knowing that the Yukawa
-potential still needs to be improved.
+def test():
+    """
+    Feel free to use this as an example of use case, knowing that the Yukawa
+    potential still needs to be improved.
 
-Returns
--------
-None.
+    Returns
+    -------
+    None.
 
-"""
-''' === VARIABLES DEFINITION ==='''
-# All the values are given in standard units
-# First sphere
-R_1 = 2  # [m]
-rho_1 = 19972.  # [kg/m^3]
-rho_q_1 = 19e-8  # [C/m^3]
+    """
+    ''' === VARIABLES DEFINITION ==='''
+    # All the values are given in standard units
+    # First sphere
+    R_1 = 2  # [m]
+    rho_1 = 19972.  # [kg/m^3]
+    rho_q_1 = 19e-8  # [C/m^3]
 
-# Second sphere
-R_2 = 2
-rho_2 = 4278.
-rho_q_2 = -19e-8
+    # Second sphere
+    R_2 = 4
+    rho_2 = 4278.
+    rho_q_2 = -19e-8
 
-# Domain sphere
-d = 5  # The distance between the centres of the spheres
+    # Domain sphere
+    d = 20  # The distance between the centres of the spheres
 
-# Miscellaneous
-FILENAME = 'spheres_2D'
+    # Miscellaneous
+    FILENAME = 'spheres_2D'
 
-# Mesh meta-parameters
+    # Mesh meta-parameters
 
-# Physical parameters
-DIM = 2
-COORSYS = 'cylindrical'
-SOLVER = 'ScipyDirect'
+    # Physical parameters
+    DIM = 2
+    COORSYS = 'cylindrical'
+    SOLVER = 'ScipyDirect'
 
-# Mesh size
-minSize = 0.01
-maxSize = 0.5
-''' === END OF VARIABLES DECLARATION ==='''
+    # Mesh size
+    minSize = 0.01
+    maxSize = 0.5
+    ''' === END OF VARIABLES DECLARATION ==='''
 
 
-# Creating the meshes that will be used by the solvers
-FO2S = ForceOnTwoSpheres(problemName=FILENAME, R_1=R_1, rho_1=rho_1,
-                         R_2=R_2, rho_2=rho_2, d=d, minSize=minSize,
-                         maxSize=maxSize, dim=DIM, rho_q_1=rho_q_1,
-                         rho_q_2=rho_q_2, coorsys=COORSYS, SOLVER=SOLVER)
+    # Creating the meshes that will be used by the solvers
+    FO2S = ForceOnTwoSpheres(problemName=FILENAME, R_1=R_1, rho_1=rho_1,
+                             R_2=R_2, rho_2=rho_2, d=d, minSize=minSize,
+                             maxSize=maxSize, dim=DIM, rho_q_1=rho_q_1,
+                             rho_q_2=rho_q_2, coorsys=COORSYS, SOLVER=SOLVER)
 
-# Verifying some critical issues of the mesh
-#FO2S.GEOMETRY_VERIFICATIONS()
+    # Verifying some critical issues of the mesh
+    #FO2S.GEOMETRY_VERIFICATIONS()
 
-# Actually creating the meshes
-mesh_int, mesh_ext = FO2S.mesh_generation()
+    # Actually creating the meshes
+    mesh_int, mesh_ext = FO2S.mesh_generation()
 
-print("\n === NEWTONIAN GRAVITY ===")
-result_pp_newton = FO2S.get_newton_force(mesh_int, mesh_ext)
-F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton, getNewton=True)
-#FO2S.newton_residual_map(result_pp_newton)
+    # print("\n === NEWTONIAN GRAVITY ===")
+    # result_pp_newton = FO2S.get_newton_force(mesh_int, mesh_ext)
+    # F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton, getNewton=True)
+    # FO2S.newton_residual_map(result_pp_newton)
 
-# print("\n === ELECTROSTATIC FORCE ===")
-# result_pp_elec = FO2S.get_electrostatic_force(mesh_int, mesh_ext)
-# F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec, getCoulomb=True)
+    # print("\n === ELECTROSTATIC FORCE ===")
+    # result_pp_elec = FO2S.get_electrostatic_force(mesh_int, mesh_ext)
+    # F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec, getCoulomb=True)
 
-print("\n === YUKAWA GRAVITY ===")
-alpha = 1
-lmbda = 0.01
-rho_0 = 1
+    print("\n === YUKAWA GRAVITY ===")
+    alpha = 1e-2
+    lmbda = 10
+    rho_0 = 1
 
-result_pp_yukawa= FO2S.get_yukawa_force(mesh_int, mesh_ext, alpha=alpha,
-                                        lmbda=lmbda, rho_0=rho_0)
-F_Y, _, epsilon_Y = FO2S.postprocess_force(postprocess_file=result_pp_yukawa,
-                                           alpha=alpha, lmbda=lmbda,
-                                           rho_0=rho_0, getYukawa=True)
+    result_pp_yukawa= FO2S.get_yukawa_force(mesh_int, mesh_ext, alpha=alpha,
+                                            lmbda=lmbda, rho_0=rho_0)
+    F_Y, _, F_ana_Y, epsilon_Y = FO2S.postprocess_force(postprocess_file=result_pp_yukawa,
+                                               alpha=alpha, lmbda=lmbda,
+                                               rho_0=rho_0, getYukawa=True)
