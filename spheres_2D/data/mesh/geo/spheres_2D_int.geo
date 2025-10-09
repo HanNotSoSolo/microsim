@@ -2,11 +2,11 @@ SetFactory("OpenCASCADE");
 
 // Setting variables
 R_1 = 2; // radius of the first sphere
-R_2 = 2; // radius of the second sphere
-d = 5; // distance between the centres of the spheres
-R_Omega = 14; // radius of the internal domain
-Ngamma = 87; // number of nodes on the domain boundary
-minSize = 0.05; // size of the elements inside the spheres
+R_2 = 4; // radius of the second sphere
+d = 20; // distance between the centres of the spheres
+R_Omega = 48; // radius of the internal domain
+Ngamma = 301; // number of nodes on the domain boundary
+minSize = 0.01; // size of the elements inside the spheres
 maxSize = 0.5; // size of the elements far from the spheres
 
 // First sphere
@@ -99,8 +99,12 @@ Field[6].SizeMin = maxSize;
 Field[6].SizeMax = 5 * maxSize;
 Field[6].StopAtDistMax = 0;
 
-Field[7] = Min;
-Field[7].FieldsList = {2, 3, 5, 6};
+Field[7] = Constant;
+Field[7].SurfacesList = {3};
+Field[7].VIn = maxSize;
+
+Field[8] = Min;
+Field[8].FieldsList = {2, 3, 5, 6, 7};
 
 
-Background Field = 7;
+Background Field = 8;
