@@ -37,7 +37,7 @@ FILENAME = 'spheres_2D'
 # Distance between the spheres
 d_i = 9  # initial distance
 d_f = 20  # final distance
-n_steps = 10  # number of steps
+n_steps = 5  # number of steps
 
 # Yukawa parameters
 alpha = 0.5
@@ -51,8 +51,8 @@ COORSYS = 'cylindrical'
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.1
-maxSize = 1
+minSize = 0.001
+maxSize = 0.1
 ''' === END OF VARIABLES DECLARATION ==='''
 
 # The distances that will be calculated
@@ -90,11 +90,31 @@ for i in range(n_steps):
         # Index that indicates where I am in lmbda_list vector
         j += 1
 
-fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)
+# Creating the figure for the plots
+fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=(12, 8))
 
+# Drawing figures
 for i in range(len(lmbda_list)):
-    axs[0].plot(d, F_fem[:, 0, i])
+    axs[0].semilogy(d, -F_fem[:, 0, i])
     axs[1].semilogy(d, epsilon[:, i])
 
-#plt.savefig("Spheres_2D_Newton.png", bbox_inches='tight')
-plt.show()
+# Removing the space between the plots because it's prettier this way
+fig.subplots_adjust(hspace=0)
+
+# Adding all the features that could explain the graphic to my future self
+# (and obv also make it look a bit less confusing for people)
+axs[0].set_title('Yukawa gravitational force depending on $\lambda$')
+
+axs[1].legend(lmbda_list, fontsize='small', title='$\lambda$ values')
+
+axs[0].set_ylabel('$F_Y ~[N]$')
+axs[1].set_ylabel('Ɛ')
+axs[1].set_xlabel('$d ~[m]$')
+
+axs[1].set_ylim(top=1.1)
+
+axs[0].grid()
+axs[1].grid()
+
+plt.savefig("Spheres_2D_Newton.png", bbox_inches='tight')
+#plt.show()

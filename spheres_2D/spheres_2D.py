@@ -700,3 +700,5 @@ def test():
     F_Y, _, F_ana_Y, epsilon_Y = FO2S.postprocess_force(postprocess_file=result_pp_yukawa,
                                                alpha=alpha, lmbda=lmbda,
                                                rho_0=rho_0, getYukawa=True)
+
+test()
