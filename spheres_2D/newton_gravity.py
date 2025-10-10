@@ -39,7 +39,7 @@ FILENAME = 'spheres_2D'
 # Distance between the spheres
 d_i = 9  # initial distance
 d_f = 20  # final distance
-n_steps = 50  # number of steps
+n_steps = 20  # number of steps
 
 # Physical parameters
 DIM = 2

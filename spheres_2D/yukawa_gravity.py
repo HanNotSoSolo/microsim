@@ -53,6 +53,7 @@ SOLVER = 'ScipyDirect'
 # Mesh size
 minSize = 0.001
 maxSize = 0.1
+
 ''' === END OF VARIABLES DECLARATION ==='''
 
 # The distances that will be calculated
@@ -116,5 +117,5 @@ axs[1].set_ylim(top=1.1)
 axs[0].grid()
 axs[1].grid()
 
-plt.savefig("Spheres_2D_Newton.png", bbox_inches='tight')
+plt.savefig("Spheres_2D_Yukawa.png", inches='tight')
 #plt.show()
