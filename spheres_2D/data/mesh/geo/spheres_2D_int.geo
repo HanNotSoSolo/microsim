@@ -3,10 +3,10 @@ SetFactory("OpenCASCADE");
 // Setting variables
 R_1 = 2; // radius of the first sphere
 R_2 = 4; // radius of the second sphere
-d = 20; // distance between the centres of the spheres
-R_Omega = 48; // radius of the internal domain
-Ngamma = 301; // number of nodes on the domain boundary
-minSize = 0.01; // size of the elements inside the spheres
+d = 9; // distance between the centres of the spheres
+R_Omega = 26; // radius of the internal domain
+Ngamma = 163; // number of nodes on the domain boundary
+minSize = 0.005; // size of the elements inside the spheres
 maxSize = 0.5; // size of the elements far from the spheres
 
 // First sphere
@@ -69,15 +69,15 @@ Field[2].InField = 1;
 Field[2].DistMin = 0;
 Field[2].DistMax = 6 * R_1;
 Field[2].SizeMin = minSize;
-Field[2].SizeMax = maxSize;
+Field[2].SizeMax = maxSize / 2;
 Field[2].StopAtDistMax = 1;
 
 Field[3] = Threshold;
 Field[3].InField = 1;
 Field[3].DistMin = 6 * R_1;
-Field[3].DistMax = 12 * R_1;
-Field[3].SizeMin = maxSize;
-Field[3].SizeMax = 5 * maxSize;
+Field[3].DistMax = R_Omega;
+Field[3].SizeMin = maxSize / 2;
+Field[3].SizeMax = maxSize;
 Field[3].StopAtDistMax = 0;
 
 Field[4] = Distance;
@@ -88,15 +88,15 @@ Field[5].InField = 4;
 Field[5].DistMin = 0;
 Field[5].DistMax = 6 * R_2;
 Field[5].SizeMin = minSize;
-Field[5].SizeMax = maxSize;
+Field[5].SizeMax = maxSize / 2;
 Field[5].StopAtDistMax = 1;
 
 Field[6] = Threshold;
 Field[6].InField = 4;
 Field[6].DistMin = 6 * R_2;
-Field[6].DistMax = 12 * R_2;
-Field[6].SizeMin = maxSize;
-Field[6].SizeMax = 5 * maxSize;
+Field[6].DistMax = R_Omega;
+Field[6].SizeMin = maxSize / 2;
+Field[6].SizeMax = maxSize;
 Field[6].StopAtDistMax = 0;
 
 Field[7] = Constant;
@@ -104,7 +104,7 @@ Field[7].SurfacesList = {3};
 Field[7].VIn = maxSize;
 
 Field[8] = Min;
-Field[8].FieldsList = {2, 3, 5, 6, 7};
+Field[8].FieldsList = {2, 3, 5, 6};
 
 
 Background Field = 8;

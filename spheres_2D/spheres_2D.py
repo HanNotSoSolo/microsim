@@ -92,9 +92,6 @@ class ForceOnTwoSpheres:
     SOLVER : str, optional
         Used to solve the equation system. Can be chosen between 'ScipyDirect',
         'ScipyIterative', 'ScipySuperLU', 'ScipyUmfpack' and 'MUMPS'.
-    SHOW_MESH : bool, optional
-        If True, a window will appear to show the mesh and the program will
-        pause until the window is closed. The default is False.
     VERBOSE : bool, optional
         If True, increases the verbose of the functions. The default is False.
 
@@ -125,7 +122,7 @@ class ForceOnTwoSpheres:
                  tag_sphere_1=300, tag_sphere_2=301, tag_domain_int=302,
                  tag_domain_ext=303, tag_boundary_int=200,
                  tag_boundary_ext=201, coorsys='cylindrical', FEM_ORDER=1,
-                 SOLVER='ScipyDirect', SHOW_MESH=False, VERBOSE=False):
+                 SOLVER='ScipyDirect', VERBOSE=False):
         # Directly initialized parameters
         self.problemName = problemName  # the geometrical file name without the extention
         self.R_1 = R_1  # All measures are expressed in S.I. units
@@ -149,7 +146,6 @@ class ForceOnTwoSpheres:
         self.coorsys = coorsys
         self.FEM_ORDER = FEM_ORDER
         self.SOLVER = SOLVER
-        self.SHOW_MESH = SHOW_MESH
         self.VERBOSE = VERBOSE
 
         # Derived parameters that are a function of the previous ones
@@ -169,7 +165,24 @@ class ForceOnTwoSpheres:
         assert self.R_2 < (self.d/2), "Sphere 2 (down one) is too big, please reduce its size or increase the distance."
         assert (self.R_1 + self.R_2) < self.d, "Spheres intersect, please increase the distance between them."
 
-    def mesh_generation(self):
+    def mesh_generation(self, SHOW_MESH=False):
+        """
+
+
+        Parameters
+        ----------
+        SHOW_MESH : bool, optional
+            If True, a window will appear to show the mesh and the program will
+            pause until the window is closed. The default is False.
+
+        Returns
+        -------
+        mesh_int : TYPE
+            DESCRIPTION.
+        mesh_ext : TYPE
+            DESCRIPTION.
+
+        """
 
         param_dict_int = {'R_1': self.R_1,
                           'R_2': self.R_2,
@@ -179,7 +192,7 @@ class ForceOnTwoSpheres:
                           'maxSize': self.maxSize,
                           'Ngamma': self.Ngamma}
         mesh_int = generate_mesh_from_geo( self.problemName + '_int',
-                                          show_mesh=self.SHOW_MESH,
+                                          show_mesh=SHOW_MESH,
                                           param_dict=param_dict_int,
                                           verbose=self.VERBOSE)
 
@@ -188,7 +201,7 @@ class ForceOnTwoSpheres:
                           'maxSize': self.maxSize,
                           'Ngamma': self.Ngamma}
         mesh_ext = generate_mesh_from_geo(self.problemName + '_ext',
-                                          show_mesh=self.SHOW_MESH,
+                                          show_mesh=SHOW_MESH,
                                           param_dict=param_dict_ext,
                                           verbose=self.VERBOSE)
 
