@@ -1,0 +1,4 @@
+# Ignore all mesh and results files
+*.vtk
+*.pkl
+*.msh
