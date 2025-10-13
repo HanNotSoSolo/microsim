@@ -51,8 +51,8 @@ COORSYS = 'cylindrical'
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.005
-maxSize = 0.5
+minSize = 0.001
+maxSize = 0.3
 
 ''' === END OF VARIABLES DECLARATION ==='''
 
@@ -100,7 +100,7 @@ for i in range(len(lmbda_list)):
     axs[1].semilogy(d, epsilon[:, i])
 
 # Removing the space between the plots because it's prettier this way
-fig.subplots_adjust(hspace=0)
+#fig.subplots_adjust(hspace=0)
 
 # Adding all the features that could explain the graphic to my future self
 # (and obv also make it look a bit less confusing for people)
@@ -112,10 +112,10 @@ axs[0].set_ylabel('$F_Y ~[N]$')
 axs[1].set_ylabel('Ɛ')
 axs[1].set_xlabel('$d ~[m]$')
 
-axs[1].set_ylim(top=1.1)
+axs[1].set_ylim(top=2)
 
 axs[0].grid()
 axs[1].grid()
 
-plt.savefig("Spheres_2D_Yukawa.png", inches='tight')
+plt.savefig("Spheres_2D_Yukawa.png", bbox_inches='tight')
 #plt.show()

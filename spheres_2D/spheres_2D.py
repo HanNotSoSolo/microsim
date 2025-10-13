@@ -677,7 +677,7 @@ def test():
     SOLVER = 'ScipyDirect'
 
     # Mesh size
-    minSize = 0.01
+    minSize = 0.005
     maxSize = 0.5
     ''' === END OF VARIABLES DECLARATION ==='''
 
@@ -705,13 +705,13 @@ def test():
 
     print("\n === YUKAWA GRAVITY ===")
     alpha = 1e-2
-    lmbda = 10
+    lmbda = 40
     rho_0 = 1
 
     result_pp_yukawa= FO2S.get_yukawa_force(mesh_int, mesh_ext, alpha=alpha,
                                             lmbda=lmbda, rho_0=rho_0)
     F_Y, _, F_ana_Y, epsilon_Y = FO2S.postprocess_force(postprocess_file=result_pp_yukawa,
-                                               alpha=alpha, lmbda=lmbda,
-                                               rho_0=rho_0, getYukawa=True)
+                                                alpha=alpha, lmbda=lmbda,
+                                                rho_0=rho_0, getYukawa=True)
 
-#test()
+test()

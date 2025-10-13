@@ -47,8 +47,8 @@ COORSYS = 'cylindrical'
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.005
-maxSize = 0.5
+minSize = 0.001
+maxSize = 0.3
 ''' === END OF VARIABLES DECLARATION ==='''
 
 # The distances that will be calculated
@@ -108,6 +108,7 @@ twin_ax.semilogy(d, epsilon[:, 1], color='red')
 twin_ax.axhline(y=np.mean(epsilon[:, 0]), ls='--', color='green')
 twin_ax.axhline(y=np.mean(epsilon[:, 1]), ls='--', color='red')
 twin_ax.legend(['$ε_1$', '$ε_2$'], fontsize='small')
-twin_ax.set_yticks(mepsilon, [f"{mepsilon[0]:.3e}", f"{mepsilon[1]:.3e}"])
+twin_ax.set_yticks(mepsilon, [f"{mepsilon[0]:.3e}", f"{mepsilon[1]:.3e}"], minor=True)
+
 
 plt.savefig("Spheres_2D_Newton.png", bbox_inches='tight')

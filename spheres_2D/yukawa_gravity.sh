@@ -7,8 +7,8 @@
 #SBATCH --profile=all
 
 echo "Starting Yukawa calculation..."
-srun python /scratchm/mdellava/femtoscope/spheres_2D/yukawa_gravity.py
+srun python /scratchm/mdellava/microsim/spheres_2D/yukawa_gravity.py
 wait
 
 echo "Calculation terminated, launching Newton's calculation and quitting."
-sbatch $WORKDIR/femtoscope/spheres_2D/newton_gravity.sh
+sbatch $WORKDIR/microsim/spheres_2D/newton_gravity.sh
