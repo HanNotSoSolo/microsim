@@ -2,3 +2,7 @@
 *.vtk
 *.pkl
 *.msh
+
+# Also ignore all SLURM output files
+*.out
+*.err
