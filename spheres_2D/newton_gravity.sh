@@ -9,3 +9,6 @@
 echo "Starting Newton calculation..."
 srun python /scratchm/mdellava/microsim/spheres_2D/newton_gravity.py
 wait
+
+echo "Calculation terminated, launching Coulomb's calculation and quitting."
+sbatch $WORKDIR/microsim/spheres_2D/coulomb_electrostatic.sh

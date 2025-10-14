@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=newt_2D
+#SBATCH --job-name=culom_2D
 #SBATCH --time=2-00:00
 #SBATCH --mem=120G
 #SBATCH --qos=c3_long_opa

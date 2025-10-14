@@ -37,7 +37,7 @@ FILENAME = 'spheres_2D'
 # Distance between the spheres
 d_i = 9  # initial distance
 d_f = 20  # final distance
-n_steps = 5  # number of steps
+n_steps = 10  # number of steps
 
 # Yukawa parameters
 alpha = 0.5
