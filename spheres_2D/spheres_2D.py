@@ -95,7 +95,7 @@ class ForceOnTwoSpheres:
     VERBOSE : int, optional
         Sets the verbosity level. 0: no message will be displayed; 1: only the
         first-party functions will have verbosity; 2: all functions will have
-        verbosity, when it's available. Default is 0.
+        verbosity, when it's available. Default is 1.
 
     Methods
     -------
@@ -124,7 +124,7 @@ class ForceOnTwoSpheres:
                  tag_sphere_1=300, tag_sphere_2=301, tag_domain_int=302,
                  tag_domain_ext=303, tag_boundary_int=200,
                  tag_boundary_ext=201, coorsys='cylindrical', FEM_ORDER=1,
-                 SOLVER='ScipyDirect', VERBOSE=0):
+                 SOLVER='ScipyDirect', VERBOSE=1):
         # Directly initialized parameters
         self.problemName = problemName  # the geometrical file name without the extention
         self.R_1 = R_1  # All measures are expressed in S.I. units
@@ -801,4 +801,4 @@ def test():
                                                 alpha=alpha, lmbda=lmbda,
                                                 rho_0=rho_0, getYukawa=True)
 
-test()
+#test()
