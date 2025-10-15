@@ -92,8 +92,10 @@ class ForceOnTwoSpheres:
     SOLVER : str, optional
         Used to solve the equation system. Can be chosen between 'ScipyDirect',
         'ScipyIterative', 'ScipySuperLU', 'ScipyUmfpack' and 'MUMPS'.
-    VERBOSE : bool, optional
-        If True, increases the verbose of the functions. The default is False.
+    VERBOSE : int, optional
+        Sets the verbosity level. 0: no message will be displayed; 1: only the
+        first-party functions will have verbosity; 2: all functions will have
+        verbosity, when it's available. Default is 0.
 
     Methods
     -------
@@ -122,7 +124,7 @@ class ForceOnTwoSpheres:
                  tag_sphere_1=300, tag_sphere_2=301, tag_domain_int=302,
                  tag_domain_ext=303, tag_boundary_int=200,
                  tag_boundary_ext=201, coorsys='cylindrical', FEM_ORDER=1,
-                 SOLVER='ScipyDirect', VERBOSE=False):
+                 SOLVER='ScipyDirect', VERBOSE=0):
         # Directly initialized parameters
         self.problemName = problemName  # the geometrical file name without the extention
         self.R_1 = R_1  # All measures are expressed in S.I. units
@@ -146,11 +148,22 @@ class ForceOnTwoSpheres:
         self.coorsys = coorsys
         self.FEM_ORDER = FEM_ORDER
         self.SOLVER = SOLVER
-        self.VERBOSE = VERBOSE
 
         # Derived parameters that are a function of the previous ones
         self.R_Omega = (self.d + max((R_1, R_2))) * 2
         self.Ngamma = int(np.pi * self.R_Omega / self.maxSize)
+
+        # The verbosity instructions for the script
+        if VERBOSE == 0:
+            self.SFEPY_VERBOSE = False
+            self.VERBOSE = False
+        elif VERBOSE == 1:
+            self.SFEPY_VERBOSE = False
+            self.VERBOSE = True
+        elif VERBOSE == 2:
+            self.SFEPY_VERBOSE = True
+            self.VERBOSE = True
+
 
     def GEOMETRY_VERIFICATIONS(self):
         '''
@@ -165,7 +178,8 @@ class ForceOnTwoSpheres:
         assert self.R_2 < (self.d/2), "Sphere 2 (down one) is too big, please reduce its size or increase the distance."
         assert (self.R_1 + self.R_2) < self.d, "Spheres intersect, please increase the distance between them."
 
-        print("Geometry verification: OK")
+        print("Geometry verifications: OK.\n")
+
 
     def mesh_generation(self, SHOW_MESH=False):
         """
@@ -192,13 +206,13 @@ class ForceOnTwoSpheres:
             print(" - R_1: {}".format(self.R_1))
             print(" - R_2: {}".format(self.R_2))
             print(" - R_Omega: {}".format(self.R_Omega))
-            print(" - Distance centre-to-centre: {}".format(self.d))
+            print(" - Distance centre-to-centre: {} m".format(self.d))
             print(" - Mesh's minimum size: {}".format(self.minSize))
             print(" - Mesh's maximum size: {}".format(self.maxSize))
             print(" - Mesh type: {}D".format(self.dim))
-            print(" - Coordinates system: {} framework".format(self.coorsys))
+            print(" - Coordinates system: {} framework\n".format(self.coorsys))
 
-        print("Generating inner mesh...", end="")
+        print("=== INNER MESH GENERATION ===")
         param_dict_int = {'R_1': self.R_1,
                           'R_2': self.R_2,
                           'd': self.d,
@@ -209,10 +223,10 @@ class ForceOnTwoSpheres:
         mesh_int = generate_mesh_from_geo( self.problemName + '_int',
                                           show_mesh=SHOW_MESH,
                                           param_dict=param_dict_int,
-                                          verbose=self.VERBOSE)
-        print("OK.")
+                                          verbose=self.SFEPY_VERBOSE)
+        print("OK.\n")
 
-        print("Generating outer mesh...", end="")
+        print("=== OUTER MESH GENERATION ===")
         param_dict_ext = {'R_Omega': self.R_Omega,
                           'minSize': self.minSize,
                           'maxSize': self.maxSize,
@@ -220,8 +234,8 @@ class ForceOnTwoSpheres:
         mesh_ext = generate_mesh_from_geo(self.problemName + '_ext',
                                           show_mesh=SHOW_MESH,
                                           param_dict=param_dict_ext,
-                                          verbose=self.VERBOSE)
-        print("OK.")
+                                          verbose=self.SFEPY_VERBOSE)
+        print("OK.\n")
 
         adjust_boundary_nodes(mesh_int, mesh_ext, self.tag_boundary_int,
                               self.tag_boundary_ext)
@@ -231,6 +245,12 @@ class ForceOnTwoSpheres:
 
     def get_newton_force(self, mesh_int, mesh_ext, return_result=True):
         # TODO update with the docstring
+
+        if self.VERBOSE:
+            print("=== NEWTONIAN FORCE COMPUTATION ===")
+            print(" - FEM complexity: {}° order".format(self.FEM_ORDER))
+            print(" - Solver name: {}".format(self.SOLVER))
+            print("")
 
         # Creating the constants that will caracterize the Newton's version of
         # the Poisson's problem
@@ -269,13 +289,13 @@ class ForceOnTwoSpheres:
 
         try:
             poisson_solver.save_results(self.problemName + '_newton')
-            print('Result saved.')
+            print('Result saved.\n')
 
         except FileExistsError:
             resultPath = RESULT_DIR / str(self.problemName + '_newton')
             rmtree(resultPath)
             poisson_solver.save_results(self.problemName + '_newton')
-            print('Result saved.')
+            print('Result saved.\n')
 
         if return_result:
             return RPP.from_files(self.problemName + '_newton')
@@ -283,6 +303,13 @@ class ForceOnTwoSpheres:
 
     def get_electrostatic_force(self, mesh_int, mesh_ext, return_result=True):
         # TODO update with the docstring
+
+        if self.VERBOSE:
+            print("=== ELECTROSTATIC FORCE COMPUTATION ===")
+            print(" - FEM complexity: {}° order".format(self.FEM_ORDER))
+            print(" - Solver name: {}".format(self.SOLVER))
+            print("")
+
 
         # Creating the constants that will caracterize the Coulomb's version of
         # the Poisson's problem
@@ -315,19 +342,20 @@ class ForceOnTwoSpheres:
                                       region_key_int=(
                                           'facet', self.tag_boundary_int),
                                       region_key_ext=('facet', self.tag_boundary_ext))
+
         poisson_solver.solve()
 
         ''' This part is here to ensure the result is correctly saved'''
 
         try:
             poisson_solver.save_results(self.problemName + '_electrostatic')
-            print('Result saved.')
+            print('Result saved.\n')
 
         except FileExistsError:
             resultPath = RESULT_DIR / str(self.problemName + '_electrostatic')
             rmtree(resultPath)
             poisson_solver.save_results(self.problemName + '_electrostatic')
-            print('Result saved.')
+            print('Result saved.\n')
 
         if return_result:
             return RPP.from_files(self.problemName + '_electrostatic')
@@ -373,6 +401,16 @@ class ForceOnTwoSpheres:
 
         """
 
+        if self.VERBOSE:
+            print("=== YUKAWA FORCE COMPUTATION ===")
+            print(" - FEM complexity: {}° order".format(self.FEM_ORDER))
+            print(" - Solver name: {}".format(self.SOLVER))
+            print(" - scale factor α: {}".format(alpha))
+            print(" - range factor Ⲗ: {}".format(lmbda))
+            print(" - characteristic lenght: {}m".format(L_0))
+            print(" - characteristic density: {} [kg·m^-3]".format(rho_0))
+            print("")
+
         # Creating the gamma parameter
         gamma = lmbda**2 / L_0**2
 
@@ -411,13 +449,13 @@ class ForceOnTwoSpheres:
 
         try:
             yukawa_solver.save_results(self.problemName + '_yukawa')
-            print('Result saved.')
+            print('Result saved.\n')
 
         except FileExistsError:
             resultPath = RESULT_DIR / str(self.problemName + '_yukawa')
             rmtree(resultPath)
             yukawa_solver.save_results(self.problemName + '_yukawa')
-            print('Result saved.')
+            print('Result saved.\n')
 
         if return_result:
             return RPP.from_files(self.problemName + '_yukawa')
@@ -547,6 +585,7 @@ class ForceOnTwoSpheres:
                 print(" - rho_1: {} [kg·m^-3]".format(self.rho_1))
                 print(" - rho_2: {} [kg·m^-3]".format(self.rho_2))
                 print(" - rho_domain: {} [kg·m^-3]".format(self.rho_domain))
+                print("")
 
             # Computing nondimensioning term U_0
             U_0 = 4 * np.pi * k * lmbda**2 * alpha * rho_0
@@ -612,11 +651,13 @@ class ForceOnTwoSpheres:
                     print(" - rho_1: {} [kg·m^-3]".format(rho_1))
                     print(" - rho_2: {} [kg·m^-3]".format(rho_2))
                     print(" - rho_domain: {} [kg·m^-3]".format(rho_domain))
+                    print("")
                 elif getCoulomb:
                     print(" === Poisson problem - Electrostatic ===")
                     print(" - rho_1: {} [C·m^-3]".format(rho_1))
                     print(" - rho_2: {} [C·m^-3]".format(rho_2))
                     print(" - rho_domain: {} [C·m^-3]".format(rho_domain))
+                    print("")
 
             # Formatting the request for Sfepy
             wf_int = postprocess_file.wf_int
@@ -712,6 +753,7 @@ def test():
 
     # Miscellaneous
     FILENAME = 'spheres_2D'
+    VERBOSE = 1
 
     # Mesh meta-parameters
 
@@ -721,7 +763,7 @@ def test():
     SOLVER = 'ScipyDirect'
 
     # Mesh size
-    minSize = 0.005
+    minSize = 0.05
     maxSize = 0.5
     ''' === END OF VARIABLES DECLARATION ==='''
 
@@ -730,22 +772,23 @@ def test():
     FO2S = ForceOnTwoSpheres(problemName=FILENAME, R_1=R_1, rho_1=rho_1,
                              R_2=R_2, rho_2=rho_2, d=d, minSize=minSize,
                              maxSize=maxSize, dim=DIM, rho_q_1=rho_q_1,
-                             rho_q_2=rho_q_2, coorsys=COORSYS, SOLVER=SOLVER)
+                             rho_q_2=rho_q_2, coorsys=COORSYS, SOLVER=SOLVER,
+                             VERBOSE=VERBOSE)
 
     # Verifying some critical issues of the mesh
-    #FO2S.GEOMETRY_VERIFICATIONS()
+    FO2S.GEOMETRY_VERIFICATIONS()
 
     # Actually creating the meshes
     mesh_int, mesh_ext = FO2S.mesh_generation()
 
-    # print("\n === NEWTONIAN GRAVITY ===")
-    # result_pp_newton = FO2S.get_newton_force(mesh_int, mesh_ext)
-    # F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton, getNewton=True)
-    # FO2S.newton_residual_map(result_pp_newton)
+    print("\n === NEWTONIAN GRAVITY ===")
+    result_pp_newton = FO2S.get_newton_force(mesh_int, mesh_ext)
+    F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton, getNewton=True)
+    FO2S.newton_residual_map(result_pp_newton, save_figure=False)
 
-    # print("\n === ELECTROSTATIC FORCE ===")
-    # result_pp_elec = FO2S.get_electrostatic_force(mesh_int, mesh_ext)
-    # F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec, getCoulomb=True)
+    print("\n === ELECTROSTATIC FORCE ===")
+    result_pp_elec = FO2S.get_electrostatic_force(mesh_int, mesh_ext)
+    F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec, getCoulomb=True)
 
     print("\n === YUKAWA GRAVITY ===")
     alpha = 1e-2
