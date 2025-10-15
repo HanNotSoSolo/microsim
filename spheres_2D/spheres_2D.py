@@ -165,6 +165,8 @@ class ForceOnTwoSpheres:
         assert self.R_2 < (self.d/2), "Sphere 2 (down one) is too big, please reduce its size or increase the distance."
         assert (self.R_1 + self.R_2) < self.d, "Spheres intersect, please increase the distance between them."
 
+        print("Geometry verification: OK")
+
     def mesh_generation(self, SHOW_MESH=False):
         """
 
@@ -184,6 +186,19 @@ class ForceOnTwoSpheres:
 
         """
 
+        # Telling information about the mesh to the user if they want to
+        if self.VERBOSE:
+            print("=== MESH CHARACTERISTICS ===")
+            print(" - R_1: {}".format(self.R_1))
+            print(" - R_2: {}".format(self.R_2))
+            print(" - R_Omega: {}".format(self.R_Omega))
+            print(" - Distance centre-to-centre: {}".format(self.d))
+            print(" - Mesh's minimum size: {}".format(self.minSize))
+            print(" - Mesh's maximum size: {}".format(self.maxSize))
+            print(" - Mesh type: {}D".format(self.dim))
+            print(" - Coordinates system: {} framework".format(self.coorsys))
+
+        print("Generating inner mesh...", end="")
         param_dict_int = {'R_1': self.R_1,
                           'R_2': self.R_2,
                           'd': self.d,
@@ -195,7 +210,9 @@ class ForceOnTwoSpheres:
                                           show_mesh=SHOW_MESH,
                                           param_dict=param_dict_int,
                                           verbose=self.VERBOSE)
+        print("OK.")
 
+        print("Generating outer mesh...", end="")
         param_dict_ext = {'R_Omega': self.R_Omega,
                           'minSize': self.minSize,
                           'maxSize': self.maxSize,
@@ -204,6 +221,7 @@ class ForceOnTwoSpheres:
                                           show_mesh=SHOW_MESH,
                                           param_dict=param_dict_ext,
                                           verbose=self.VERBOSE)
+        print("OK.")
 
         adjust_boundary_nodes(mesh_int, mesh_ext, self.tag_boundary_int,
                               self.tag_boundary_ext)
@@ -498,10 +516,12 @@ class ForceOnTwoSpheres:
         if getNewton or getYukawa:
             rho_1 = self.rho_1
             rho_2 = self.rho_2
+            rho_domain = self.rho_domain
             k = 6.6743e-11
         elif getCoulomb:
             rho_1 = self.rho_q_1
             rho_2 = self.rho_q_2
+            rho_domain = self.rho_q_domain
             k = (4 * np.pi * 8.8541878128e-12)**-1
 
         # Extracting coordinates from results file
@@ -518,6 +538,15 @@ class ForceOnTwoSpheres:
         '''
 
         if getYukawa:
+
+            # Informing the user about the characteristics of the K-G problem
+            if self.VERBOSE:
+                print(" === Linear Klein-Gordon problem ===")
+                print(" - scale factor α: {}".format(alpha))
+                print(" - range factor Ⲗ: {}".format(lmbda))
+                print(" - rho_1: {} [kg·m^-3]".format(self.rho_1))
+                print(" - rho_2: {} [kg·m^-3]".format(self.rho_2))
+                print(" - rho_domain: {} [kg·m^-3]".format(self.rho_domain))
 
             # Computing nondimensioning term U_0
             U_0 = 4 * np.pi * k * lmbda**2 * alpha * rho_0
@@ -569,11 +598,25 @@ class ForceOnTwoSpheres:
             # # Calculating the precision of those ratios
             # epsilon = (N2Y_ana - N2Y_fem) / N2Y_ana
             print("Precision on vertical force: ", epsilon)
+            print("\n\n")
 
 
             return grad_yukawa_S1[1], grad_yukawa_S2[1], F_ana, epsilon
 
         else:
+
+            # Informing the user about the characteristics of the Poisson problem
+            if self.VERBOSE:
+                if getNewton:
+                    print(" === Poisson problem - Newtonian ===")
+                    print(" - rho_1: {} [kg·m^-3]".format(rho_1))
+                    print(" - rho_2: {} [kg·m^-3]".format(rho_2))
+                    print(" - rho_domain: {} [kg·m^-3]".format(rho_domain))
+                elif getCoulomb:
+                    print(" === Poisson problem - Electrostatic ===")
+                    print(" - rho_1: {} [C·m^-3]".format(rho_1))
+                    print(" - rho_2: {} [C·m^-3]".format(rho_2))
+                    print(" - rho_domain: {} [C·m^-3]".format(rho_domain))
 
             # Formatting the request for Sfepy
             wf_int = postprocess_file.wf_int
@@ -599,6 +642,7 @@ class ForceOnTwoSpheres:
             epsilon = np.abs((F_ana - grad_phi_sphere_1[1]) / F_ana)
 
             print("Precision on vertical force: ", epsilon)
+            print("\n\n")
 
             return grad_phi_sphere_1[1], grad_phi_sphere_2[1], epsilon
 
