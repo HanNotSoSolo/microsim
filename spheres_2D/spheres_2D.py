@@ -178,7 +178,8 @@ class ForceOnTwoSpheres:
         assert self.R_2 < (self.d/2), "Sphere 2 (down one) is too big, please reduce its size or increase the distance."
         assert (self.R_1 + self.R_2) < self.d, "Spheres intersect, please increase the distance between them."
 
-        print("Geometry verifications: OK.\n")
+        if self.VERBOSE:
+            print("Geometry verifications: OK.\n")
 
 
     def mesh_generation(self, SHOW_MESH=False):
@@ -212,7 +213,9 @@ class ForceOnTwoSpheres:
             print(" - Mesh type: {}D".format(self.dim))
             print(" - Coordinates system: {} framework\n".format(self.coorsys))
 
-        print("=== INNER MESH GENERATION ===")
+        if self.VERBOSE:
+            print("=== INNER MESH GENERATION ===")
+
         param_dict_int = {'R_1': self.R_1,
                           'R_2': self.R_2,
                           'd': self.d,
@@ -224,9 +227,12 @@ class ForceOnTwoSpheres:
                                           show_mesh=SHOW_MESH,
                                           param_dict=param_dict_int,
                                           verbose=self.SFEPY_VERBOSE)
-        print("OK.\n")
+        if self.VERBOSE:
+            print("OK.\n")
 
-        print("=== OUTER MESH GENERATION ===")
+        if self.VERBOSE:
+            print("=== OUTER MESH GENERATION ===")
+
         param_dict_ext = {'R_Omega': self.R_Omega,
                           'minSize': self.minSize,
                           'maxSize': self.maxSize,
@@ -235,7 +241,8 @@ class ForceOnTwoSpheres:
                                           show_mesh=SHOW_MESH,
                                           param_dict=param_dict_ext,
                                           verbose=self.SFEPY_VERBOSE)
-        print("OK.\n")
+        if self.VERBOSE:
+            print("OK.\n")
 
         adjust_boundary_nodes(mesh_int, mesh_ext, self.tag_boundary_int,
                               self.tag_boundary_ext)
@@ -749,11 +756,11 @@ def test():
     rho_q_2 = -19e-8
 
     # Domain sphere
-    d = 20  # The distance between the centres of the spheres
+    d = 9  # The distance between the centres of the spheres
 
     # Miscellaneous
     FILENAME = 'spheres_2D'
-    VERBOSE = 1
+    VERBOSE = 0
 
     # Mesh meta-parameters
 
@@ -781,22 +788,23 @@ def test():
     # Actually creating the meshes
     mesh_int, mesh_ext = FO2S.mesh_generation()
 
-    print("\n === NEWTONIAN GRAVITY ===")
-    result_pp_newton = FO2S.get_newton_force(mesh_int, mesh_ext)
-    F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton, getNewton=True)
-    FO2S.newton_residual_map(result_pp_newton, save_figure=False)
+    # print("\n === NEWTONIAN GRAVITY ===")
+    # result_pp_newton = FO2S.get_newton_force(mesh_int, mesh_ext)
+    # F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton, getNewton=True)
+    # FO2S.newton_residual_map(result_pp_newton, save_figure=False)
 
-    print("\n === ELECTROSTATIC FORCE ===")
-    result_pp_elec = FO2S.get_electrostatic_force(mesh_int, mesh_ext)
-    F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec, getCoulomb=True)
+    # print("\n === ELECTROSTATIC FORCE ===")
+    # result_pp_elec = FO2S.get_electrostatic_force(mesh_int, mesh_ext)
+    # F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec, getCoulomb=True)
 
     print("\n === YUKAWA GRAVITY ===")
-    alpha = 1e-2
+    alpha = 5e-1
     lmbda = 40
-    rho_0 = 1
+    rho_0 = 10e4
+    L_0 = 1  # FIXME L_0 not equal to 1 makes the problem explode!
 
     result_pp_yukawa= FO2S.get_yukawa_force(mesh_int, mesh_ext, alpha=alpha,
-                                            lmbda=lmbda, rho_0=rho_0)
+                                            lmbda=lmbda, L_0=L_0, rho_0=rho_0)
     F_Y, _, F_ana_Y, epsilon_Y = FO2S.postprocess_force(postprocess_file=result_pp_yukawa,
                                                 alpha=alpha, lmbda=lmbda,
                                                 rho_0=rho_0, getYukawa=True)

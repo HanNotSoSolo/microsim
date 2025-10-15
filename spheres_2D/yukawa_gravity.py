@@ -42,7 +42,7 @@ n_steps = 10  # number of steps
 # Yukawa parameters
 alpha = 0.5
 lmbda_list = np.array([40, 20, 10, 5, 2.5, 1.25, 0.75, 0.375])
-L_0 = 15
+L_0 = 1  # FIXME L_0 =! 1 makes the problem explode
 rho_0 = 10e4
 
 # Physical parameters
@@ -52,6 +52,8 @@ SOLVER = 'ScipyDirect'
 
 # Mesh size
 minSize = 0.001
+minSize = 0.05
+maxSize = 0.3
 maxSize = 0.5
 
 ''' === END OF VARIABLES DECLARATION ==='''
@@ -77,6 +79,8 @@ for i in range(n_steps):
     j = 0
 
     for lmbda in lmbda_list:
+
+        print("--- NEW LAMBDA ---")
         # Resolution of the linear Klein-Gordon problem
         result_pp_yukawa = system.get_yukawa_force(mesh_int, mesh_ext,
                                                    alpha=alpha, lmbda=lmbda,
@@ -90,6 +94,7 @@ for i in range(n_steps):
                                                                                               getYukawa=True)
         # Index that indicates where I am in lmbda_list vector
         j += 1
+
 
 # Creating the figure for the plots
 fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=(12, 8))
