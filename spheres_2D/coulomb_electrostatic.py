@@ -47,8 +47,8 @@ COORSYS = 'cylindrical'
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.0005
-maxSize = 0.1
+minSize = 0.001
+maxSize = 0.3
 ''' === END OF VARIABLES DECLARATION ==='''
 
 # The distances that will be calculated

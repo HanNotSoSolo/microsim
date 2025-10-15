@@ -1,0 +1,123 @@
+==========================================
+SLURM_JOB_ID = 6924
+SLURM_JOB_NODELIST = n304
+==========================================
+Starting Newton calculation...
+Result saved.
+Force on sphere 1: -0.6324685211885802 N
+Force on sphere 2: 0.63245386292212 N
+Precision on vertical force:  2.0016538439445285e-05
+Result saved.
+Force on sphere 1: -0.5583290440066062 N
+Force on sphere 2: 0.5583136602904293 N
+Precision on vertical force:  2.4300475600027823e-05
+Result saved.
+Force on sphere 1: -0.4965003941223616 N
+Force on sphere 2: 0.4964854284713824 N
+Precision on vertical force:  2.710830487704041e-05
+Result saved.
+Force on sphere 1: -0.4443987046187583 N
+Force on sphere 2: 0.4443864524110291 N
+Precision on vertical force:  2.458369398711569e-05
+Result saved.
+Force on sphere 1: -0.4000923082758529 N
+Force on sphere 2: 0.4000775417052064 N
+Precision on vertical force:  3.380084215332663e-05
+Result saved.
+Force on sphere 1: -0.3620914344059792 N
+Force on sphere 2: 0.3620797411099084 N
+Precision on vertical force:  2.921297718866442e-05
+Result saved.
+Force on sphere 1: -0.32926148144089523 N
+Force on sphere 2: 0.3292489244222689 N
+Precision on vertical force:  3.4947236276930966e-05
+Result saved.
+Force on sphere 1: -0.30070203072450724 N
+Force on sphere 2: 0.3006891739473034 N
+Precision on vertical force:  3.978925858807596e-05
+Result saved.
+Force on sphere 1: -0.2757016474530622 N
+Force on sphere 2: 0.2756904058615031 N
+Precision on vertical force:  3.787049745308251e-05
+Result saved.
+Force on sphere 1: -0.2536934532627685 N
+Force on sphere 2: 0.2536845075341834 N
+Precision on vertical force:  3.3032621616038176e-05
+Result saved.
+Force on sphere 1: -0.23422089918526945 N
+Force on sphere 2: 0.2342118094559674 N
+Precision on vertical force:  3.647584349513242e-05
+Result saved.
+Force on sphere 1: -0.21690743513208832 N
+Force on sphere 2: 0.21689807319321708 N
+Precision on vertical force:  4.075453208220505e-05
+Result saved.
+Force on sphere 1: -0.2014466451406346 N
+Force on sphere 2: 0.20143562500275183 N
+Precision on vertical force:  5.262318488361207e-05
+Result saved.
+Force on sphere 1: -0.18758222677480865 N
+Force on sphere 2: 0.18756954462743425 N
+Precision on vertical force:  6.571889499231742e-05
+Result saved.
+Force on sphere 1: -0.17509985066281095 N
+Force on sphere 2: 0.17508739339557974 N
+Precision on vertical force:  6.920631898893585e-05
+Result saved.
+Force on sphere 1: -0.16381861060949354 N
+Force on sphere 2: 0.1638110341568535 N
+Precision on vertical force:  4.455660998400989e-05
+Result saved.
+Force on sphere 1: -0.15360101513431493 N
+Force on sphere 2: 0.1535899675345956 N
+Precision on vertical force:  7.044485537391638e-05
+Result saved.
+Force on sphere 1: -0.144309081478022 N
+Force on sphere 2: 0.1442965856531676 N
+Precision on vertical force:  8.582783098283985e-05
+Result saved.
+Force on sphere 1: -0.13583266916189662 N
+Force on sphere 2: 0.1358217437463389 N
+Precision on vertical force:  7.94984775130389e-05
+Result saved.
+Force on sphere 1: -0.1280765999689611 N
+Force on sphere 2: 0.12807230252123203 N
+Precision on vertical force:  3.3481027734521026e-05
+Calculation terminated, launching Coulomb's calculation and quitting.
+sbatch: slurm_job_submit: features fixee a : [csl]
+Submitted batch job 6926
+
+-----------------------------------------------------
+Command=/scratchm/mdellava/microsim/spheres_2D/newton_gravity.sh
+-----------------------------------------------------
+#!/bin/bash
+#SBATCH --job-name=newt_2D
+#SBATCH --time=2-00:00
+#SBATCH --mem=120G
+#SBATCH --qos=c3_long_opa
+#SBATCH --output=%j.spheres_2D_newton.out
+#SBATCH --profile=all
+
+echo "Starting Newton calculation..."
+srun python /scratchm/mdellava/microsim/spheres_2D/newton_gravity.py
+wait
+
+echo "Calculation terminated, launching Coulomb's calculation and quitting."
+sbatch $WORKDIR/microsim/spheres_2D/coulomb_electrostatic.sh
+
+-----------------------------------------------------
+StartTime=2025-10-14T11:09:27
+EndTime=2025-10-14T18:21:38
+NodeList=n304
+-----------------------------------------------------
+Job ID: 6924
+Cluster: c3
+User/Group: mdellava/dphy
+State: COMPLETED (exit code 0)
+Cores: 1
+CPU Utilized: 07:06:01
+CPU Efficiency: 98.57% of 07:12:11 core-walltime
+Job Wall-clock time: 07:12:11
+Memory Utilized: 132.92 GB
+Memory Efficiency: 110.77% of 120.00 GB
+-----------------------------------------------------

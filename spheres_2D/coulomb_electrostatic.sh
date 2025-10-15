@@ -3,7 +3,7 @@
 #SBATCH --time=2-00:00
 #SBATCH --mem=120G
 #SBATCH --qos=c3_long_opa
-#SBATCH --output=%j.spheres_2D_newton.out
+#SBATCH --output=%j.spheres_2D_coulomb.out
 #SBATCH --profile=all
 
 echo "Starting Coulomb calculation..."

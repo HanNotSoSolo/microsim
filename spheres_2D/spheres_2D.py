@@ -558,7 +558,7 @@ class ForceOnTwoSpheres:
 
 
             print("Analytically calculated force :", str(F_ana) + " N")
-            epsilon = np.abs((F_ana - grad_yukawa_S1[1]) / F_ana)
+            epsilon = np.abs((grad_yukawa_S1[1] - F_ana) / grad_yukawa_S1[1])
 
             # # Calculating the Newton-to-Yukawa target ratio (see [1])
             # N2Y_ana = alpha * (9 / 2) * (lmbda**3 / self.R_1**3) * (1 + (self.d / (2 * self.R_1))) * np.exp(-self.d / lmbda)
@@ -714,4 +714,4 @@ def test():
                                                 alpha=alpha, lmbda=lmbda,
                                                 rho_0=rho_0, getYukawa=True)
 
-#test()
+test()
