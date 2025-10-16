@@ -3,3 +3,37 @@ SLURM_JOB_ID = 6932
 SLURM_JOB_NODELIST = n305
 ==========================================
 Starting Coulomb calculation...
+slurmstepd: error: Detected 1 oom_kill event in StepId=6932.0. Some of the step tasks have been OOM Killed.
+srun: error: n305: task 0: Out Of Memory
+
+-----------------------------------------------------
+Command=/scratchm/mdellava/microsim/spheres_2D/coulomb_electrostatic.sh
+-----------------------------------------------------
+#!/bin/bash
+#SBATCH --job-name=culom_2D
+#SBATCH --time=2-00:00
+#SBATCH --mem=120G
+#SBATCH --qos=c3_long_opa
+#SBATCH --output=%j.spheres_2D_coulomb.out
+#SBATCH --profile=all
+
+echo "Starting Coulomb calculation..."
+srun python /scratchm/mdellava/microsim/spheres_2D/coulomb_electrostatic.py
+wait
+
+-----------------------------------------------------
+StartTime=2025-10-15T14:43:27
+EndTime=2025-10-15T20:17:35
+NodeList=n305
+-----------------------------------------------------
+Job ID: 6932
+Cluster: c3
+User/Group: mdellava/dphy
+State: COMPLETED (exit code 0)
+Cores: 1
+CPU Utilized: 05:29:49
+CPU Efficiency: 98.71% of 05:34:08 core-walltime
+Job Wall-clock time: 05:34:08
+Memory Utilized: 119.75 GB
+Memory Efficiency: 99.79% of 120.00 GB
+-----------------------------------------------------

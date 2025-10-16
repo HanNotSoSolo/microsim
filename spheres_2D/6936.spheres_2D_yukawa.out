@@ -1,0 +1,2196 @@
+==========================================
+SLURM_JOB_ID = 6936
+SLURM_JOB_NODELIST = n306
+==========================================
+Starting Yukawa calculation...
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 26.0
+ - Distance centre-to-centre: 9.0 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.30972177037072895 N
+Force on sphere 2: 0.3097145203380528 N
+Analytically calculated force : -0.309715441676429 N
+Precision on vertical force:  2.04334822587091e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.2938431220804794 N
+Force on sphere 2: 0.29383601695096867 N
+Analytically calculated force : -0.293836762691567 N
+Precision on vertical force:  2.16421227346626e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.24921191961310407 N
+Force on sphere 2: 0.24920526466154386 N
+Analytically calculated force : -0.249205649626606 N
+Precision on vertical force:  2.51592560563117e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.15846072931912156 N
+Force on sphere 2: 0.15845534435192232 N
+Analytically calculated force : -0.158455211365365 N
+Precision on vertical force:  3.48222160777958e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.054233353920633484 N
+Force on sphere 2: 0.05423021660592423 N
+Analytically calculated force : -0.054229962071692 N
+Precision on vertical force:  6.25417514544106e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.006145323037457981 N
+Force on sphere 2: 0.006144325112618275 N
+Analytically calculated force : -0.00614428751781862 N
+Precision on vertical force:  0.000168505322347685
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.0004301106826283167 N
+Force on sphere 2: 0.00042985048590875416 N
+Analytically calculated force : -0.000429852997458124 N
+Precision on vertical force:  0.000599113624934955
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -1.3803427756816993e-06 N
+Force on sphere 2: 1.3567869919641746e-06 N
+Analytically calculated force : -1.35768237209209e-6 N
+Precision on vertical force:  0.0164165046456802
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 28.444444444444443
+ - Distance centre-to-centre: 10.222222222222221 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.2386707786604408 N
+Force on sphere 2: 0.23866339303404005 N
+Analytically calculated force : -0.238664034577218 N
+Precision on vertical force:  2.82568451007427e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.22330674347085375 N
+Force on sphere 2: 0.22329952299153386 N
+Analytically calculated force : -0.223299984026155 N
+Precision on vertical force:  3.02697741830367e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.18195453648803409 N
+Force on sphere 2: 0.18194782631844345 N
+Analytically calculated force : -0.181947925281585 N
+Precision on vertical force:  3.63343864721946e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.10459569760198321 N
+Force on sphere 2: 0.10459027357001566 N
+Analytically calculated force : -0.104589974915235 N
+Precision on vertical force:  5.47124487806781e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.02852530737308008 N
+Force on sphere 2: 0.028522037541923128 N
+Analytically calculated force : -0.0285218094391013 N
+Precision on vertical force:  0.000122625636701721
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.002006355064569152 N
+Force on sphere 2: 0.002005167507440711 N
+Analytically calculated force : -0.00200514648443809 N
+Precision on vertical force:  0.000602375996355153
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -7.387673401808956e-05 N
+Force on sphere 2: 7.349602654831932e-05 N
+Analytically calculated force : -7.34962475308864e-5 N
+Precision on vertical force:  0.00515028841299304
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -9.404965186368024e-08 N
+Force on sphere 2: 4.517181568194964e-08 N
+Analytically calculated force : -4.57019800121462e-8 N
+Precision on vertical force:  0.514065399429774
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 30.88888888888889
+ - Distance centre-to-centre: 11.444444444444445 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.1891790147462342 N
+Force on sphere 2: 0.1891731524967896 N
+Analytically calculated force : -0.189173644316394 N
+Precision on vertical force:  2.83880844128277e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.174373545087194 N
+Force on sphere 2: 0.17436785992140258 N
+Analytically calculated force : -0.174368170320131 N
+Precision on vertical force:  3.08232940975467e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.13622923765636707 N
+Force on sphere 2: 0.1362240932383494 N
+Analytically calculated force : -0.13622405297858 N
+Precision on vertical force:  3.80584805128392e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.07059883498916138 N
+Force on sphere 2: 0.07059493541677936 N
+Analytically calculated force : -0.0705946092998294 N
+Precision on vertical force:  5.98549442439361e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.015298768682835015 N
+Force on sphere 2: 0.015296751298569828 N
+Analytically calculated force : -0.0152965951196 N
+Precision on vertical force:  0.000142074390433684
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.0006663677712101597 N
+Force on sphere 2: 0.0006658465082723554 N
+Analytically calculated force : -0.000665840128506089 N
+Precision on vertical force:  0.000791819062787043
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -1.2881641317231023e-05 N
+Force on sphere 2: 1.2775139996700842e-05 N
+Analytically calculated force : -1.27730508243348e-5 N
+Precision on vertical force:  0.00842986465948351
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -2.455440106492605e-09 N
+Force on sphere 2: 2.8116319034764812e-09 N
+Analytically calculated force : -1.56229460148092e-9 N
+Precision on vertical force:  0.36374151527869
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 33.333333333333336
+ - Distance centre-to-centre: 12.666666666666668 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.15334500105662927 N
+Force on sphere 2: 0.1533385862128738 N
+Analytically calculated force : -0.1533389971373 N
+Precision on vertical force:  3.91530163221075e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.13911417223557423 N
+Force on sphere 2: 0.13910793465434532 N
+Analytically calculated force : -0.13910816881932 N
+Precision on vertical force:  4.31545985410896e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.10402437067876294 N
+Force on sphere 2: 0.10401867849278311 N
+Analytically calculated force : -0.104018590808577 N
+Precision on vertical force:  5.5562654673813e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.04849010639728601 N
+Force on sphere 2: 0.048485660439060406 N
+Analytically calculated force : -0.048485381965506 N
+Precision on vertical force:  9.74308396288005e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.008332250616101546 N
+Force on sphere 2: 0.008329735375572855 N
+Analytically calculated force : -0.00832964892360169 N
+Precision on vertical force:  0.000312243668574744
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.00022495248343659517 N
+Force on sphere 2: 0.00022413435921797318 N
+Analytically calculated force : -0.000224136581867652 N
+Precision on vertical force:  0.00362699516128182
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -2.476573150554134e-06 N
+Force on sphere 2: 2.2472829846573752e-06 N
+Analytically calculated force : -2.24855151481923e-6 N
+Precision on vertical force:  0.0920714317216439
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -1.8709025421196765e-08 N
+Force on sphere 2: -6.937304772438661e-10 N
+Analytically calculated force : -5.40611649036465e-11 N
+Precision on vertical force:  0.997110423248322
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 35.77777777777778
+ - Distance centre-to-centre: 13.88888888888889 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.12657659396968707 N
+Force on sphere 2: 0.12657110976787486 N
+Analytically calculated force : -0.126571399751912 N
+Precision on vertical force:  4.10361632626261e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.11292096040285801 N
+Force on sphere 2: 0.11291564780253752 N
+Analytically calculated force : -0.112915770140857 N
+Precision on vertical force:  4.59636721335693e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.08069657559765746 N
+Force on sphere 2: 0.08069179263056521 N
+Analytically calculated force : -0.0806916318366823 N
+Precision on vertical force:  6.12635782686284e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.03377077601702649 N
+Force on sphere 2: 0.033767180006830884 N
+Analytically calculated force : -0.0337669178822433 N
+Precision on vertical force:  0.000114244777236009
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.004593404100235793 N
+Force on sphere 2: 0.004591550262145326 N
+Analytically calculated force : -0.00459149373556047 N
+Precision on vertical force:  0.00041589301390387
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -7.677982181421434e-05 N
+Force on sphere 2: 7.627999248779268e-05 N
+Analytically calculated force : -7.62812329825087e-5 N
+Precision on vertical force:  0.00649374822609083
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -5.10273725616169e-07 N
+Force on sphere 2: 3.995481672430949e-07 N
+Analytically calculated force : -3.99960264786911e-7 N
+Precision on vertical force:  0.216184873512841
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -2.5360850468342526e-09 N
+Force on sphere 2: -3.877224525888111e-10 N
+Analytically calculated force : -1.88930300873451e-12 N
+Precision on vertical force:  0.999255031683148
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 38.22222222222222
+ - Distance centre-to-centre: 15.11111111111111 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.10606495184225784 N
+Force on sphere 2: 0.10605885477801319 N
+Analytically calculated force : -0.106059022715846 N
+Precision on vertical force:  5.5900901366561e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.09297613946253824 N
+Force on sphere 2: 0.09297020067513682 N
+Analytically calculated force : -0.0929702149762145 N
+Precision on vertical force:  6.3720502463765e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.06341602475474979 N
+Force on sphere 2: 0.06341058442869599 N
+Analytically calculated force : -0.0634103645787111 N
+Precision on vertical force:  8.92546648992828e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.023789481568624354 N
+Force on sphere 2: 0.023785199210409367 N
+Analytically calculated force : -0.0237849592165797 N
+Precision on vertical force:  0.000190098806128672
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.00255881487046747 N
+Force on sphere 2: 0.0025563360666893374 N
+Analytically calculated force : -0.00255629932251904 N
+Precision on vertical force:  0.000983091030719139
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -2.7072864010152535e-05 N
+Force on sphere 2: 2.619461699872609e-05 N
+Analytically calculated force : -2.61960139229598e-5 N
+Precision on vertical force:  0.0323885233148564
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -3.4561188208468e-07 N
+Force on sphere 2: 7.060182565409629e-08 N
+Analytically calculated force : -7.17538806404561e-8 N
+Precision on vertical force:  0.79238595557639
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -2.7829087229465674e-08 N
+Force on sphere 2: -8.716517555459698e-10 N
+Analytically calculated force : -6.65686788527162e-14 N
+Precision on vertical force:  0.99999760794602
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 40.66666666666667
+ - Distance centre-to-centre: 16.333333333333336 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.09000440904404915 N
+Force on sphere 2: 0.09000082377104683 N
+Analytically calculated force : -0.090000918555082 N
+Precision on vertical force:  3.87813108735293e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.0774688259242611 N
+Force on sphere 2: 0.07746538412773422 N
+Analytically calculated force : -0.0774653404941902 N
+Precision on vertical force:  4.49913888495845e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.05037217310898287 N
+Force on sphere 2: 0.050369180138140124 N
+Analytically calculated force : -0.0503689465244359 N
+Precision on vertical force:  6.40549007082467e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.016914694325334382 N
+Force on sphere 2: 0.016912680175524854 N
+Analytically calculated force : -0.0169124816659847 N
+Precision on vertical force:  0.000130812848704927
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.0014358690448651931 N
+Force on sphere 2: 0.0014350901411690736 N
+Analytically calculated force : -0.00143507150612836 N
+Precision on vertical force:  0.000555439745484875
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -9.17697721922457e-06 N
+Force on sphere 2: 9.063019181126733e-06 N
+Analytically calculated force : -9.06407064283638e-6 N
+Precision on vertical force:  0.0123032425264897
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -2.030074759081565e-08 N
+Force on sphere 2: 1.2305855559131621e-08 N
+Analytically calculated force : -1.29654738301841e-8 N
+Precision on vertical force:  0.361330228249825
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: 6.011430518452845e-09 N
+Force on sphere 2: -5.410505425668278e-10 N
+Analytically calculated force : -2.36170437260799e-15 N
+Precision on vertical force:  1.00000039286895
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 43.111111111111114
+ - Distance centre-to-centre: 17.555555555555557 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.07720660477590764 N
+Force on sphere 2: 0.07720027673449374 N
+Analytically calculated force : -0.0772003250151015 N
+Precision on vertical force:  8.13370931714651e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.06520762770097233 N
+Force on sphere 2: 0.06520143744159544 N
+Analytically calculated force : -0.0652013606692585 N
+Precision on vertical force:  9.61088746017235e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.04038037557694863 N
+Force on sphere 2: 0.04037464588189692 N
+Analytically calculated force : -0.0403744167294 N
+Precision on vertical force:  0.000147567908012164
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.012126385125139031 N
+Force on sphere 2: 0.012121814867963883 N
+Analytically calculated force : -0.0121216508428092 N
+Precision on vertical force:  0.000390411675115928
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.0008139643618179988 N
+Force on sphere 2: 0.0008113101500844987 N
+Analytically calculated force : -0.000811296857981471 N
+Precision on vertical force:  0.00327717522001833
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -4.090318982084548e-06 N
+Force on sphere 2: 3.155155748080263e-06 N
+Analytically calculated force : -3.15635063525603e-6 N
+Precision on vertical force:  0.228336310913468
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -2.9446223137367663e-07 N
+Force on sphere 2: 1.3592861772345079e-09 N
+Analytically calculated force : -2.35711098386666e-9 N
+Precision on vertical force:  0.991995200970696
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -3.24768799505789e-08 N
+Force on sphere 2: -5.520915532979729e-10 N
+Analytically calculated force : -8.42807385765171e-17 N
+Precision on vertical force:  0.9999999974049
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 45.55555555555556
+ - Distance centre-to-centre: 18.77777777777778 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.06683930816422312 N
+Force on sphere 2: 0.06683684343325431 N
+Analytically calculated force : -0.0668368073691323 N
+Precision on vertical force:  3.74150355457109e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.05535865564388698 N
+Force on sphere 2: 0.055356300577395795 N
+Analytically calculated force : -0.0553561569526203 N
+Precision on vertical force:  4.51364152118823e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.03261704825383928 N
+Force on sphere 2: 0.032615046587592206 N
+Analytically calculated force : -0.03261479646281 N
+Precision on vertical force:  6.90372412550251e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.00874837229743587 N
+Force on sphere 2: 0.008747144069133645 N
+Analytically calculated force : -0.00874700544784275 N
+Precision on vertical force:  0.000156240446411166
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.00046177843320542285 N
+Force on sphere 2: 0.000461418802816985 N
+Analytically calculated force : -0.000461413592583247 N
+Precision on vertical force:  0.000790077223059238
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -1.1362351943479073e-06 N
+Force on sphere 2: 1.1047458366278986e-06 N
+Analytically calculated force : -1.10517005689749e-6 N
+Precision on vertical force:  0.0273404112149933
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -3.6804777895519055e-09 N
+Force on sphere 2: -3.2450069677571246e-10 N
+Analytically calculated force : -4.30776051352093e-10 N
+Precision on vertical force:  0.882956486634704
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: 3.0831401858657194e-09 N
+Force on sphere 2: -6.912659052588351e-10 N
+Analytically calculated force : -3.02293500729244e-18 N
+Precision on vertical force:  1.00000000098047
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 48.0
+ - Distance centre-to-centre: 20.0 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 40.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.058334865686396654 N
+Force on sphere 2: 0.05833275424078984 N
+Analytically calculated force : -0.0583326993857377 N
+Precision on vertical force:  3.71356072132519e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 20.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.047353384458210065 N
+Force on sphere 2: 0.04735137080209139 N
+Analytically calculated force : -0.0473512214687412 N
+Precision on vertical force:  4.56776108742528e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 10.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.026525160297787342 N
+Force on sphere 2: 0.026523469290367818 N
+Analytically calculated force : -0.0265232436593932 N
+Precision on vertical force:  7.22573727214643e-5
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 5.0
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.006349947463485822 N
+Force on sphere 2: 0.006348962133124869 N
+Analytically calculated force : -0.0063488587863328 N
+Precision on vertical force:  0.000171446639406395
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 2.5
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -0.0002640342693231719 N
+Force on sphere 2: 0.0002637877742585379 N
+Analytically calculated force : -0.000263786937358982 N
+Precision on vertical force:  0.000936741904087417
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 1.25
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: -4.033606363794626e-07 N
+Force on sphere 2: 3.888527275550079e-07 N
+Analytically calculated force : -3.88812470570747e-7 N
+Precision on vertical force:  0.0360673910555551
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.75
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: 1.4738576334747296e-09 N
+Force on sphere 2: -2.880844433313905e-10 N
+Analytically calculated force : -7.90871765262644e-11 N
+Precision on vertical force:  1.05365998365786
+
+
+
+--- NEW LAMBDA ---
+=== YUKAWA FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - characteristic lenght: 1m
+ - characteristic density: 100000.0 [kg·m^-3]
+
+Result saved.
+
+ === Linear Klein-Gordon problem ===
+ - scale factor α: 0.5
+ - range factor Ⲗ: 0.375
+ - rho_1: 19972.0 [kg·m^-3]
+ - rho_2: 4278.0 [kg·m^-3]
+ - rho_domain: 0 [kg·m^-3]
+
+Force on sphere 1: 5.615160728490195e-09 N
+Force on sphere 2: -4.733083237938883e-10 N
+Analytically calculated force : -1.08904229143759e-19 N
+Precision on vertical force:  1.00000000001939
+
+
+
+
+-----------------------------------------------------
+Command=/scratchm/mdellava/microsim/spheres_2D/yukawa_gravity.sh
+-----------------------------------------------------
+#!/bin/bash
+#SBATCH --job-name=yuka_2D
+#SBATCH --time=2-00:00
+#SBATCH --mem=150G
+#SBATCH --qos=c3_long_opa
+#SBATCH --output=%j.spheres_2D_yukawa.out
+#SBATCH --profile=all
+
+echo "Starting Yukawa calculation..."
+srun python /scratchm/mdellava/microsim/spheres_2D/yukawa_gravity.py
+
+-----------------------------------------------------
+StartTime=2025-10-15T20:37:59
+EndTime=2025-10-16T13:47:26
+NodeList=n306
+-----------------------------------------------------
+Job ID: 6936
+Cluster: c3
+User/Group: mdellava/dphy
+State: COMPLETED (exit code 0)
+Cores: 1
+CPU Utilized: 16:56:32
+CPU Efficiency: 98.75% of 17:09:27 core-walltime
+Job Wall-clock time: 17:09:27
+Memory Utilized: 137.54 GB
+Memory Efficiency: 91.70% of 150.00 GB
+-----------------------------------------------------

@@ -5,9 +5,9 @@ R_1 = 2; // radius of the first sphere
 R_2 = 4; // radius of the second sphere
 d = 9.0; // distance between the centres of the spheres
 R_Omega = 26.0; // radius of the internal domain
-Ngamma = 163; // number of nodes on the domain boundary
-minSize = 0.05; // size of the elements inside the spheres
-maxSize = 0.5; // size of the elements far from the spheres
+Ngamma = 272; // number of nodes on the domain boundary
+minSize = 0.001; // size of the elements inside the spheres
+maxSize = 0.3; // size of the elements far from the spheres
 
 // First sphere
 Point(1) = {0, d/2, 0};
