@@ -1,0 +1,334 @@
+==========================================
+SLURM_JOB_ID = 6951
+SLURM_JOB_NODELIST = n305
+==========================================
+Starting Coulomb calculation...
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 38.73684210526316
+ - Distance centre-to-centre: 15.368421052631579 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+=== ELECTROSTATIC FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+
+Result saved.
+
+ === Poisson problem - Electrostatic ===
+ - rho_1: 1.9e-07 [C·m^-3]
+ - rho_2: -1.9e-07 [C·m^-3]
+ - rho_domain: 0 [C·m^-3]
+
+Force on sphere 1: 0.01234044149489287 N
+Force on sphere 2: -0.012340511653460166 N
+Precision on vertical force:  1.5172028551351087e-05
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 39.89473684210526
+ - Distance centre-to-centre: 15.947368421052632 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+=== ELECTROSTATIC FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+
+Result saved.
+
+ === Poisson problem - Electrostatic ===
+ - rho_1: 1.9e-07 [C·m^-3]
+ - rho_2: -1.9e-07 [C·m^-3]
+ - rho_domain: 0 [C·m^-3]
+
+Force on sphere 1: 0.011460671825958757 N
+Force on sphere 2: -0.011460771800252453 N
+Precision on vertical force:  1.7627762425085467e-05
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 41.05263157894737
+ - Distance centre-to-centre: 16.526315789473685 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+=== ELECTROSTATIC FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+
+Result saved.
+
+ === Poisson problem - Electrostatic ===
+ - rho_1: 1.9e-07 [C·m^-3]
+ - rho_2: -1.9e-07 [C·m^-3]
+ - rho_domain: 0 [C·m^-3]
+
+Force on sphere 1: 0.010671716593123355 N
+Force on sphere 2: -0.010671819873724295 N
+Precision on vertical force:  2.166730617750955e-05
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 42.21052631578947
+ - Distance centre-to-centre: 17.105263157894736 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+=== ELECTROSTATIC FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+
+Result saved.
+
+ === Poisson problem - Electrostatic ===
+ - rho_1: 1.9e-07 [C·m^-3]
+ - rho_2: -1.9e-07 [C·m^-3]
+ - rho_domain: 0 [C·m^-3]
+
+Force on sphere 1: 0.009961540802754154 N
+Force on sphere 2: -0.009961641619045265 N
+Precision on vertical force:  2.244844645805956e-05
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 43.368421052631575
+ - Distance centre-to-centre: 17.684210526315788 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+=== ELECTROSTATIC FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+
+Result saved.
+
+ === Poisson problem - Electrostatic ===
+ - rho_1: 1.9e-07 [C·m^-3]
+ - rho_2: -1.9e-07 [C·m^-3]
+ - rho_domain: 0 [C·m^-3]
+
+Force on sphere 1: 0.009320032850824876 N
+Force on sphere 2: -0.00932009689420751 N
+Precision on vertical force:  1.609854754811817e-05
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 44.526315789473685
+ - Distance centre-to-centre: 18.263157894736842 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+=== ELECTROSTATIC FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+
+Result saved.
+
+ === Poisson problem - Electrostatic ===
+ - rho_1: 1.9e-07 [C·m^-3]
+ - rho_2: -1.9e-07 [C·m^-3]
+ - rho_domain: 0 [C·m^-3]
+
+Force on sphere 1: 0.008738443374401376 N
+Force on sphere 2: -0.008738520713939558 N
+Precision on vertical force:  2.294171485265824e-05
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 45.684210526315795
+ - Distance centre-to-centre: 18.842105263157897 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+=== ELECTROSTATIC FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+
+Result saved.
+
+ === Poisson problem - Electrostatic ===
+ - rho_1: 1.9e-07 [C·m^-3]
+ - rho_2: -1.9e-07 [C·m^-3]
+ - rho_domain: 0 [C·m^-3]
+
+Force on sphere 1: 0.00820966440665894 N
+Force on sphere 2: -0.008209744512613481 N
+Precision on vertical force:  2.6552446854599817e-05
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 46.8421052631579
+ - Distance centre-to-centre: 19.42105263157895 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+=== ELECTROSTATIC FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+
+Result saved.
+
+ === Poisson problem - Electrostatic ===
+ - rho_1: 1.9e-07 [C·m^-3]
+ - rho_2: -1.9e-07 [C·m^-3]
+ - rho_domain: 0 [C·m^-3]
+
+Force on sphere 1: 0.007727510318220516 N
+Force on sphere 2: -0.007727597479194886 N
+Precision on vertical force:  2.4553395854596573e-05
+
+
+
+=== MESH CHARACTERISTICS ===
+ - R_1: 2
+ - R_2: 4
+ - R_Omega: 48.0
+ - Distance centre-to-centre: 20.0 m
+ - Mesh's minimum size: 0.001
+ - Mesh's maximum size: 0.3
+ - Mesh type: 2D
+ - Coordinates system: cylindrical framework
+
+=== INNER MESH GENERATION ===
+OK.
+
+=== OUTER MESH GENERATION ===
+OK.
+
+=== ELECTROSTATIC FORCE COMPUTATION ===
+ - FEM complexity: 1° order
+ - Solver name: ScipyDirect
+
+Result saved.
+
+ === Poisson problem - Electrostatic ===
+ - rho_1: 1.9e-07 [C·m^-3]
+ - rho_2: -1.9e-07 [C·m^-3]
+ - rho_domain: 0 [C·m^-3]
+
+Force on sphere 1: 0.0072866983148762035 N
+Force on sphere 2: -0.00728673639663046 N
+Precision on vertical force:  1.1529179124604071e-05
+
+
+
+
+-----------------------------------------------------
+Command=/scratchm/mdellava/microsim/spheres_2D/coulomb_electrostatic.sh
+-----------------------------------------------------
+#!/bin/bash
+#SBATCH --job-name=culom_2D
+#SBATCH --time=2-00:00
+#SBATCH --mem=150G
+#SBATCH --qos=c3_long_opa
+#SBATCH --output=%j.spheres_2D_coulomb.out
+#SBATCH --profile=all
+
+echo "Starting Coulomb calculation..."
+srun python /scratchm/mdellava/microsim/spheres_2D/coulomb_electrostatic.py
+wait
+
+-----------------------------------------------------
+StartTime=2025-10-17T10:59:43
+EndTime=2025-10-17T13:52:08
+NodeList=n305
+-----------------------------------------------------
+Job ID: 6951
+Cluster: c3
+User/Group: mdellava/dphy
+State: COMPLETED (exit code 0)
+Cores: 1
+CPU Utilized: 02:50:14
+CPU Efficiency: 98.73% of 02:52:25 core-walltime
+Job Wall-clock time: 02:52:25
+Memory Utilized: 59.62 GB
+Memory Efficiency: 39.75% of 150.00 GB
+-----------------------------------------------------
