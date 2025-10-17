@@ -760,7 +760,7 @@ def test():
 
     # Miscellaneous
     FILENAME = 'spheres_2D'
-    VERBOSE = 0
+    VERBOSE = 1
 
     # Mesh meta-parameters
 
@@ -803,7 +803,7 @@ def test():
     alpha = 5e-1
     lmbda = 0.01
     rho_0 = 10e4
-    L_0 = 0.01  # FIXME L_0 not equal to 1 makes the problem explode!
+    L_0 = 0.1  # FIXME L_0 not equal to 1 makes the problem explode!
 
     result_pp_yukawa= FO2S.get_yukawa_force(mesh_int, mesh_ext, alpha=alpha,
                                             lmbda=lmbda, L_0=L_0,

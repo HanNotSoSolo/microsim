@@ -2,21 +2,13 @@ SetFactory("OpenCASCADE");
 
 // Setting variables
 R_1 = 2; // radius of the first sphere
-<<<<<<< HEAD
 R_2 = 4; // radius of the second sphere
-d = 20.0; // distance between the centres of the spheres
-R_Omega = 48.0; // radius of the internal domain
-Ngamma = 502; // number of nodes on the domain boundary
-minSize = 0.001; // size of the elements inside the spheres
-maxSize = 0.3; // size of the elements far from the spheres
-=======
-R_2 = 2; // radius of the second sphere
-d = 4.001; // distance between the centres of the spheres
-R_Omega = 12.002; // radius of the internal domain
-Ngamma = 75; // number of nodes on the domain boundary
+d = 17.555555555555557; // distance between the centres of the spheres
+R_Omega = 43.111111111111114; // radius of the internal domain
+Ngamma = 270.87509990952; // number of nodes on the domain boundary
 minSize = 0.05; // size of the elements inside the spheres
 maxSize = 0.5; // size of the elements far from the spheres
->>>>>>> babb4716e9d35c8389045e814f95534e031d527d
+d = 17.555555555555557; // distance between the centres of the spheres
 
 // First sphere
 Point(1) = {0, d/2, 0};
