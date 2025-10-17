@@ -747,16 +747,16 @@ def test():
     # All the values are given in standard units
     # First sphere
     R_1 = 2  # [m]
-    rho_1 = 19972.  # [kg/m^3]
+    rho_1 = 19972  # [kg/m^3]
     rho_q_1 = 19e-8  # [C/m^3]
 
     # Second sphere
-    R_2 = 4
-    rho_2 = 4278.
+    R_2 = 2
+    rho_2 = 4278
     rho_q_2 = -19e-8
 
     # Domain sphere
-    d = 9  # The distance between the centres of the spheres
+    d = 4.001  # The distance between the centres of the spheres
 
     # Miscellaneous
     FILENAME = 'spheres_2D'
@@ -790,23 +790,28 @@ def test():
 
     # print("\n === NEWTONIAN GRAVITY ===")
     # result_pp_newton = FO2S.get_newton_force(mesh_int, mesh_ext)
-    # F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton, getNewton=True)
+    # F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton,
+    #                                            getNewton=True)
     # FO2S.newton_residual_map(result_pp_newton, save_figure=False)
 
     # print("\n === ELECTROSTATIC FORCE ===")
     # result_pp_elec = FO2S.get_electrostatic_force(mesh_int, mesh_ext)
-    # F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec, getCoulomb=True)
+    # F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec,
+    #                                             getCoulomb=True)
 
     print("\n === YUKAWA GRAVITY ===")
     alpha = 5e-1
-    lmbda = 40
+    lmbda = 0.01
     rho_0 = 10e4
-    L_0 = 1  # FIXME L_0 not equal to 1 makes the problem explode!
+    L_0 = 0.01  # FIXME L_0 not equal to 1 makes the problem explode!
 
     result_pp_yukawa= FO2S.get_yukawa_force(mesh_int, mesh_ext, alpha=alpha,
-                                            lmbda=lmbda, L_0=L_0, rho_0=rho_0)
+                                            lmbda=lmbda, L_0=L_0,
+                                            rho_0=rho_0)
     F_Y, _, F_ana_Y, epsilon_Y = FO2S.postprocess_force(postprocess_file=result_pp_yukawa,
-                                                alpha=alpha, lmbda=lmbda,
-                                                rho_0=rho_0, getYukawa=True)
+                                                        alpha=alpha,
+                                                        lmbda=lmbda,
+                                                        rho_0=rho_0,
+                                                        getYukawa=True)
 
-#test()
+test()
