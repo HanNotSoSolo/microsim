@@ -59,41 +59,8 @@ F_fem = np.zeros((n_steps, 2))  # first column with force on sphere 1, second wi
 F_ana = np.zeros((n_steps))  # analytical force
 epsilon = np.zeros((n_steps, 2))  # precision FIXME
 
-''' === ONE-TIME PATCH === '''
-# Please !!!REMOVE!!! after use
-# I just put this here because the program interrupted but got some results
-F_fem[0] = [0.035983762645421524, -0.03598374819378855]
-F_fem[1] = [0.03176548145774502, -0.031765502377652785]
-F_fem[2] = [0.028247720793874054, -0.028247758428189024]
-F_fem[3] = [0.02528355235657581, -0.02528358187793577]
-F_fem[4] = [0.022762522343591395, -0.02276260315015435]
-F_fem[5] = [0.020600652838511698, -0.02060071386385236]
-F_fem[6] = [0.01873270224838132, -0.018732786224501585]
-F_fem[7] = [0.017107763828356548, -0.01710785722494169]
-F_fem[8] = [0.015685461352442462, -0.015685542843102467]
-F_fem[9] = [0.014433455791315428, -0.014433516268432662]
-F_fem[10] = [0.01332553458229729, -0.013325606401869843]
-
-for i in range(11):
-    F_ana[i] = -8.9875517862e9 * ((4 / 3) * np.pi)**2 * R_1**3 * rho_q_1 * R_2**3 * rho_q_2 / d[i]**2
-    epsilon[i, 1] = np.abs((F_ana[i] + F_fem[i, 1]) / F_ana[i])
-
-epsilon[0, 0] = 9.659928603942185e-06
-epsilon[1, 0] = 1.098638112796123e-05
-epsilon[2, 0] = 1.1419711678655434e-05
-epsilon[3, 0] = 1.0504477084643726e-05
-epsilon[4, 0] = 1.3089070665194595e-05
-epsilon[5, 0] = 1.1806963901639258e-05
-epsilon[6, 0] = 1.350984466148363e-05
-epsilon[7, 0] = 1.4694103002709574e-05
-epsilon[8, 0] = 1.419374350463233e-05
-epsilon[9, 0] = 1.182330370685907e-05
-epsilon[10, 0] = 1.31453138664227e-05
-    
-''' === END OF ONE-TIME PATCH === '''
-
 # Starting the calculation iterations
-for i in range(11, n_steps):
+for i in range(n_steps):
     
     # Generation of a two-spheres problem
     system = FO2S('spheres_2D', R_1=R_1, rho_1=rho_1, R_2=R_2, rho_2=rho_2,
