@@ -61,27 +61,27 @@ epsilon = np.zeros((n_steps, 2))  # precision FIXME
 
 # Starting the calculation iterations
 for i in range(n_steps):
-    
+
     # Generation of a two-spheres problem
     system = FO2S('spheres_2D', R_1=R_1, rho_1=rho_1, R_2=R_2, rho_2=rho_2,
                   d=d[i], minSize=minSize, maxSize=maxSize, dim=DIM,
                   rho_q_1=rho_q_1, rho_q_2=rho_q_2)
-    
+
     # Generation of the generic meshes
     mesh_int, mesh_ext = system.mesh_generation()
-    
+
     # Resolution of the Poisson's problem
-    result_pp_coulomb = system.get_electrostatic_force(mesh_int, mesh_ext)
-    
+    result_pp_coulomb = system.get_electrostatic_potential(mesh_int, mesh_ext)
+
     # Postprocessing on the results file to extract the force
     F_fem[i, 0], F_fem[i, 1], epsilon[i, 0] = system.postprocess_force(result_pp_coulomb, getCoulomb=True)
-    
+
     # Finding analytical force
     F_ana[i] = -8.9875517862e9 * ((4 / 3) * np.pi)**2 * R_1**3 * rho_q_1 * R_2**3 * rho_q_2 / d[i]**2
-    
+
     # Precision on second sphere
     epsilon[i, 1] = np.abs((F_ana[i] + F_fem[i, 1]) / F_ana[i])
-    
+
 mepsilon = np.array([np.mean(epsilon[:, 0]), np.mean(epsilon[:, 1])])
 
 

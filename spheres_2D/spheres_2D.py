@@ -154,13 +154,13 @@ class ForceOnTwoSpheres:
         self.Ngamma = int(np.pi * self.R_Omega / self.maxSize)
 
         # The verbosity instructions for the script
-        if VERBOSE == 0:
+        if VERBOSE == 0:  # --> no verbosity at all
             self.SFEPY_VERBOSE = False
             self.VERBOSE = False
-        elif VERBOSE == 1:
+        elif VERBOSE == 1:  # --> only first party (me!) verbosity
             self.SFEPY_VERBOSE = False
             self.VERBOSE = True
-        elif VERBOSE == 2:
+        elif VERBOSE == 2:  # --> first party and Sfepy verbosity
             self.SFEPY_VERBOSE = True
             self.VERBOSE = True
 
@@ -184,7 +184,8 @@ class ForceOnTwoSpheres:
 
     def mesh_generation(self, SHOW_MESH=False):
         """
-
+        Generation of the geometrical files that will compose the system. Note
+        that the .geo files must have the same name as the problem.
 
         Parameters
         ----------
@@ -194,10 +195,12 @@ class ForceOnTwoSpheres:
 
         Returns
         -------
-        mesh_int : TYPE
-            DESCRIPTION.
+        mesh_int : str
+            The path of the .vtk file of the internal mesh. The directory is
+            the same given by the variable MESH_DIR from femtoscope module.
         mesh_ext : TYPE
-            DESCRIPTION.
+            The path of the .vtk file of the external mesh. The directory is
+            the same given by the variable MESH_DIR from femtoscope module.
 
         """
 
@@ -250,8 +253,31 @@ class ForceOnTwoSpheres:
         return mesh_int, mesh_ext
 
 
-    def get_newton_force(self, mesh_int, mesh_ext, return_result=True):
-        # TODO update with the docstring
+    def get_newton_potential(self, mesh_int, mesh_ext, return_result=True):
+        """
+        Calculates the newtonian gravitational potential on the .vtk file. The
+        potential is calculated on every node of the mesh, and interpolated
+        between the nodes with a FEM_ORDER-degree polynomial, depending on
+        what has been declared during the class creation.
+
+        Parameters
+        ----------
+        mesh_int : str
+            The path of the .vtk internal mesh file.
+        mesh_ext : str
+            The path of the .vtk external mesh file.
+        return_result : bool, optional
+            If True, the function not only solves the system for every node and
+            saves it in the data/results/ directory, but also returns the
+            results file in a variable. The default is True.
+
+        Returns
+        -------
+        result_pp : ResultsPostProcessor
+            When asked, returns the results file that will be used for
+            post-processing operations. Triggered by return_result parameter.
+
+        """
 
         if self.VERBOSE:
             print("=== NEWTONIAN FORCE COMPUTATION ===")
@@ -308,8 +334,31 @@ class ForceOnTwoSpheres:
             return RPP.from_files(self.problemName + '_newton')
 
 
-    def get_electrostatic_force(self, mesh_int, mesh_ext, return_result=True):
-        # TODO update with the docstring
+    def get_electrostatic_potential(self, mesh_int, mesh_ext, return_result=True):
+        """
+        Calculates the electrostatic potential on the .vtk file. The potential
+        is calculated on every node of the mesh, and interpolated between the
+        nodes with a FEM_ORDER-degree polynomial, depending on what has been
+        declared during the class creation.
+
+        Parameters
+        ----------
+        mesh_int : str
+            The path of the .vtk internal mesh file.
+        mesh_ext : str
+            The path of the .vtk external mesh file.
+        return_result : bool, optional
+            If True, the function not only solves the system for every node and
+            saves it in the data/results/ directory, but also returns the
+            results file in a variable. The default is True.
+
+        Returns
+        -------
+        result_pp : ResultsPostProcessor
+            When asked, returns the results file that will be used for
+            post-processing operations. Triggered by return_result parameter.
+
+        """
 
         if self.VERBOSE:
             print("=== ELECTROSTATIC FORCE COMPUTATION ===")
@@ -368,13 +417,14 @@ class ForceOnTwoSpheres:
             return RPP.from_files(self.problemName + '_electrostatic')
 
 
-    def get_yukawa_force(self, mesh_int, mesh_ext, alpha: float, lmbda: float,
+    def get_yukawa_potential(self, mesh_int, mesh_ext, alpha: float, lmbda: float,
                          L_0=1, rho_0=1, return_result=True):
         """
         Solves the Klein-Gordon equation applied to the internal and external
         meshes according to the (alpha, lambda) couple given by the user.
         The equation that this method solves is as follows:
             ƔΔU = U + ρ
+        !!! NOT SURE ANYMORE ABOUT GAMMA AND L_0, REFER TO -SOMEONE- FOR HELP
 
         Parameters
         ----------
@@ -513,29 +563,38 @@ class ForceOnTwoSpheres:
 
         Parameters
         ----------
-        postprocess_file : TYPE
-            DESCRIPTION.
+        postprocess_file : ResultsPostProcessor
+            The results file that the user wants to compute.
         alpha : float, optional
-            DESCRIPTION. The default is 0.
+            The scale factor used to compute the Yukawa potential, is useless
+            for other computations. The default is 0.
         lmbda : float, optional
-            DESCRIPTION. The default is 1.
+            The range factor used to compute the Yukawa potential, is useless
+            for the other computations. The default is 1.
         rho_o : float, optional
-            DESCRIPTION. The default is 1.
+            The caracteristic density of the problem, it's used for the
+            rescaling of the Yukawa potential's result. NOTE that this value
+            must be equal to the one declared for the resolution function!. The
+            default is 1.
         getNewton : bool, optional
-            DESCRIPTION. The default is False.
+            When True, activates the post-processing of newton's gravitational
+            potential. The default is False.
         getCoulomb : bool, optional
-            DESCRIPTION. The default is False.
+            When True, activates the post-processing of the electrostatic
+            potential. The default is False.
         getYukawa : bool, optional
-            DESCRIPTION. The default is False.
+            When True, activates the post-processing of yukawa's gravitational
+            potential. The default is False.
 
         Returns
         -------
-        TYPE
-            DESCRIPTION.
-        TYPE
-            DESCRIPTION.
-        epsilon : TYPE
-            DESCRIPTION.
+        grad_phi_sphere_1[1]: float
+            The vertical force applied on the first sphere.
+        grad_phi_sphere_2[1]: float
+            The vertical force applied on the second sphere.
+        epsilon : float
+            The precision of the force on the first sphere with respect to the
+            analytical calculation.
 
         References
         ----------
@@ -545,17 +604,12 @@ class ForceOnTwoSpheres:
             arXiv preprint hep-ph/0307284.
 
         """
-        # TODO update with the docstring
 
-        #  Asserting that we have only one force to calculate
+        #  Asserting that we have exactly one force to calculate
         A = getNewton and not getCoulomb and not getYukawa
         B = not getNewton and getCoulomb and not getYukawa
         C = not getNewton and not getCoulomb and getYukawa
-        assert A or B or C, "Please, one force at a time!"
-
-        # Asserting that, if we want Yukawa, we also have all the elements
-        if getYukawa:
-            assert type(postprocess_file) == RPP, "First argument must be a results file."
+        assert A or B or C, "Please select exactly one force for post-process!"
 
 
         if getNewton or getYukawa:
@@ -572,15 +626,6 @@ class ForceOnTwoSpheres:
         # Extracting coordinates from results file
         # NOTE: nodes' coordinates should match since it's the same mesh file
         coors_int = postprocess_file.coors_int
-
-
-        '''
-            Only Yukawa has a different computing method, since it's the sum of
-            newtonian and Yukawa's contribution to the gravitational potential.
-            Here the Yukawa case is treated first, then the Newton
-            gravitational force and the Coulomb electrostatic force, since they
-            are similar.
-        '''
 
         if getYukawa:
 
@@ -623,7 +668,6 @@ class ForceOnTwoSpheres:
 
             print("Force on sphere 2:", str(grad_yukawa_S2[1]), "N")
 
-
             # Calculating analytical Yukawa's potential (see [1])
             m_1 = (4 / 3) * np.pi * self.R_1**3 * self.rho_1
             m_2 = (4 / 3) * np.pi * self.R_2**3 * self.rho_2
@@ -631,21 +675,10 @@ class ForceOnTwoSpheres:
                       self.Phi(self.R_2/lmbda) * (1 + (self.d / lmbda)) *
                       mp.exp(-self.d/lmbda) / self.d**2)
 
-
             print("Analytically calculated force :", str(F_ana) + " N")
             epsilon = np.abs((grad_yukawa_S1[1] - F_ana) / grad_yukawa_S1[1])
-
-            # # Calculating the Newton-to-Yukawa target ratio (see [1])
-            # N2Y_ana = alpha * (9 / 2) * (lmbda**3 / self.R_1**3) * (1 + (self.d / (2 * self.R_1))) * np.exp(-self.d / lmbda)
-
-            # # Calculating the Newton-to-Yukawa ratio obtained with Femtoscope
-            # N2Y_fem = grad_yukawa_S1[1] / grad_newton_S1[1]
-
-            # # Calculating the precision of those ratios
-            # epsilon = (N2Y_ana - N2Y_fem) / N2Y_ana
             print("Precision on vertical force: ", epsilon)
             print("\n\n")
-
 
             return grad_yukawa_S1[1], grad_yukawa_S2[1], F_ana, epsilon
 
@@ -696,6 +729,24 @@ class ForceOnTwoSpheres:
 
 
     def newton_residual_map(self, postprocess_file, save_figure=True):
+        """
+        Shows the relative error of the computation for every point of the
+        mesh in the internal domain. The result is compared to the analytical
+        calculation, which is supposed to be exact.
+
+        Parameters
+        ----------
+        postprocess_file : RPP
+            The results .vtk file generated after the solving stage.
+        save_figure : Bool, optional
+            If True, the figure is not only shown (if possible), but also saved
+            in the same folder as the script. The default is True.
+
+        Returns
+        -------
+        None.
+
+        """
 
 
         # Getting evaluated potential
@@ -735,8 +786,7 @@ class ForceOnTwoSpheres:
 
 def test():
     """
-    Feel free to use this as an example of use case, knowing that the Yukawa
-    potential still needs to be improved.
+    Feel free to use this as an example of use case.
 
     Returns
     -------
@@ -788,16 +838,16 @@ def test():
     # Actually creating the meshes
     mesh_int, mesh_ext = FO2S.mesh_generation()
 
-    # print("\n === NEWTONIAN GRAVITY ===")
-    # result_pp_newton = FO2S.get_newton_force(mesh_int, mesh_ext)
-    # F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton,
-    #                                            getNewton=True)
-    # FO2S.newton_residual_map(result_pp_newton, save_figure=False)
+    print("\n === NEWTONIAN GRAVITY ===")
+    result_pp_newton = FO2S.get_newton_potential(mesh_int, mesh_ext)
+    F_N, _, epsilon_N = FO2S.postprocess_force(result_pp_newton,
+                                                getNewton=True)
+    FO2S.newton_residual_map(result_pp_newton, save_figure=False)
 
-    # print("\n === ELECTROSTATIC FORCE ===")
-    # result_pp_elec = FO2S.get_electrostatic_force(mesh_int, mesh_ext)
-    # F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec,
-    #                                             getCoulomb=True)
+    print("\n === ELECTROSTATIC FORCE ===")
+    result_pp_elec = FO2S.get_electrostatic_potential(mesh_int, mesh_ext)
+    F_E, _, epsilon_E = FO2S.postprocess_force(result_pp_elec,
+                                                getCoulomb=True)
 
     print("\n === YUKAWA GRAVITY ===")
     alpha = 5e-1
@@ -805,9 +855,9 @@ def test():
     rho_0 = 10e4
     L_0 = 0.1  # FIXME L_0 not equal to 1 makes the problem explode!
 
-    result_pp_yukawa= FO2S.get_yukawa_force(mesh_int, mesh_ext, alpha=alpha,
-                                            lmbda=lmbda, L_0=L_0,
-                                            rho_0=rho_0)
+    result_pp_yukawa= FO2S.get_yukawa_potential(mesh_int, mesh_ext,
+                                                alpha=alpha, lmbda=lmbda,
+                                                L_0=L_0, rho_0=rho_0)
     F_Y, _, F_ana_Y, epsilon_Y = FO2S.postprocess_force(postprocess_file=result_pp_yukawa,
                                                         alpha=alpha,
                                                         lmbda=lmbda,

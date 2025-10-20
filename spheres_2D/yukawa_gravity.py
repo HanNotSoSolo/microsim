@@ -80,9 +80,10 @@ for i in range(n_steps):
 
         print("--- NEW LAMBDA ---")
         # Resolution of the linear Klein-Gordon problem
-        result_pp_yukawa = system.get_yukawa_force(mesh_int, mesh_ext,
-                                                   alpha=alpha, lmbda=lmbda,
-                                                   L_0=L_0, rho_0=rho_0)
+        result_pp_yukawa = system.get_yukawa_potential(mesh_int, mesh_ext,
+                                                       alpha=alpha,
+                                                       lmbda=lmbda, L_0=L_0,
+                                                       rho_0=rho_0)
 
         # Postprocessing on the results file to extract the force
         F_fem[i, 0, j], F_fem[i, 1, j], F_ana[i, j], epsilon[i, j] = system.postprocess_force(result_pp_yukawa,
@@ -102,8 +103,6 @@ for i in range(len(lmbda_list)):
     axs[0].semilogy(d, -F_fem[:, 0, i])
     axs[1].semilogy(d, epsilon[:, i])
 
-# Removing the space between the plots because it's prettier this way
-#fig.subplots_adjust(hspace=0)
 
 # Adding all the features that could explain the graphic to my future self
 # (and obv also make it look a bit less confusing for people)
@@ -121,4 +120,3 @@ axs[0].grid()
 axs[1].grid()
 
 plt.savefig("Spheres_2D_Yukawa.png", bbox_inches='tight')
-#plt.show()

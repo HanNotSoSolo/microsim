@@ -17,7 +17,7 @@ uniform spheres separated by a distance d. This parameter is the only one that
 will change along the experiment, since all other parameters will remain the
 same. We will also challenge (a bit) the computer, as the demanded precision
 will be at least 10e-6.
-This script will run a hundred of measures and plot them alongside the
+This script will run plenty of measures and plot them alongside the
 precision reached.
 """
 
@@ -70,7 +70,7 @@ for i in range(n_steps):
     mesh_int, mesh_ext = system.mesh_generation()
 
     # Resolution of the Poisson's problem
-    result_pp_newton = system.get_newton_force(mesh_int, mesh_ext)
+    result_pp_newton = system.get_newton_potential(mesh_int, mesh_ext)
 
     # Postprocessing on the results file to extract the force
     F_fem[i, 0], F_fem[i, 1], epsilon[i, 0] = system.postprocess_force(result_pp_newton, getNewton=True)
