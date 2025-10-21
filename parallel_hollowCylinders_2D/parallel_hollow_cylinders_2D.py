@@ -107,7 +107,7 @@ class ForceOnTwoParallelCylinders:
             print(" - R_int_1: {}".format(self.R_int_1))
             print(" - R_ext_1: {}".format(self.R_ext_1))
             print(" - h_1: {}".format(self.h_1))
-            print(" - Z_1: {}".format(self.Z_1))
+            print(" - Vertical displacement: {}".format(self.Z_1))
             print(" - R_int_2: {}".format(self.R_int_2))
             print(" - R_ext_2: {}".format(self.R_ext_2))
             print(" - h_2: {}".format(self.h_2))
@@ -609,7 +609,7 @@ def test():
     # Miscellaneous
     FILENAME = 'parallel_hollow_cylinders_2D'
     VERBOSE = 1
-    FEM_ORDER = 2
+    FEM_ORDER = 1
     
     # Physical parameters
     DIM = 2
@@ -617,8 +617,8 @@ def test():
     SOLVER = 'ScipyDirect'
     
     # Mesh size
-    minSize = 0.00001
-    maxSize = 0.005
+    minSize = 0.0001
+    maxSize = 0.001
     ''' === END OF VARIABLES DECLARATION === '''
     
     # Creating the problem
@@ -638,8 +638,25 @@ def test():
     # Creating the meshes
     mesh_int, mesh_ext = FO2PHC.mesh_generation()
     
-    print("\n === NEWTONIAN GRAVITY ===")
-    result_pp_newton = FO2PHC.get_newton_potential(mesh_int, mesh_ext)
-    F_N_1, F_N_2 = FO2PHC.postprocess_force(result_pp_newton, getNewton=True)
+    # print("\n === NEWTONIAN GRAVITY ===")
+    # result_pp_newton = FO2PHC.get_newton_potential(mesh_int, mesh_ext)
+    # F_N_1, F_N_2 = FO2PHC.postprocess_force(result_pp_newton, getNewton=True)
     
-test()
+    # print("\n === ELECTROSTATIC FORCE ===")
+    # result_pp_elec = FO2PHC.get_electrostatic_potential(mesh_int, mesh_ext)
+    # F_E_1, F_E_2 = FO2PHC.postprocess_force(result_pp_elec, getCoulomb=True)
+    
+    print("\n === YUKAWA GRAVITY ===")
+    alpha = 5e-1
+    lmbda = 10
+    rho_0 = 10e4
+    L_0 = 1  # FIXME L_0 not equal to 1 makes the problem explode!
+    
+    result_pp_yukawa = FO2PHC.get_yukawa_potential(mesh_int, mesh_ext,
+                                                   alpha=alpha, lmbda=lmbda,
+                                                   rho_0=rho_0)
+    F_Y_1, F_Y_2 = FO2PHC.postprocess_force(result_pp_yukawa, alpha=alpha,
+                                            lmbda=lmbda, rho_0=rho_0,
+                                            getYukawa=True)
+    
+#test()
