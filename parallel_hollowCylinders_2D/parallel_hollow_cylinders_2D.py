@@ -19,8 +19,8 @@ class ForceOnTwoParallelCylinders:
 
     def __init__(self, problemName, R_int_1: float, R_ext_1: float,
                  rho_1: float, h_1: float, R_int_2: float, R_ext_2: float,
-                 h_2: float, rho_2: float, Z_1: float, minSize: float,
-                 maxSize: float, dim=2, rho_domain=0, rho_q_1=0, rho_q_2=0,
+                 h_2: float, rho_2: float, minSize: float,
+                 maxSize: float, Z_1=0, dim=2, rho_domain=0, rho_q_1=0, rho_q_2=0,
                  rho_q_domain=0, tag_cyl_1=300, tag_cyl_2=301,
                  tag_domain_int=302, tag_domain_ext=303, tag_boundary_int=200,
                  tag_boundary_ext=201, coorsys='cylindrical', FEM_ORDER=1,
@@ -106,8 +106,11 @@ class ForceOnTwoParallelCylinders:
             print("=== MESH CHARACTERISTICS ===")
             print(" - R_int_1: {}".format(self.R_int_1))
             print(" - R_ext_1: {}".format(self.R_ext_1))
+            print(" - h_1: {}".format(self.h_1))
+            print(" - Z_1: {}".format(self.Z_1))
             print(" - R_int_2: {}".format(self.R_int_2))
             print(" - R_ext_2: {}".format(self.R_ext_2))
+            print(" - h_2: {}".format(self.h_2))
             print(" - R_Omega: {}".format(self.R_Omega))
             print(" - Distance between cylinders: {} m".format(self.R_int_2 - self.R_ext_1))
             print(" - Mesh's minimum size: {}".format(self.minSize))
@@ -120,8 +123,11 @@ class ForceOnTwoParallelCylinders:
 
         param_dict_int = {'R_int_1': self.R_int_1,
                           'R_ext_1': self.R_ext_1,
+                          'h_1': self.h_1,
+                          'Z_1': self.Z_1,
                           'R_int_2': self.R_int_2,
                           'R_ext_2': self.R_ext_2,
+                          'h_2': self.h_2,
                           'R_Omega': self.R_Omega,
                           'minSize': self.minSize,
                           'maxSize': self.maxSize,
@@ -199,8 +205,8 @@ class ForceOnTwoParallelCylinders:
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
         poisson.set_wf_int(partial_args_dict_int,
-                           {('subomega', self.tag_sphere_1): self.rho_1,
-                            ('subomega', self.tag_sphere_2): self.rho_2,
+                           {('subomega', self.tag_cyl_1): self.rho_1,
+                            ('subomega', self.tag_cyl_2): self.rho_2,
                             ('subomega', self.tag_domain_int): self.rho_domain})
 
         partial_args_dict_ext = {'dim': self.dim,
@@ -281,8 +287,8 @@ class ForceOnTwoParallelCylinders:
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
         poisson.set_wf_int(partial_args_dict_int,
-                           {('subomega', self.tag_sphere_1): self.rho_q_1,
-                            ('subomega', self.tag_sphere_2): self.rho_q_2,
+                           {('subomega', self.tag_cyl_1): self.rho_q_1,
+                            ('subomega', self.tag_cyl_2): self.rho_q_2,
                             ('subomega', self.tag_domain_int): self.rho_q_domain})
 
         partial_args_dict_ext = {'dim': self.dim,
@@ -382,8 +388,8 @@ class ForceOnTwoParallelCylinders:
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
         yukawa.set_wf_int(partial_args_dict_int,
-                           {('subomega', self.tag_sphere_1): self.rho_1 / rho_0,
-                            ('subomega', self.tag_sphere_2): self.rho_2 / rho_0,
+                           {('subomega', self.tag_cyl_1): self.rho_1 / rho_0,
+                            ('subomega', self.tag_cyl_2): self.rho_2 / rho_0,
                             ('subomega', self.tag_domain_int): self.rho_domain / rho_0})
 
         # External domain caracteristics
@@ -418,3 +424,222 @@ class ForceOnTwoParallelCylinders:
 
         if return_result:
             return RPP.from_files(self.problemName + '_yukawa')
+        
+
+    def postprocess_force(self, postprocess_file, alpha=0, lmbda=1, rho_0=1, 
+                          getNewton=False, getCoulomb=False, getYukawa=False):
+        """
+        Computes the gravitational and electrostatic force between the two
+        parallel hollow cylinders. For gravity, can compute Newton's or
+        Yukawa's potential.
+
+        Parameters
+        ----------
+        postprocess_file : ResultsPostProcessor
+            The results file that the user wants to compute.
+        alpha : float, optional
+            The scale factor used to compute the Yukawa potential, is useless
+            for other computations. The default is 0.
+        lmbda : float, optional
+            The range factor used to compute the Yukawa potential, is useless
+            for the other computations. The default is 1.
+        rho_o : float, optional
+            The caracteristic density of the problem, it's used for the
+            rescaling of the Yukawa potential's result. NOTE that this value
+            must be equal to the one declared for the resolution function!. The
+            default is 1.
+        getNewton : bool, optional
+            When True, activates the post-processing of newton's gravitational
+            potential. The default is False.
+        getCoulomb : bool, optional
+            When True, activates the post-processing of the electrostatic
+            potential. The default is False.
+        getYukawa : bool, optional
+            When True, activates the post-processing of yukawa's gravitational
+            potential. The default is False.
+
+        Returns
+        -------
+        grad_phi_cyl_1[1]: float
+            The vertical force applied on the first hollow cylinder.
+        grad_phi_cyl_2[1]: float
+            The vertical force applied on the second hollow cylinder.
+
+        References
+        ----------
+        [1] Adelberger, E. G., Heckel, B. R., & Nelson, A. E.
+            (2003).
+            Tests of the gravitational inverse-square law.
+            arXiv preprint hep-ph/0307284.
+
+        """
+        
+        #  Asserting that we have exactly one force to calculate
+        A = getNewton and not getCoulomb and not getYukawa
+        B = not getNewton and getCoulomb and not getYukawa
+        C = not getNewton and not getCoulomb and getYukawa
+        assert A or B or C, "Please select exactly one force for post-process!"
+        
+        
+        if getNewton or getYukawa:
+            rho_1 = self.rho_1
+            rho_2 = self.rho_2
+            rho_domain = self.rho_domain
+            k = 6.6743e-11
+        elif getCoulomb:
+            rho_1 = self.rho_q_1
+            rho_2 = self.rho_q_2
+            rho_domain = self.rho_q_domain
+            k = (4 * np.pi * 8.8541878128e-12)**-1
+            
+        # Extracting coordinates from results file
+        # NOTE: nodes' coordinates should match since it's the same mesh file
+        coors_int = postprocess_file.coors_int
+        
+        
+        if getYukawa:
+
+            # Informing the user about the characteristics of the K-G problem
+            if self.VERBOSE:
+                print(" === Linear Klein-Gordon problem ===")
+                print(" - scale factor α: {}".format(alpha))
+                print(" - range factor Ⲗ: {}".format(lmbda))
+                print(" - rho_1: {} [kg·m^-3]".format(self.rho_1))
+                print(" - rho_2: {} [kg·m^-3]".format(self.rho_2))
+                print(" - rho_domain: {} [kg·m^-3]".format(self.rho_domain))
+                print("")
+
+            # Computing nondimensioning term U_0
+            U_0 = 4 * np.pi * k * lmbda**2 * alpha * rho_0
+
+            # Extractign the weak form
+            wf_int_yukawa = postprocess_file.wf_int
+
+            # Setting the FieldVariable for the potential integration
+            param_yukawa = FieldVariable('param', 'parameter',
+                                         wf_int_yukawa.field,
+                                         primary_var_name=wf_int_yukawa.get_unknown_name('cst'))
+
+            # Setting the weight of the potential's value according to r
+            param_yukawa.set_data(coors_int[:, 0] * postprocess_file.sol_int)
+
+            # Integrating the potential on the whole surface - Yukawa S1
+            expression_yukawa_C1 = "ev_grad.{}.subomega300(param)".format(wf_int_yukawa.integral.order)
+            grad_yukawa_C1 = -wf_int_yukawa.pb_cst.evaluate(expression_yukawa_C1,
+                                                            var_dict={'param': param_yukawa}) * rho_1 * 2 * np.pi * U_0
+
+            # Integrating the potential on the whole surface - Yukawa S2
+            expression_yukawa_C2 = "ev_grad.{}.subomega301(param)".format(wf_int_yukawa.integral.order)
+            grad_yukawa_C2 = -wf_int_yukawa.pb_cst.evaluate(expression_yukawa_C2,
+                                                            var_dict={'param': param_yukawa}) * rho_2 * 2 * np.pi * U_0
+
+            # Communicating the results to the user
+            print("Force on cylinder 1:", str(grad_yukawa_C1[1]), "N")
+
+            print("Force on cylinder 2:", str(grad_yukawa_C2[1]), "N")
+            
+            return grad_yukawa_C1[1], grad_yukawa_C2[1]
+        
+        else:
+
+            # Informing the user about the characteristics of the Poisson problem
+            if self.VERBOSE:
+                if getNewton:
+                    print(" === Poisson problem - Newtonian ===")
+                    print(" - rho_1: {} [kg·m^-3]".format(rho_1))
+                    print(" - rho_2: {} [kg·m^-3]".format(rho_2))
+                    print(" - rho_domain: {} [kg·m^-3]".format(rho_domain))
+                    print("")
+                elif getCoulomb:
+                    print(" === Poisson problem - Electrostatic ===")
+                    print(" - rho_1: {} [C·m^-3]".format(rho_1))
+                    print(" - rho_2: {} [C·m^-3]".format(rho_2))
+                    print(" - rho_domain: {} [C·m^-3]".format(rho_domain))
+                    print("")
+
+            # Formatting the request for Sfepy
+            wf_int = postprocess_file.wf_int
+            param = FieldVariable('param', 'parameter', wf_int.field,
+                                  primary_var_name=wf_int.get_unknown_name('cst'))
+            param.set_data(coors_int[:, 0] * postprocess_file.sol_int)
+
+            expression_cylinder_1 = "ev_grad.{}.subomega300(param)".format(wf_int.integral.order)
+            grad_phi_cylinder_1 = -wf_int.pb_cst.evaluate(expression_cylinder_1,
+                                                          var_dict={'param': param}) * rho_1 * 2 * np.pi
+
+            expression_cylinder_2 = "ev_grad.{}.subomega301(param)".format(wf_int.integral.order)
+            grad_phi_cylinder_2 = -wf_int.pb_cst.evaluate(expression_cylinder_2,
+                                                          var_dict={'param': param}) * rho_2 * 2 * np.pi
+
+            print("Force on cylinder 1:", str(grad_phi_cylinder_1[1]), "N")
+            print("Force on cylinder 2:", str(grad_phi_cylinder_2[1]), "N")
+            
+            return grad_phi_cylinder_1[1], grad_phi_cylinder_2[1]
+        
+        
+#%% Testing the class
+
+def test():
+    """
+    Feel free to use this as an example of use case.
+
+    Returns
+    -------
+    None.
+
+    """
+    
+    ''' === VARIABLES DEFINITION === '''
+    # All the values are given in standard units
+    # First cylinder
+    R_int_1 = 15.4e-3
+    R_ext_1 = 19.7e-3
+    h_1 = 43.37e-3
+    rho_1 = 19972
+    rho_q_1 = 0
+    Z_1 = 1e-5
+    
+    # Second cylinder
+    R_int_2 = 30.4e-3
+    R_ext_2 = 34.6975e-3
+    h_2 = 79.83e-3
+    rho_2 = 4420
+    rho_q_2 = 0
+    
+    # Miscellaneous
+    FILENAME = 'parallel_hollow_cylinders_2D'
+    VERBOSE = 1
+    FEM_ORDER = 2
+    
+    # Physical parameters
+    DIM = 2
+    COORSYS = 'cylindrical'
+    SOLVER = 'ScipyDirect'
+    
+    # Mesh size
+    minSize = 0.00001
+    maxSize = 0.005
+    ''' === END OF VARIABLES DECLARATION === '''
+    
+    # Creating the problem
+    FO2PHC = ForceOnTwoParallelCylinders(problemName=FILENAME, R_int_1=R_int_1,
+                                         R_ext_1=R_ext_1, rho_1=rho_1, h_1=h_1,
+                                         rho_q_1=rho_q_1, R_int_2=R_int_2, 
+                                         R_ext_2=R_ext_2, h_2=h_2, rho_2=rho_2,
+                                         rho_q_2=rho_q_2, Z_1=Z_1,
+                                         minSize=minSize, maxSize=maxSize, 
+                                         dim=DIM, VERBOSE=VERBOSE,
+                                         FEM_ORDER=FEM_ORDER, SOLVER=SOLVER,
+                                         coorsys=COORSYS)
+    
+    # Conducting critical verifications
+    FO2PHC.GEOMETRY_VERIFICATIONS()
+    
+    # Creating the meshes
+    mesh_int, mesh_ext = FO2PHC.mesh_generation()
+    
+    print("\n === NEWTONIAN GRAVITY ===")
+    result_pp_newton = FO2PHC.get_newton_potential(mesh_int, mesh_ext)
+    F_N_1, F_N_2 = FO2PHC.postprocess_force(result_pp_newton, getNewton=True)
+    
+test()
