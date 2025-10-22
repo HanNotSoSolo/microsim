@@ -13,6 +13,7 @@ from femtoscope.inout.meshfactory import adjust_boundary_nodes
 from femtoscope.inout.meshfactory import generate_mesh_from_geo
 from femtoscope.inout.postprocess import ResultsPostProcessor as RPP
 from femtoscope.physics.physical_problems import Poisson, Yukawa, LinearSolver
+from cylinder_gravity.gravity.solids.cylinder import cylinder
 
 
 class ForceOnTwoParallelCylinders:
@@ -424,10 +425,11 @@ class ForceOnTwoParallelCylinders:
 
         if return_result:
             return RPP.from_files(self.problemName + '_yukawa')
-        
 
-    def postprocess_force(self, postprocess_file, alpha=0, lmbda=1, rho_0=1, 
-                          getNewton=False, getCoulomb=False, getYukawa=False):
+
+    def postprocess_force(self, postprocess_file, alpha=0, lmbda=1, rho_0=1,
+                          getNewton=False, getCoulomb=False, getYukawa=False,
+                          compare=True):
         """
         Computes the gravitational and electrostatic force between the two
         parallel hollow cylinders. For gravity, can compute Newton's or
@@ -457,6 +459,11 @@ class ForceOnTwoParallelCylinders:
         getYukawa : bool, optional
             When True, activates the post-processing of yukawa's gravitational
             potential. The default is False.
+        compare : bool, optional
+            When True, performs an additional analytical calculation that will
+            compute the relative error. The analytical calculation is the one
+            that has been used for MICROSCOPE mission (see [1]). The default is
+            True.
 
         Returns
         -------
@@ -464,23 +471,27 @@ class ForceOnTwoParallelCylinders:
             The vertical force applied on the first hollow cylinder.
         grad_phi_cyl_2[1]: float
             The vertical force applied on the second hollow cylinder.
+        F_ana: float
+            The analytically calculated vertical force.
+        epsilon: float
+            The relative error of the method compared with analytical method.
 
         References
         ----------
-        [1] Adelberger, E. G., Heckel, B. R., & Nelson, A. E.
-            (2003).
-            Tests of the gravitational inverse-square law.
-            arXiv preprint hep-ph/0307284.
+        [1] Bergé, J.
+            (2023).
+            MICROSCOPE’s view at gravitation.
+            Reports on Progress in Physics, 86(6), 066901.
 
         """
-        
+
         #  Asserting that we have exactly one force to calculate
         A = getNewton and not getCoulomb and not getYukawa
         B = not getNewton and getCoulomb and not getYukawa
         C = not getNewton and not getCoulomb and getYukawa
         assert A or B or C, "Please select exactly one force for post-process!"
-        
-        
+
+
         if getNewton or getYukawa:
             rho_1 = self.rho_1
             rho_2 = self.rho_2
@@ -491,12 +502,12 @@ class ForceOnTwoParallelCylinders:
             rho_2 = self.rho_q_2
             rho_domain = self.rho_q_domain
             k = (4 * np.pi * 8.8541878128e-12)**-1
-            
+
         # Extracting coordinates from results file
         # NOTE: nodes' coordinates should match since it's the same mesh file
         coors_int = postprocess_file.coors_int
-        
-        
+
+
         if getYukawa:
 
             # Informing the user about the characteristics of the K-G problem
@@ -533,13 +544,18 @@ class ForceOnTwoParallelCylinders:
             grad_yukawa_C2 = -wf_int_yukawa.pb_cst.evaluate(expression_yukawa_C2,
                                                             var_dict={'param': param_yukawa}) * rho_2 * 2 * np.pi * U_0
 
+            # Analytical calculation and comparison
+            if compare:
+                raise NotImplementedError("Sorry, this will come soon!")
+                # UPDATE
+
             # Communicating the results to the user
             print("Force on cylinder 1:", str(grad_yukawa_C1[1]), "N")
 
             print("Force on cylinder 2:", str(grad_yukawa_C2[1]), "N")
-            
+
             return grad_yukawa_C1[1], grad_yukawa_C2[1]
-        
+
         else:
 
             # Informing the user about the characteristics of the Poisson problem
@@ -573,10 +589,15 @@ class ForceOnTwoParallelCylinders:
 
             print("Force on cylinder 1:", str(grad_phi_cylinder_1[1]), "N")
             print("Force on cylinder 2:", str(grad_phi_cylinder_2[1]), "N")
-            
+
+            # Analytical calculation and comparison
+            if compare:
+                raise NotImplementedError("Sorry, this will come soon!")
+                # UPDATE
+
             return grad_phi_cylinder_1[1], grad_phi_cylinder_2[1]
-        
-        
+
+
 #%% Testing the class
 
 def test():
@@ -588,7 +609,7 @@ def test():
     None.
 
     """
-    
+
     ''' === VARIABLES DEFINITION === '''
     # All the values are given in standard units
     # First cylinder
@@ -597,66 +618,66 @@ def test():
     h_1 = 43.37e-3
     rho_1 = 19972
     rho_q_1 = 0
-    Z_1 = 1e-5
-    
+    Z_1 = -1e-5
+
     # Second cylinder
     R_int_2 = 30.4e-3
     R_ext_2 = 34.6975e-3
     h_2 = 79.83e-3
     rho_2 = 4420
     rho_q_2 = 0
-    
+
     # Miscellaneous
     FILENAME = 'parallel_hollow_cylinders_2D'
     VERBOSE = 1
     FEM_ORDER = 1
-    
+
     # Physical parameters
     DIM = 2
     COORSYS = 'cylindrical'
     SOLVER = 'ScipyDirect'
-    
+
     # Mesh size
     minSize = 0.0001
     maxSize = 0.001
     ''' === END OF VARIABLES DECLARATION === '''
-    
+
     # Creating the problem
     FO2PHC = ForceOnTwoParallelCylinders(problemName=FILENAME, R_int_1=R_int_1,
                                          R_ext_1=R_ext_1, rho_1=rho_1, h_1=h_1,
-                                         rho_q_1=rho_q_1, R_int_2=R_int_2, 
+                                         rho_q_1=rho_q_1, R_int_2=R_int_2,
                                          R_ext_2=R_ext_2, h_2=h_2, rho_2=rho_2,
                                          rho_q_2=rho_q_2, Z_1=Z_1,
-                                         minSize=minSize, maxSize=maxSize, 
+                                         minSize=minSize, maxSize=maxSize,
                                          dim=DIM, VERBOSE=VERBOSE,
                                          FEM_ORDER=FEM_ORDER, SOLVER=SOLVER,
                                          coorsys=COORSYS)
-    
+
     # Conducting critical verifications
     FO2PHC.GEOMETRY_VERIFICATIONS()
-    
+
     # Creating the meshes
     mesh_int, mesh_ext = FO2PHC.mesh_generation()
-    
-    # print("\n === NEWTONIAN GRAVITY ===")
-    # result_pp_newton = FO2PHC.get_newton_potential(mesh_int, mesh_ext)
-    # F_N_1, F_N_2 = FO2PHC.postprocess_force(result_pp_newton, getNewton=True)
-    
+
+    print("\n === NEWTONIAN GRAVITY ===")
+    result_pp_newton = FO2PHC.get_newton_potential(mesh_int, mesh_ext)
+    F_N_1, F_N_2 = FO2PHC.postprocess_force(result_pp_newton, getNewton=True)
+
     # print("\n === ELECTROSTATIC FORCE ===")
     # result_pp_elec = FO2PHC.get_electrostatic_potential(mesh_int, mesh_ext)
     # F_E_1, F_E_2 = FO2PHC.postprocess_force(result_pp_elec, getCoulomb=True)
-    
-    print("\n === YUKAWA GRAVITY ===")
-    alpha = 5e-1
-    lmbda = 10
-    rho_0 = 10e4
-    L_0 = 1  # FIXME L_0 not equal to 1 makes the problem explode!
-    
-    result_pp_yukawa = FO2PHC.get_yukawa_potential(mesh_int, mesh_ext,
-                                                   alpha=alpha, lmbda=lmbda,
-                                                   rho_0=rho_0)
-    F_Y_1, F_Y_2 = FO2PHC.postprocess_force(result_pp_yukawa, alpha=alpha,
-                                            lmbda=lmbda, rho_0=rho_0,
-                                            getYukawa=True)
-    
-#test()
+
+    # print("\n === YUKAWA GRAVITY ===")
+    # alpha = 1  # scale factor compared to Newton potential
+    # lmbda = 10000  # range factor (large lmbda leads to Newton potential)
+    # rho_0 = 10e4
+    # L_0 = 1  # FIXME L_0 not equal to 1 makes the problem explode!
+
+    # result_pp_yukawa = FO2PHC.get_yukawa_potential(mesh_int, mesh_ext,
+    #                                                alpha=alpha, lmbda=lmbda,
+    #                                                rho_0=rho_0, L_0=L_0)
+    # F_Y_1, F_Y_2 = FO2PHC.postprocess_force(result_pp_yukawa, alpha=alpha,
+    #                                         lmbda=lmbda, rho_0=rho_0,
+    #                                         getYukawa=True)
+
+test()
