@@ -38,7 +38,7 @@ class ForceOnTwoParallelCylinders:
         self.rho_2 = rho_2
         self.Z_1 = Z_1
         self.R_1 = R_1
-        if R_1 != 0:
+        if R_1 != 0:  # FIXME
             raise NotImplementedError("Sorry, radial displacement is not ready yet!")
         self.minSize = minSize
         self.maxSize = maxSize
@@ -638,8 +638,8 @@ class ForceOnTwoParallelCylinders:
                                     _dir='1->2')
 
             # Computing relative error
-            epsilon_1 = (grad_phi_cylinder_1[1] - ana_Fz_1) / grad_phi_cylinder_1[1]
-            epsilon_2 = (grad_phi_cylinder_2[1] - ana_Fz_2) / grad_phi_cylinder_2[1]
+            epsilon_1 = np.abs((grad_phi_cylinder_1[1] - ana_Fz_1) / grad_phi_cylinder_1[1])
+            epsilon_2 = np.abs((grad_phi_cylinder_2[1] - ana_Fz_2) / grad_phi_cylinder_2[1])
 
             # Communicating the results
             print("\r                             ", end="")  # <-- this is here to make everything prettier
@@ -682,7 +682,7 @@ def test():
 
     # Miscellaneous
     FILENAME = 'parallel_hollow_cylinders_2D'
-    VERBOSE = 1
+    VERBOSE = 0
     FEM_ORDER = 1
 
     # Physical parameters
@@ -721,17 +721,17 @@ def test():
     # result_pp_elec = FO2PHC.get_electrostatic_potential(mesh_int, mesh_ext)
     # F_E_1, F_E_2 = FO2PHC.postprocess_force(result_pp_elec, getCoulomb=True)
 
-    print("\n === YUKAWA GRAVITY ===")
-    alpha = 1  # scale factor compared to Newton potential
-    lmbda = 10000  # range factor (large lmbda leads to Newton potential)
-    rho_0 = 10e4
-    L_0 = 1  # FIXME L_0 not equal to 1 makes the problem explode!
+    # print("\n === YUKAWA GRAVITY ===")
+    # alpha = 1  # scale factor compared to Newton potential
+    # lmbda = 10000  # range factor (large lmbda leads to Newton potential)
+    # rho_0 = 10e4
+    # L_0 = 1  # FIXME L_0 not equal to 1 makes the problem explode!
 
-    result_pp_yukawa = FO2PHC.get_yukawa_potential(mesh_int, mesh_ext,
-                                                    alpha=alpha, lmbda=lmbda,
-                                                    rho_0=rho_0, L_0=L_0)
-    F_Y_1, F_Y_2, F_Y_ana, _, epsilon_Y, _ = FO2PHC.postprocess_force(result_pp_yukawa, alpha=alpha,
-                                            lmbda=lmbda, rho_0=rho_0,
-                                            getYukawa=True)
+    # result_pp_yukawa = FO2PHC.get_yukawa_potential(mesh_int, mesh_ext,
+    #                                                 alpha=alpha, lmbda=lmbda,
+    #                                                 rho_0=rho_0, L_0=L_0)
+    # F_Y_1, F_Y_2, F_Y_ana, _, epsilon_Y, _ = FO2PHC.postprocess_force(result_pp_yukawa, alpha=alpha,
+    #                                         lmbda=lmbda, rho_0=rho_0,
+    #                                         getYukawa=True)
 
-#test()
+test()
