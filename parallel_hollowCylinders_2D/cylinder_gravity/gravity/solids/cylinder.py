@@ -60,7 +60,7 @@ class cylinder(solid.solid):
             self.tplquad_xmax = self.x0 + self.radius #upper boundary for x for tplquad integration
         else:
             raise ValueError(self.kind + ' solid kind not allowed in cylinder object')
-        
+
     def tplquad_ymin_fun(self, x):
         """lower boundary for y for tplquad integration (gfun in terms of tplquad doc)"""
         tx = x - self.x0
@@ -78,7 +78,7 @@ class cylinder(solid.solid):
     def tplquad_zmax_fun(self, x, y):
         """upper boundary for z for tplquad integration (rfun in terms of tplquad doc)"""
         return self.hmax
-        
+
     def cmpVolume(self):
         if not self.hollow:
             return np.pi * self.radius**2 * self.height
@@ -87,7 +87,7 @@ class cylinder(solid.solid):
 
     def inner(self, xyzmin, xyzmax, strictBorder = True):
         raise NotImplementedError("Now called inside()")
-        
+
     def inside(self, xyzmin, xyzmax, strictBorder = True, gridType = None):
         """
         Check if a small volume (or an ensemble of small volumes) is inside or outside the cylinder. Return 1 for volume(s) inside the cylinder, 0 for others
@@ -116,7 +116,7 @@ class cylinder(solid.solid):
             xright = xyzmax[0] - self.x0
             yright = xyzmax[1] - self.y0
             zmax = xyzmax[2] #- self.z0
-        
+
         rleft = np.sqrt(xleft**2 + yleft**2)
         rright = np.sqrt(xright**2 + yright**2)
         rmin = np.minimum(rleft, rright)
@@ -144,7 +144,7 @@ class cylinder(solid.solid):
 
     def innerPoint(self, x_in, y_in, z_in):
         raise NotImplementedError("Now called insidePoint()")
-        
+
     def insidePoint(self, x_in, y_in, z_in, gridType = None):
         """
         Check if a point (or an ensemble of points) is inside or outside the cylinder. Return 1 for point(s) inside the cylinder, 0 for others
@@ -185,7 +185,7 @@ class cylinder(solid.solid):
             return self.mkPolarGrid(dr_rel = dr_rel, dtheta_rel = dtheta_rel, dz_rel = dz_rel, rmin = rmin, rmax = rmax, thmin = thmin, thmax = thmax, zmin = zmin, zmax = zmax, borders = borders)
         else:
             raise ValueError("Bad type " + _type + ". Must Cartesian or polar")
-        
+
     def mkCartesianGrid(self, dx_rel = 0.01, dy_rel = 0.01, dz_rel = 0.01, xmin = None, xmax = None, ymin = None, ymax = None, zmin = None, zmax = None, borders = True):
         """
         Make regular grid inside cylinder
@@ -229,7 +229,7 @@ class cylinder(solid.solid):
             #dz = (zmax - zmin) * dz_rel
             nz = int((zmax - zmin) / dz + 1)
             z = np.linspace(zmin, zmax, nz)
-        
+
         if borders:
             xl = x - 0.5 * dx
             xr = x + 0.5 * dx
@@ -280,7 +280,7 @@ class cylinder(solid.solid):
         nr = np.size(rl)
         nth = np.size(thl)
         nz = np.size(zl)
-        
+
         if borders:
             r = rl + 0.5 * dr
             rr = rl + dr
@@ -295,7 +295,7 @@ class cylinder(solid.solid):
             z = zl + 0.5 * dz
             return r, nr, theta, nth, z, nz
 
-        
+
     def inertiaMoment(self, i, j, k, dx_rel = 0.01, dy_rel = 0.01, dz_rel = 0.01, method = 'simps', mc_npoints = 1e6, memoryFriendly = False, verbose = True, fullNumeric = False):
         """
         Compute ijk inertia moment (Int[rho*x^i*y^j*z^k dxdydz])
@@ -326,7 +326,7 @@ class cylinder(solid.solid):
                 iname = 'I' + str(i) + str(j) + str(k)
             setattr(self, iname, I)
             return I
-        
+
     def cmpPotential_XYZ_mcquad(self, XYZ, npoints = 1e6, verbose = True, timeit = False):
         """
         XYZ -- (X, Y, Z)
@@ -335,7 +335,7 @@ class cylinder(solid.solid):
         X = XYZ[0]
         Y = XYZ[1]
         Z = XYZ[2]
-        
+
         if timeit:
             st = time.time()
         dU = lambda xyz: self.infinitesimalVElementPotential(xyz[0], xyz[1], xyz[2], X, Y, Z)
@@ -357,7 +357,7 @@ class cylinder(solid.solid):
     #     X = XYZ[0]
     #     Y = XYZ[1]
     #     Z = XYZ[2]
-        
+
     #     if timeit:
     #         st = time.time()
     #     for i in range(4):
@@ -419,7 +419,7 @@ class cylinder(solid.solid):
             return v
         else:
             return self.cmpPotential_ana_multipolar_XYZ(XYZ, pmax = pmax, raiseWarning = raiseWarning)
-            
+
     def cmpPotential_ana_multipolar_XYZ(self, XYZ, pmax = 15, raiseWarning = True):
         """
         Lockerbie et al 1993
@@ -449,7 +449,7 @@ class cylinder(solid.solid):
             vp += (k2 * P2p  * (0.5 * self.height / R)**(2 * p))
             if self.height / R >= 1 and raiseWarning:
                 print("WARNING! cylinder.cmpPotential_ana_multipolar_XYZ: l/R >=1, series will not converge! " + str(self.height / R))
-            
+
         vp *= (-G * M) / R
         return vp
 
@@ -471,7 +471,7 @@ class cylinder(solid.solid):
             return ax, ay, az
         else:
             return self.cmpAcceleration_ana_multipolar_XYZ(XYZ, pmax = pmax, raiseWarning = raiseWarning)
-    
+
     def cmpAcceleration_ana_multipolar_XYZ(self, XYZ, pmax = 15, raiseWarning = True):
         """
         Lockerbie et al 1993
@@ -570,7 +570,7 @@ class cylinder(solid.solid):
         plt.tight_layout()
         plt.show(block = True)
 
-        
+
     def plt_vz(self, zmin, zmax, nz = 100, xcross = 0, ycross = 0, alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, objectRef = True, log = False, yscale = 'linear', method = 'tplquad', im_method = 'simps', dx_rel = 0.01, dy_rel = 0.01, dz_rel = 0.01, mc_npoints = 1e6, memoryFriendly = False, verbose = False):
         """
         Plot potential as a function of height (parallel to axis)
@@ -594,7 +594,7 @@ class cylinder(solid.solid):
         plt.ylabel(r'$V(' + laborth+ ', z)$ [$J.kg^{-1}$]')
         plt.tight_layout()
         plt.show(block = True)
-        
+
 
     def plt_ar(self, rmin, rmax, nr = 100, theta = 0, z = 0, alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, log = False, yscale = 'linear', method = 'tplquad', im_method = 'simps', dx_rel = 0.01, dy_rel = 0.01, dr_rel = 0.01, dtheta_rel = 0.01, dz_rel = 0.01, mc_npoints = 1e6, memoryFriendly = False, pmax = 15, compareWAna = False, verbose = False, gridType = 'Cartesian'):
         """
@@ -857,7 +857,7 @@ class cylinder(solid.solid):
         plt.show(block = True)
 
 
-        
+
     def plt_horizontal_vslice(self, xmin, xmax, ymin, ymax, z, alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, objectRef = True, nx = 200, ny = 200, log = False, method = 'tplquad', im_method = 'simps', dx_rel = 0.01, dy_rel = 0.01, dz_rel = 0.01, mc_npoints = 1e6, memoryFriendly = False, verbose = False):
         """
         Plot potential in a horizontal slice (normal to cylinder main axis)
@@ -885,7 +885,7 @@ class cylinder(solid.solid):
         plt.ylabel('y [m]')
         plt.show(block = True)
 
-        
+
     def plt_vertical_vslice(self, xmin, xmax, zmin, zmax, y, alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, objectRef = True, nx = 200, nz = 200, log = False, method = 'tplquad', im_method = 'simps', dx_rel = 0.01, dy_rel = 0.01, dz_rel = 0.01, mc_npoints = 1e6, memoryFriendly = False, verbose = False):
         """
         Plot potential in a horizontal slice (normal to cylinder main axis)
@@ -915,7 +915,7 @@ class cylinder(solid.solid):
         plt.xlim(xmin, xmax)
         plt.ylim(zmin, zmax)
         plt.show(block = True)
-        
+
 
     def plt_horizontal_Tslice(self, xmin, xmax, ymin, ymax, z, alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, objectRef = True, nx = 200, ny = 200, log = False, v_method = 'regular grid', im_method = 'simps', dx_rel = 0.01, dy_rel = 0.01, dz_rel = 0.01, memoryFriendly = False, verbose = False):
         """
@@ -939,7 +939,7 @@ class cylinder(solid.solid):
                 locax = axis
             else:
                 locax = plt.subplot(3,3,iplot, sharex = axis)
-                
+
             Txx, Txy, Txz, Tyy, Tyz, Tzz = self.plt_TSlice('(x,y)', xmin, xmax, ymin, ymax, alpha = alpha, lmbda = lmbda, getNewton = getNewton, getYukawa = getYukawa, Tcomp = comp[iplot-1], pltAxis = locax, objectRef = objectRef, n = (nx, ny), orthogonalCross = z, log = log, v_method = v_method, im_method = im_method, dx_rel = dx_rel, dy_rel = dy_rel, dz_rel = dz_rel, memoryFriendly = memoryFriendly, verbose = verbose, hold = True, Txx = Txx, Txy = Txy, Txz = Txz, Tyy = Tyy, Tyz = Tyz, Tzz = Tzz)
             trace = Txx + Tyy + Tzz
 
@@ -1023,7 +1023,7 @@ class cylinder(solid.solid):
         #plt.suptitle(r'$a(' + laborth+ ', y)$ [$m.s^{-2}$]', fontsize = 13)
         plt.subplots_adjust(wspace = 0.05, hspace = 0.05)
         plt.show(block = True)
-        
+
     def plt_horizontal_rhoslice(self, xmin, xmax, ymin, ymax, z, objectRef = True, nx = 200, ny = 200, log = False, method = 'tplquad', im_method = 'simps', dx_rel = 0.01, dy_rel = 0.01, dz_rel = 0.01, mc_npoints = 1e6, memoryFriendly = False, verbose = False):
         """
         Plot potential in a horizontal slice (normal to cylinder main axis)
@@ -1067,7 +1067,7 @@ def k2p(p, a, b, L):
     #print(denom2)
     #print('-------')
     return np.sum(num1 / denom1 * num2 / denom2)
-        
+
 
 #############################################
 def tst1():
@@ -1198,7 +1198,7 @@ def cmpMass(dx_rel = 0.01, dy_rel = 0.01, dr_rel = 0.01, dtheta_rel = 0.01, dz_r
     print(anaM, numM_cart, numM_polar)
     print('Ratio to ana -- cart, polar')
     print(numM_cart / anaM, numM_polar / anaM)
-        
+
 
 def pltVr(z = None, alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, method = 'regular grid', originType = 'low', dx_rel = 0.01, dy_rel = 0.01, dr_rel = 0.01, dtheta_rel = 0.01, dz_rel = 0.01, log = True, nr = 100, compareWAna = False, pmax = 15, gridType = 'Cartesian'):
     if (compareWAna or method == 'ana multipolar') and originType == 'low':
@@ -1235,7 +1235,7 @@ def pltVz(alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, method = 'r
     c = cylinder(radius, height, density = density, originType = originType)
     c.plt_vz(280, 800, nz = nz, method = method, yscale = yscale, dx_rel = dx_rel, dy_rel = dy_rel, dz_rel = dz_rel, alpha = alpha, lmbda = lmbda, getNewton = getNewton, getYukawa = getYukawa)
 
-    
+
 def pltVh_slice(alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, method = 'regular grid', originType = 'low', dx_rel = 0.01, dy_rel = 0.01, dz_rel = 0.01, nx = 15, ny = 15, log = True):
     #radius = 1.1
     #innerRadius = 0#.8
@@ -1346,7 +1346,7 @@ def pltTr(alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, v_method = 
     c.plt_Tr(300, 800, nr = nr, z = height / 2, yscale = yscale, v_method = v_method, dx_rel = dx_rel, dy_rel = dy_rel, dz_rel = dz_rel, alpha = alpha, lmbda = lmbda, getNewton = getNewton, getYukawa = getYukawa)#, fname = 'Figure_Tr1.png')
     c.plt_Tr(300, 800, nr = nr, z = height, yscale = yscale, v_method = v_method, dx_rel = dx_rel, dy_rel = dy_rel, dz_rel = dz_rel, alpha = alpha, lmbda = lmbda, getNewton = getNewton, getYukawa = getYukawa)#, fname = 'Figure_Tr2.png')
 
-    
+
 def pltTz(alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, v_method = 'regular grid', originType = 'low', dx_rel = 0.01, dy_rel = 0.01, dz_rel = 0.01, log = True, nz = 120):
     if log:
         yscale = 'log'
@@ -1383,7 +1383,7 @@ def pltTv_slice(alpha = 0, lmbda = 1, getNewton = True, getYukawa = False, v_met
     c.plt_vertical_Tslice(xmin, xmax, zmin, zmax, 0, objectRef = True, nx = nx, nz = nz, log = log, v_method = v_method, im_method = 'simps', dx_rel = dx_rel, dy_rel = dy_rel, dz_rel = dz_rel, memoryFriendly = False, verbose = False, alpha = alpha, lmbda = lmbda, getNewton = getNewton, getYukawa = getYukawa)
     c.plt_vertical_Tslice(xmin, xmax, zmin, zmax, 1.2*radius, objectRef = True, nx = nx, nz = nz, log = log, v_method = v_method, im_method = 'simps', dx_rel = dx_rel, dy_rel = dy_rel, dz_rel = dz_rel, memoryFriendly = False, verbose = False, alpha = alpha, lmbda = lmbda, getNewton = getNewton, getYukawa = getYukawa)
 
-    
+
 def pltRhoh_slice(nx = 15, ny = 15):
     radius = 300 #m
     innerRadius = 200 #m
@@ -1395,4 +1395,3 @@ def pltRhoh_slice(nx = 15, ny = 15):
     ymax = 350
     c = cylinder(radius, height, density = density, originType = 'low', innerRadius = innerRadius)
     c.plt_horizontal_rhoslice(xmin, xmax, ymin, ymax, height / 2, nx = nx, ny = ny)
- 

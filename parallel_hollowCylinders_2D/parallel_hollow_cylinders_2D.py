@@ -14,6 +14,7 @@ from femtoscope.inout.meshfactory import generate_mesh_from_geo
 from femtoscope.inout.postprocess import ResultsPostProcessor as RPP
 from femtoscope.physics.physical_problems import Poisson, Yukawa, LinearSolver
 from cylinder_gravity.gravity.solids.cylinder import cylinder
+from cylinder_gravity.gravity.solids.solidsPair import cylinderPair
 
 
 class ForceOnTwoParallelCylinders:
@@ -21,8 +22,8 @@ class ForceOnTwoParallelCylinders:
     def __init__(self, problemName, R_int_1: float, R_ext_1: float,
                  rho_1: float, h_1: float, R_int_2: float, R_ext_2: float,
                  h_2: float, rho_2: float, minSize: float,
-                 maxSize: float, Z_1=0, dim=2, rho_domain=0, rho_q_1=0, rho_q_2=0,
-                 rho_q_domain=0, tag_cyl_1=300, tag_cyl_2=301,
+                 maxSize: float, Z_1=0, R_1=0, dim=2, rho_domain=0, rho_q_1=0,
+                 rho_q_2=0, rho_q_domain=0, tag_cyl_1=300, tag_cyl_2=301,
                  tag_domain_int=302, tag_domain_ext=303, tag_boundary_int=200,
                  tag_boundary_ext=201, coorsys='cylindrical', FEM_ORDER=1,
                  SOLVER='ScipyDirect', VERBOSE=1):
@@ -36,6 +37,9 @@ class ForceOnTwoParallelCylinders:
         self.h_2 = h_2
         self.rho_2 = rho_2
         self.Z_1 = Z_1
+        self.R_1 = R_1
+        if R_1 != 0:
+            raise NotImplementedError("Sorry, radial displacement is not ready yet!")
         self.minSize = minSize
         self.maxSize = maxSize
         self.dim = dim
@@ -324,8 +328,8 @@ class ForceOnTwoParallelCylinders:
             return RPP.from_files(self.problemName + '_electrostatic')
 
 
-    def get_yukawa_potential(self, mesh_int, mesh_ext, alpha: float, lmbda: float,
-                         L_0=1, rho_0=1, return_result=True):
+    def get_yukawa_potential(self, mesh_int, mesh_ext, alpha: float,
+                             lmbda: float, L_0=1, rho_0=1, return_result=True):
         """
         Solves the Klein-Gordon equation applied to the internal and external
         meshes according to the (alpha, lambda) couple given by the user.
@@ -428,8 +432,7 @@ class ForceOnTwoParallelCylinders:
 
 
     def postprocess_force(self, postprocess_file, alpha=0, lmbda=1, rho_0=1,
-                          getNewton=False, getCoulomb=False, getYukawa=False,
-                          compare=True):
+                          getNewton=False, getCoulomb=False, getYukawa=False):
         """
         Computes the gravitational and electrostatic force between the two
         parallel hollow cylinders. For gravity, can compute Newton's or
@@ -544,17 +547,42 @@ class ForceOnTwoParallelCylinders:
             grad_yukawa_C2 = -wf_int_yukawa.pb_cst.evaluate(expression_yukawa_C2,
                                                             var_dict={'param': param_yukawa}) * rho_2 * 2 * np.pi * U_0
 
-            # Analytical calculation and comparison
-            if compare:
-                raise NotImplementedError("Sorry, this will come soon!")
-                # UPDATE
-
             # Communicating the results to the user
             print("Force on cylinder 1:", str(grad_yukawa_C1[1]), "N")
 
             print("Force on cylinder 2:", str(grad_yukawa_C2[1]), "N")
 
-            return grad_yukawa_C1[1], grad_yukawa_C2[1]
+            # Analytical calculation and comparison
+            if self.VERBOSE:
+                print("Computing analytical force...", end="")
+
+            # Creating the two cylinders to compute analitically
+            ana_c1 = cylinder(radius=self.R_ext_1, height=self.h_1,
+                              density=self.rho_1, innerRadius=self.R_int_1)
+            ana_c2 = cylinder(radius=self.R_ext_2, height=self.h_2,
+                              density=self.rho_2, innerRadius=self.R_int_2)
+
+            # Creating the interaction between the two cylinders
+            c1_c2 = cylinderPair(ana_c1, ana_c2)
+
+            # Computing the force on the Z axis of the cylinder
+            ana_Fz_1 = c1_c2.cmpAnaFz([self.R_1, 0, self.Z_1], [0, 0, 0],
+                                      _dir='2->1', yukawa=True, lmbda=lmbda,
+                                      alpha=alpha)
+            ana_Fz_2 = c1_c2.cmpAnaFz([self.R_1, 0, self.Z_1], [0, 0, 0],
+                                      _dir='1->2', yukawa=True, lmbda=lmbda,
+                                      alpha=alpha)
+
+            # Computing relative error
+            epsilon_1 = (grad_yukawa_C1[1] - ana_Fz_1) / grad_yukawa_C1[1]
+            epsilon_2 = (grad_yukawa_C2[1] - ana_Fz_2) / grad_yukawa_C2[1]
+
+            # Communicating the results
+            print("\r                             ", end="")  # <-- this is here to make everything prettier
+            print("\rAnalytical force:", str(ana_Fz_1), "N")
+            print("Relative error:", str(epsilon_1))
+
+            return grad_yukawa_C1[1], grad_yukawa_C2[1], ana_Fz_1, ana_Fz_2, epsilon_1, epsilon_2
 
         else:
 
@@ -591,11 +619,35 @@ class ForceOnTwoParallelCylinders:
             print("Force on cylinder 2:", str(grad_phi_cylinder_2[1]), "N")
 
             # Analytical calculation and comparison
-            if compare:
-                raise NotImplementedError("Sorry, this will come soon!")
-                # UPDATE
+            if self.VERBOSE:
+                print("Computing analytical force...", end="")
 
-            return grad_phi_cylinder_1[1], grad_phi_cylinder_2[1]
+            # Creating the two cylinders to compute analitically
+            ana_c1 = cylinder(radius=self.R_ext_1, height=self.h_1,
+                              density=self.rho_1, innerRadius=self.R_int_1)
+            ana_c2 = cylinder(radius=self.R_ext_2, height=self.h_2,
+                              density=self.rho_2, innerRadius=self.R_int_2)
+
+            # Creating the interaction between the two cylinders
+            c1_c2 = cylinderPair(ana_c1, ana_c2)
+
+            # Computing the force on the Z axis of the cylinder
+            ana_Fz_1 = c1_c2.cmpAnaFz([self.R_1, 0, self.Z_1], [0, 0, 0],
+                                    _dir='2->1')
+            ana_Fz_2 = c1_c2.cmpAnaFz([self.R_1, 0, self.Z_1], [0, 0, 0],
+                                    _dir='1->2')
+
+            # Computing relative error
+            epsilon_1 = (grad_phi_cylinder_1[1] - ana_Fz_1) / grad_phi_cylinder_1[1]
+            epsilon_2 = (grad_phi_cylinder_2[1] - ana_Fz_2) / grad_phi_cylinder_2[1]
+
+            # Communicating the results
+            print("\r                             ", end="")  # <-- this is here to make everything prettier
+            print("\rAnalytical force:", str(ana_Fz_1), "N")
+            print("Relative error:", str(epsilon_1))
+
+            # Returning the results
+            return grad_phi_cylinder_1[1], grad_phi_cylinder_2[1], ana_Fz_1, ana_Fz_2, epsilon_1, epsilon_2
 
 
 #%% Testing the class
@@ -619,6 +671,7 @@ def test():
     rho_1 = 19972
     rho_q_1 = 0
     Z_1 = -1e-5
+    R_1 = 0
 
     # Second cylinder
     R_int_2 = 30.4e-3
@@ -647,7 +700,7 @@ def test():
                                          R_ext_1=R_ext_1, rho_1=rho_1, h_1=h_1,
                                          rho_q_1=rho_q_1, R_int_2=R_int_2,
                                          R_ext_2=R_ext_2, h_2=h_2, rho_2=rho_2,
-                                         rho_q_2=rho_q_2, Z_1=Z_1,
+                                         rho_q_2=rho_q_2, Z_1=Z_1, R_1=R_1,
                                          minSize=minSize, maxSize=maxSize,
                                          dim=DIM, VERBOSE=VERBOSE,
                                          FEM_ORDER=FEM_ORDER, SOLVER=SOLVER,
@@ -661,23 +714,24 @@ def test():
 
     print("\n === NEWTONIAN GRAVITY ===")
     result_pp_newton = FO2PHC.get_newton_potential(mesh_int, mesh_ext)
-    F_N_1, F_N_2 = FO2PHC.postprocess_force(result_pp_newton, getNewton=True)
+    F_N_1, F_N_2, F_N_ana, _, epsilon_N, _ = FO2PHC.postprocess_force(result_pp_newton,
+                                                              getNewton=True)
 
     # print("\n === ELECTROSTATIC FORCE ===")
     # result_pp_elec = FO2PHC.get_electrostatic_potential(mesh_int, mesh_ext)
     # F_E_1, F_E_2 = FO2PHC.postprocess_force(result_pp_elec, getCoulomb=True)
 
-    # print("\n === YUKAWA GRAVITY ===")
-    # alpha = 1  # scale factor compared to Newton potential
-    # lmbda = 10000  # range factor (large lmbda leads to Newton potential)
-    # rho_0 = 10e4
-    # L_0 = 1  # FIXME L_0 not equal to 1 makes the problem explode!
+    print("\n === YUKAWA GRAVITY ===")
+    alpha = 1  # scale factor compared to Newton potential
+    lmbda = 10000  # range factor (large lmbda leads to Newton potential)
+    rho_0 = 10e4
+    L_0 = 1  # FIXME L_0 not equal to 1 makes the problem explode!
 
-    # result_pp_yukawa = FO2PHC.get_yukawa_potential(mesh_int, mesh_ext,
-    #                                                alpha=alpha, lmbda=lmbda,
-    #                                                rho_0=rho_0, L_0=L_0)
-    # F_Y_1, F_Y_2 = FO2PHC.postprocess_force(result_pp_yukawa, alpha=alpha,
-    #                                         lmbda=lmbda, rho_0=rho_0,
-    #                                         getYukawa=True)
+    result_pp_yukawa = FO2PHC.get_yukawa_potential(mesh_int, mesh_ext,
+                                                    alpha=alpha, lmbda=lmbda,
+                                                    rho_0=rho_0, L_0=L_0)
+    F_Y_1, F_Y_2, F_Y_ana, _, epsilon_Y, _ = FO2PHC.postprocess_force(result_pp_yukawa, alpha=alpha,
+                                            lmbda=lmbda, rho_0=rho_0,
+                                            getYukawa=True)
 
-test()
+#test()
