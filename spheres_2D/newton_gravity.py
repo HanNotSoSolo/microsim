@@ -6,8 +6,6 @@ Created on Tue Sep 30 10:03:31 2025
 @author: mdellava
 """
 
-import gc
-
 import numpy as np
 import matplotlib.pyplot as plt
 

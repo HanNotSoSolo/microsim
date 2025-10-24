@@ -331,6 +331,10 @@ class ForceOnTwoSpheres:
             poisson_solver.save_results(self.problemName + '_newton')
             print('Result saved.\n')
 
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
+
         if return_result:
             return RPP.from_files(self.problemName + '_newton')
 
@@ -413,6 +417,10 @@ class ForceOnTwoSpheres:
             rmtree(resultPath)
             poisson_solver.save_results(self.problemName + '_electrostatic')
             print('Result saved.\n')
+
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
 
         if return_result:
             return RPP.from_files(self.problemName + '_electrostatic')
@@ -516,6 +524,10 @@ class ForceOnTwoSpheres:
             rmtree(resultPath)
             yukawa_solver.save_results(self.problemName + '_yukawa')
             print('Result saved.\n')
+
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
 
         if return_result:
             return RPP.from_files(self.problemName + '_yukawa')
@@ -866,9 +878,5 @@ def test():
                                                         lmbda=lmbda,
                                                         rho_0=rho_0,
                                                         getYukawa=True)
-
-    # Deleting the files that are still in memory that Python won't automatically delete
-    # NOTE: without this line, everything works but memory usage increase for serial resolutions
-    gc.collect()
 
 #test()

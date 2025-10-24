@@ -6,8 +6,6 @@ Created on Tue Oct  7 18:11:19 2025
 @author: mdellava
 """
 
-import gc
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -95,10 +93,6 @@ for i in range(n_steps):
                                                                                               getYukawa=True)
         # Index that indicates where I am in lmbda_list vector
         j += 1
-
-        # Manually collecting garbage because Python cannot do it himself
-        # NOTE: this is important for memory usage
-        gc.collect()
 
 
 # Creating the figure for the plots

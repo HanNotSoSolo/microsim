@@ -5,14 +5,14 @@ SetFactory("OpenCASCADE");
 R_int_1 = 0.0154; // internal radius of the first cylinder
 R_ext_1 = 0.0197; // external radius of the first cylinder
 h_1 = 0.04337; // height of the first cylinder
-Z_1 = 1e-05; // vertical displacement of the first cylinder
+Z_1 = -1.9999999999999995e-06; // vertical displacement of the first cylinder
 R_int_2 = 0.0304; // internal radius of the second cylinder
 R_ext_2 = 0.0346975; // external radius of the second cylinder
 h_2 = 0.07983; // height of the second cylinder
 R_Omega = 0.10577568210604932; // radius of the internal domain
-Ngamma = 332; // number of nodes on the domain boundary
-minSize = 0.0001; // size of the elements inside the spheres
-maxSize = 0.001; // size of the elements far from the spheres
+Ngamma = 664; // number of nodes on the domain boundary
+minSize = 0.0005; // size of the elements inside the spheres
+maxSize = 0.0005; // size of the elements far from the spheres
 d = 4.001; // distance between the centres of the spheres
 
 // First cylinder

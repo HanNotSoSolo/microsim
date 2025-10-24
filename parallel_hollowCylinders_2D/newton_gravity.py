@@ -8,7 +8,6 @@ Created on Thu Oct 23 15:39:38 2025
 
 import numpy as np
 import matplotlib.pyplot as plt
-import gc
 
 from parallel_hollow_cylinders_2D import ForceOnTwoParallelCylinders as FO2PC
 
@@ -50,8 +49,8 @@ COORSYS = 'cylindrical'
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.0001
-maxSize = 0.001
+minSize = 0.00001
+maxSize = 0.0005
 ''' === END OF VARIABLES DECLARATION === '''
 
 # The steps where the computation will take place
@@ -91,10 +90,6 @@ for i in range(n_steps):
     F_fem[i, 0], F_fem[i, 1], F_ana[i, 0], F_ana[i, 1], epsilon[i, 0], epsilon[i, 1] = system_2hc.postprocess_force(result_pp_newton,
                                                                                                                     getNewton=True)
 
-    # Manually collecting garbage because Python cannot do it himself
-    # NOTE: this is important for memory usage
-    gc.collect()
-
 # Evaluating the average relative error for each cylinder
 mepsilon = np.array([np.mean(epsilon[:, 0]), np.mean(epsilon[:, 1])])
 
@@ -127,4 +122,4 @@ twin_ax.legend(['$ε_1$', '$ε_2$'], fontsize='small')
 twin_ax.set_yticks(mepsilon, [f"{mepsilon[0]:.3e}", f"{mepsilon[1]:.3e}"], minor=True)
 
 
-plt.savefig("Hollow_cylinders_2D_Newton.png", bbox_inches='tight')
+plt.savefig("Hollow_cylinders_2D_Newton.png", bbox_inches='tight', dpi=700)

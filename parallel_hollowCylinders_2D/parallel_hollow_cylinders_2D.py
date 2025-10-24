@@ -241,6 +241,10 @@ class ForceOnTwoParallelCylinders:
             poisson_solver.save_results(self.problemName + '_newton')
             print('Result saved.\n')
 
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
+
         if return_result:
             return RPP.from_files(self.problemName + '_newton')
 
@@ -323,6 +327,10 @@ class ForceOnTwoParallelCylinders:
             rmtree(resultPath)
             poisson_solver.save_results(self.problemName + '_electrostatic')
             print('Result saved.\n')
+
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
 
         if return_result:
             return RPP.from_files(self.problemName + '_electrostatic')
@@ -426,6 +434,10 @@ class ForceOnTwoParallelCylinders:
             rmtree(resultPath)
             yukawa_solver.save_results(self.problemName + '_yukawa')
             print('Result saved.\n')
+
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
 
         if return_result:
             return RPP.from_files(self.problemName + '_yukawa')
@@ -735,8 +747,6 @@ def test():
     # F_Y_1, F_Y_2, F_Y_ana, _, epsilon_Y, _ = FO2PHC.postprocess_force(result_pp_yukawa, alpha=alpha,
     #                                         lmbda=lmbda, rho_0=rho_0,
     #                                         getYukawa=True)
-
-    gc.collect()
 
 
 #test()
