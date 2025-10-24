@@ -128,7 +128,7 @@ for i in range(len(lmbda)):
 # (and obv also make it look a bit less confusing for people)
 axs[0].set_title('Yukawa gravitational force depending on $\lambda$')
 
-axs[1].legend(lmbda, fontsize='small', title='$\lambda$ values')
+axs[1].legend(['R_1/10', 'R_1/2', '5*R_1', 'R_2/10', 'R_2/2', '5*R_2'], fontsize='small', title='$\lambda$ values')
 
 axs[0].set_ylabel('$F_Y ~[N]$')
 axs[1].set_ylabel('Ɛ')
