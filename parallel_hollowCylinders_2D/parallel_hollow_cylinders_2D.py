@@ -2,10 +2,9 @@
 from shutil import rmtree  # to remove the existing result
 
 # Maths and plot functions
-import matplotlib.pyplot as plt
-import mpmath as mp
 import numpy as np
 from sfepy.discrete import FieldVariable
+import gc
 
 # Femtoscope functions
 from femtoscope import RESULT_DIR, GEO_DIR
@@ -15,6 +14,7 @@ from femtoscope.inout.postprocess import ResultsPostProcessor as RPP
 from femtoscope.physics.physical_problems import Poisson, Yukawa, LinearSolver
 from cylinder_gravity.gravity.solids.cylinder import cylinder
 from cylinder_gravity.gravity.solids.solidsPair import cylinderPair
+
 
 
 class ForceOnTwoParallelCylinders:
@@ -652,6 +652,8 @@ class ForceOnTwoParallelCylinders:
 
 #%% Testing the class
 
+#@profile
+
 def test():
     """
     Feel free to use this as an example of use case.
@@ -691,7 +693,7 @@ def test():
     SOLVER = 'ScipyDirect'
 
     # Mesh size
-    minSize = 0.0001
+    minSize = 0.0005
     maxSize = 0.001
     ''' === END OF VARIABLES DECLARATION === '''
 
@@ -734,4 +736,7 @@ def test():
     #                                         lmbda=lmbda, rho_0=rho_0,
     #                                         getYukawa=True)
 
-test()
+    gc.collect()
+
+
+#test()

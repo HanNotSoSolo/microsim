@@ -6,6 +6,8 @@ Created on Tue Sep 30 10:03:31 2025
 @author: mdellava
 """
 
+import gc
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -80,6 +82,10 @@ for i in range(n_steps):
 
     # Precision on second sphere
     epsilon[i, 1] = np.abs((F_ana[i] + F_fem[i, 1]) / F_ana[i])
+
+    # Manually collecting garbage because Python cannot do it himself
+    # NOTE: this is important for memory usage
+    gc.collect()
 
 mepsilon = np.array([np.mean(epsilon[:, 0]), np.mean(epsilon[:, 1])])
 

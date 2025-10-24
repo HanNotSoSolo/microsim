@@ -8,6 +8,7 @@ Created on Thu Oct 23 15:39:38 2025
 
 import numpy as np
 import matplotlib.pyplot as plt
+import gc
 
 from parallel_hollow_cylinders_2D import ForceOnTwoParallelCylinders as FO2PC
 
@@ -59,8 +60,8 @@ r = np.zeros_like(z)
 
 # Since the system would pass in a neutral position that would be bad for
 # relative error computation, the neutral position is removed
-np.delete(z, 10)
-np.delete(r, 10)
+z = np.delete(z, 10)
+r = np.delete(r, 10)
 n_steps -= 1
 
 # Results array
@@ -89,6 +90,10 @@ for i in range(n_steps):
     # Post-processing of the solution to get the force and relative error
     F_fem[i, 0], F_fem[i, 1], F_ana[i, 0], F_ana[i, 1], epsilon[i, 0], epsilon[i, 1] = system_2hc.postprocess_force(result_pp_newton,
                                                                                                                     getNewton=True)
+
+    # Manually collecting garbage because Python cannot do it himself
+    # NOTE: this is important for memory usage
+    gc.collect()
 
 # Evaluating the average relative error for each cylinder
 mepsilon = np.array([np.mean(epsilon[:, 0]), np.mean(epsilon[:, 1])])

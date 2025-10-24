@@ -6,3 +6,6 @@
 # Also ignore all SLURM output files
 *.out
 *.err
+
+# Ignore the Python cache files
+*.pyc

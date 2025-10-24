@@ -8,6 +8,7 @@ Created on Fri Sep 19 15:06:44 2025
 
 # Core modules, useful to manipulate files in the computer
 from shutil import rmtree  # to remove the existing result
+import gc  # garbage collector, to manage memory
 
 # Maths and plot functions
 import matplotlib.pyplot as plt
@@ -308,14 +309,14 @@ class ForceOnTwoSpheres:
                                  'pre_mesh': mesh_ext,
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
-        partial_args_dict_ext['pre_ebc_dict'] = {
-            ('vertex', 0): self.rho_domain}
+        partial_args_dict_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_domain}
         poisson.set_wf_ext(partial_args_dict_ext, density=None)
 
         poisson_solver = LinearSolver(poisson.wf_dict, ls_class=self.SOLVER,
-                                      region_key_int=(
-                                          'facet', self.tag_boundary_int),
-                                      region_key_ext=('facet', self.tag_boundary_ext))
+                                      region_key_int=('facet',
+                                                      self.tag_boundary_int),
+                                      region_key_ext=('facet',
+                                                      self.tag_boundary_ext))
         poisson_solver.solve()
 
         ''' This part is here to ensure the result is correctly saved'''
@@ -390,14 +391,14 @@ class ForceOnTwoSpheres:
                                  'pre_mesh': mesh_ext,
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
-        partial_args_dict_ext['pre_ebc_dict'] = {
-            ('vertex', 0): self.rho_q_domain}
+        partial_args_dict_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_q_domain}
         poisson.set_wf_ext(partial_args_dict_ext, density=None)
 
         poisson_solver = LinearSolver(poisson.wf_dict, ls_class=self.SOLVER,
-                                      region_key_int=(
-                                          'facet', self.tag_boundary_int),
-                                      region_key_ext=('facet', self.tag_boundary_ext))
+                                      region_key_int=('facet',
+                                                      self.tag_boundary_int),
+                                      region_key_ext=('facet',
+                                                      self.tag_boundary_ext))
 
         poisson_solver.solve()
 
@@ -498,8 +499,10 @@ class ForceOnTwoSpheres:
 
         # Setting up the solver
         yukawa_solver = LinearSolver(yukawa.wf_dict, ls_class='ScipyDirect',
-                                     region_key_int=('facet', self.tag_boundary_int),
-                                     region_key_ext=('facet', self.tag_boundary_ext))
+                                     region_key_int=('facet',
+                                                     self.tag_boundary_int),
+                                     region_key_ext=('facet',
+                                                     self.tag_boundary_ext))
         yukawa_solver.solve()
 
         ''' This part is here to ensure the result is correctly saved'''
@@ -864,4 +867,8 @@ def test():
                                                         rho_0=rho_0,
                                                         getYukawa=True)
 
-test()
+    # Deleting the files that are still in memory that Python won't automatically delete
+    # NOTE: without this line, everything works but memory usage increase for serial resolutions
+    gc.collect()
+
+#test()
