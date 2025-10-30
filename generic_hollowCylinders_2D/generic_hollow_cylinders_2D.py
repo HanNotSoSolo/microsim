@@ -549,8 +549,9 @@ class ForceOnTwoParallelCylinders:
             return RPP.from_files(self.problemName + '_yukawa')
 
 
-    def postprocess_force(self, postprocess_file, alpha=0, lmbda=1, rho_0=1,
-                          getNewton=False, getCoulomb=False, getYukawa=False):
+    def postprocess_force(self, postprocess_file_R1, postprocess_file_R2,
+                          alpha=0, lmbda=1, rho_0=1, getNewton=False,
+                          getCoulomb=False, getYukawa=False):
         """
         Computes the gravitational and electrostatic force between the two
         parallel hollow cylinders. For gravity, can compute Newton's or
@@ -558,8 +559,10 @@ class ForceOnTwoParallelCylinders:
 
         Parameters
         ----------
-        postprocess_file : ResultsPostProcessor
-            The results file that the user wants to compute.
+        postprocess_file_R1 : ResultsPostProcessor
+            The results file representing cylinder 1's framework.
+        postprocess_file_R2 : ResultsPostProcessor
+            The results file representing cylinder 2's framework.
         alpha : float, optional
             The scale factor used to compute the Yukawa potential, is useless
             for other computations. The default is 0.
@@ -624,12 +627,9 @@ class ForceOnTwoParallelCylinders:
             rho_domain = self.rho_q_domain
             k = (4 * np.pi * 8.8541878128e-12)**-1
 
-        # Extracting coordinates from results file
-        # NOTE: nodes' coordinates should match since it's the same mesh file
-        coors_int = postprocess_file.coors_int
-
 
         if getYukawa:
+            raise NotImplementedError("Sorry, coming soon! <3")
 
             # Informing the user about the characteristics of the K-G problem
             if self.VERBOSE:
@@ -713,25 +713,52 @@ class ForceOnTwoParallelCylinders:
                     print(" - rho_domain: {} [kg·m^-3]".format(rho_domain))
                     print("")
                 elif getCoulomb:
+                    raise NotImplementedError("Sorry, coming soon! <3")
                     print(" === Poisson problem - Electrostatic ===")
                     print(" - rho_1: {} [C·m^-3]".format(rho_1))
                     print(" - rho_2: {} [C·m^-3]".format(rho_2))
                     print(" - rho_domain: {} [C·m^-3]".format(rho_domain))
                     print("")
 
-            # Formatting the request for Sfepy
-            wf_int = postprocess_file.wf_int
-            param = FieldVariable('param', 'parameter', wf_int.field,
-                                  primary_var_name=wf_int.get_unknown_name('cst'))
-            param.set_data(coors_int[:, 0] * postprocess_file.sol_int)
 
-            expression_cylinder_1 = "ev_grad.{}.subomega300(param)".format(wf_int.integral.order)
-            grad_phi_cylinder_1 = -wf_int.pb_cst.evaluate(expression_cylinder_1,
-                                                          var_dict={'param': param}) * rho_1 * 2 * np.pi
 
-            expression_cylinder_2 = "ev_grad.{}.subomega301(param)".format(wf_int.integral.order)
-            grad_phi_cylinder_2 = -wf_int.pb_cst.evaluate(expression_cylinder_2,
-                                                          var_dict={'param': param}) * rho_2 * 2 * np.pi
+
+
+            # Taking the potential's gradient for the two cylinders in R1
+            wf_R1 = postprocess_file_R1.wf_int
+            param_R1 = FieldVariable('param', 'parameter', wf_R1.field,
+                                  primary_var_name=wf_R1.get_unknown_name('cst'))
+            pseudo_coors_int_R2 = postprocess_file_R1.coors_int + np.array([self.R_1, self.Z_1])
+            image_R2 = postprocess_file_R2.evaluate_at(pseudo_coors_int_R2,
+                                                       mode='val')
+            param_R1.set_data((postprocess_file_R1.coors_int[:, 0]* postprocess_file_R1.sol_int) + (pseudo_coors_int_R2[:, 0] * image_R2))
+
+            expression_cylinder_1_R1 = "ev_grad.{}.subomega300(param)".format(wf_R1.integral.order)
+            expression_cylinder_2_R1 = "ev_grad.{}.subomega301(param)".format(wf_R1.integral.order)
+
+            force_cylinder_1_R1 = -wf_R1.pb_cst.evaluate(expression_cylinder_1_R1,
+                                                         var_dict={'param': param_R1}) * rho_1 * 2 * np.pi
+            force_cylinder_2_R1 = -wf_R1.pb_cst.evaluate(expression_cylinder_2_R1,
+                                                         var_dict={'param': param_R1}) * rho_2 * 2 * np.pi
+
+            # Taking the potential's gradient for the two cylinders in R2
+            wf_R2 = postprocess_file_R2.wf_int
+            param_R2 = FieldVariable('param', 'parameter', wf_R2.field,
+                                  primary_var_name=wf_R2.get_unknown_name('cst'))
+            param_R2.set_data(postprocess_file_R2.coors_int[:, 0] * postprocess_file_R2.sol_int)
+
+            expression_cylinder_1_R2 = "ev_grad.{}.subomega300(param_R2)".format(wf_R2.integral.order)
+            expression_cylinder_2_R2 = "ev_grad.{}.subomega301(param_R2)".format(wf_R2.integral.order)
+
+            force_cylinder_1_R2 = -wf_R2.pb_cst.evaluate(expression_cylinder_1_R2,
+                                                         var_dict={'param': param_R2}) * rho_1 * 2 * np.pi
+            force_cylinder_2_R2 = -wf_R2.pb_cst.evaluate(expression_cylinder_2_R2,
+                                                         var_dict={'param': param_R2}) * rho_2 * 2 * np.pi
+
+
+
+
+            pass
 
             print("Force on cylinder 1:", str(grad_phi_cylinder_1[1]), "N")
             print("Force on cylinder 2:", str(grad_phi_cylinder_2[1]), "N")
@@ -791,7 +818,7 @@ def test():
     rho_1 = 19972
     rho_q_1 = 0
     Z_1 = -1e-5
-    R_1 = 0.005
+    R_1 = -1e-5
 
     # Second cylinder
     R_int_2 = 30.4e-3
@@ -835,8 +862,9 @@ def test():
     print("\n === NEWTONIAN GRAVITY ===")
     result_pp_newton = FO2PHC.get_newton_potential(mesh_R1_int, mesh_R1_ext,
                                                    mesh_R2_int, mesh_R2_ext)
-    # F_N_1, F_N_2, F_N_ana, _, epsilon_N, _ = FO2PHC.postprocess_force(result_pp_newton,
-    #                                                           getNewton=True)
+    F_N_1, F_N_2, F_N_ana, _, epsilon_N, _ = FO2PHC.postprocess_force(result_pp_newton[0],
+                                                                      result_pp_newton[1],
+                                                                      getNewton=True)
 
     # print("\n === ELECTROSTATIC FORCE ===")
     # result_pp_elec = FO2PHC.get_electrostatic_potential(mesh_int, mesh_ext)
