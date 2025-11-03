@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Oct 29 15:36:53 2025
+
+@author: mdellava
+"""
+
 # Core modules, useful to manipulate files in the computer
 from shutil import rmtree  # to remove the existing result
 
@@ -19,7 +27,7 @@ from cylinder_gravity.gravity.solids.solidsPair import cylinderPair
 
 class ForceOnTwoParallelCylinders:
 
-    def __init__(self, problemName, R_int_1: float, R_ext_1: float,
+    def __init__(self, problemName: str, R_int_1: float, R_ext_1: float,
                  rho_1: float, h_1: float, R_int_2: float, R_ext_2: float,
                  h_2: float, rho_2: float, minSize: float,
                  maxSize: float, Z_1=0, R_1=0, dim=2, rho_domain=0, rho_q_1=0,
@@ -38,8 +46,6 @@ class ForceOnTwoParallelCylinders:
         self.rho_2 = rho_2
         self.Z_1 = Z_1
         self.R_1 = R_1
-        if R_1 != 0:  # FIXME
-            raise NotImplementedError("Sorry, radial displacement is not ready yet!")
         self.minSize = minSize
         self.maxSize = maxSize
         self.dim = dim
@@ -59,7 +65,7 @@ class ForceOnTwoParallelCylinders:
         self.VERBOSE = VERBOSE
 
         # Derived parameters that are a function of the previous ones
-        self.R_Omega = np.sqrt(R_ext_2**2 + h_2**2/4) * 2
+        self.R_Omega = np.sqrt(R_ext_2**2 + np.max((h_1, h_2))**2/4) * 2
         self.Ngamma = int(np.pi * self.R_Omega / self.maxSize)
 
         # The verbosity instructions for the script
@@ -77,8 +83,10 @@ class ForceOnTwoParallelCylinders:
     def GEOMETRY_VERIFICATIONS(self):
         assert self.R_int_1 < self.R_ext_1, "Warning, first cylinder geometry problem."
         assert self.R_int_2 < self.R_ext_2, "Warning, second cylinder geometry problem."
-        assert self.R_ext_1 < self.R_int_2, "Warning, cylinders' geometry is inconsistent."
+        assert self.R_ext_1 + self.R_1 < self.R_int_2, "Warning, cylinders' geometry is inconsistent."
+        assert self.R_int_1 + self.R_1 > 0, "Warning, first cylinder's radial displacement is inconsistent."
         assert self.h_1 > 0 and self.h_2 > 0, "Warning, invalid height encountered."
+        assert self.R_int_1 > 0 and self.R_int_2 > 0, "Warning, invalid radius encountered."
 
         if self.VERBOSE:
             print("Geometry verifications: OK.\n")
@@ -87,7 +95,11 @@ class ForceOnTwoParallelCylinders:
     def mesh_generation(self, SHOW_MESH=False):
         """
         Generation of the geometrical files that will compose the system. Note
-        that the .geo files must have the same name as the problem.
+        that the .geo files must have the same name as the problem. Opposely to
+        the parallel hollow cylinders' case, since we don't have a cylindrical
+        symmetry anymore, we create two meshes for two different frameworks:
+        one representing the "POV" of the first cylinder, and the other one the
+        second cylinder's POV.
 
         Parameters
         ----------
@@ -97,12 +109,16 @@ class ForceOnTwoParallelCylinders:
 
         Returns
         -------
-        mesh_int : str
-            The path of the .vtk file of the internal mesh. The directory is
-            the same given by the variable MESH_DIR from femtoscope module.
-        mesh_ext : TYPE
-            The path of the .vtk file of the external mesh. The directory is
-            the same given by the variable MESH_DIR from femtoscope module.
+        mesh_R1_int : str
+            The path of the .vtk file of the internal mesh in the R1 framework.
+            The directory of the file is the same as the one contained in the
+            GEO_DIR of the Femtoscope module.
+        mesh_R1_ext : TYPE
+            The path of the .vtk file of the external mesh of the R1 framework.
+        mesh_R2_int : str
+            The path of the .vtk file of the internal mesh of the R2 framework.
+        mesh_R2_ext : TYPE
+            The path of the .vtk file of the external mesh of the R2 framework.
 
         """
 
@@ -113,6 +129,7 @@ class ForceOnTwoParallelCylinders:
             print(" - R_ext_1: {}".format(self.R_ext_1))
             print(" - h_1: {}".format(self.h_1))
             print(" - Vertical displacement: {}".format(self.Z_1))
+            print(" - Radial displacement: {}".format(self.R_1))
             print(" - R_int_2: {}".format(self.R_int_2))
             print(" - R_ext_2: {}".format(self.R_ext_2))
             print(" - h_2: {}".format(self.h_2))
@@ -124,47 +141,76 @@ class ForceOnTwoParallelCylinders:
             print(" - Coordinates system: {} framework\n".format(self.coorsys))
 
         if self.VERBOSE:
-            print("=== INNER MESH GENERATION ===")
+            print("=== INNER MESHES GENERATION ===")
 
-        param_dict_int = {'R_int_1': self.R_int_1,
-                          'R_ext_1': self.R_ext_1,
-                          'h_1': self.h_1,
-                          'Z_1': self.Z_1,
-                          'R_int_2': self.R_int_2,
-                          'R_ext_2': self.R_ext_2,
-                          'h_2': self.h_2,
-                          'R_Omega': self.R_Omega,
-                          'minSize': self.minSize,
-                          'maxSize': self.maxSize,
-                          'Ngamma': self.Ngamma}
-        mesh_int = generate_mesh_from_geo( self.problemName + '_int',
-                                          show_mesh=SHOW_MESH,
-                                          param_dict=param_dict_int,
-                                          verbose=self.SFEPY_VERBOSE)
+        param_dict_R1_int = {'R_int_1': self.R_int_1,
+                             'R_ext_1': self.R_ext_1,
+                             'h_1': self.h_1,
+                             'Z_2': self.Z_1,  # to understand this parameter, please refer to the .geo file
+                             'R_2': self.R_1,  # (respective displacements are equal and opposite)
+                             'R_int_2': self.R_int_2,
+                             'R_ext_2': self.R_ext_2,
+                             'h_2': self.h_2,
+                             'R_Omega': self.R_Omega,
+                             'minSize': self.minSize,
+                             'maxSize': self.maxSize,
+                             'Ngamma': self.Ngamma}
+        mesh_R1_int = generate_mesh_from_geo(self.problemName + '_R1_int',
+                                             show_mesh=SHOW_MESH,
+                                             param_dict=param_dict_R1_int,
+                                             verbose=self.SFEPY_VERBOSE)
+
+        param_dict_R2_int = {'R_int_1': self.R_int_1,
+                             'R_ext_1': self.R_ext_1,
+                             'h_1': self.h_1,
+                             'Z_1': self.Z_1,
+                             'R_1': self.R_1,
+                             'R_int_2': self.R_int_2,
+                             'R_ext_2': self.R_ext_2,
+                             'h_2': self.h_2,
+                             'R_Omega': self.R_Omega,
+                             'minSize': self.minSize,
+                             'maxSize': self.maxSize,
+                             'Ngamma': self.Ngamma}
+        mesh_R2_int = generate_mesh_from_geo(self.problemName + '_R2_int',
+                                             show_mesh=SHOW_MESH,
+                                             param_dict=param_dict_R2_int,
+                                             verbose=self.SFEPY_VERBOSE)
         if self.VERBOSE:
             print("OK.\n")
 
         if self.VERBOSE:
             print("=== OUTER MESH GENERATION ===")
 
+        # Generating external mesh
         param_dict_ext = {'R_Omega': self.R_Omega,
                           'minSize': self.minSize,
                           'maxSize': self.maxSize,
                           'Ngamma': self.Ngamma}
-        mesh_ext = generate_mesh_from_geo(self.problemName + '_ext',
+        mesh_R1_ext = generate_mesh_from_geo(self.problemName + '_R2_ext',
                                           show_mesh=SHOW_MESH,
                                           param_dict=param_dict_ext,
                                           verbose=self.SFEPY_VERBOSE)
+
+        # External meshes are the same for both frameworks
+        mesh_R2_ext = mesh_R1_ext
+
         if self.VERBOSE:
             print("OK.\n")
 
-        adjust_boundary_nodes(mesh_int, mesh_ext, self.tag_boundary_int,
+        # This function is not essential for 2D, but it's a redundancy that both boundary curves correspond
+        adjust_boundary_nodes(mesh_R1_int, mesh_R1_ext, self.tag_boundary_int,
+                              self.tag_boundary_ext)
+        adjust_boundary_nodes(mesh_R2_int, mesh_R2_ext, self.tag_boundary_int,
                               self.tag_boundary_ext)
 
-        return mesh_int, mesh_ext
+
+        return mesh_R1_int, mesh_R1_ext, mesh_R2_int, mesh_R2_ext
 
 
-    def get_newton_potential(self, mesh_int, mesh_ext, return_result=True):
+    def get_newton_potential(self, mesh_R1_int: str, mesh_R1_ext: str,
+                             mesh_R2_int: str, mesh_R2_ext: str,
+                             return_result=True):
         """
         Calculates the newtonian gravitational potential on the .vtk file. The
         potential is calculated on every node of the mesh, and interpolated
@@ -201,52 +247,108 @@ class ForceOnTwoParallelCylinders:
         G = 6.6743e-11
         ALPHA = 4 * np.pi * G
 
-        poisson = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
-                          coorsys=self.coorsys)
+        # Starting computation of the first framework
+        if self.VERBOSE:
+            print("== FIRST FRAMEWORK COMPUTATION ==")
 
-        partial_args_dict_int = {'dim': self.dim,
-                                 'name': 'wf_int',
-                                 'pre_mesh': mesh_int,
-                                 'fem_order': self.FEM_ORDER,
-                                 'Ngamma': self.Ngamma}
-        poisson.set_wf_int(partial_args_dict_int,
-                           {('subomega', self.tag_cyl_1): self.rho_1,
-                            ('subomega', self.tag_cyl_2): self.rho_2,
-                            ('subomega', self.tag_domain_int): self.rho_domain})
+        poisson_R1 = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
+                             coorsys=self.coorsys)
 
-        partial_args_dict_ext = {'dim': self.dim,
-                                 'name': 'wf_ext',
-                                 'pre_mesh': mesh_ext,
-                                 'fem_order': self.FEM_ORDER,
-                                 'Ngamma': self.Ngamma}
-        partial_args_dict_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_domain}
-        poisson.set_wf_ext(partial_args_dict_ext, density=None)
+        partial_args_dict_R1_int = {'dim': self.dim,
+                                    'name': 'wf_int',
+                                    'pre_mesh': mesh_R1_int,
+                                    'fem_order': self.FEM_ORDER,
+                                    'Ngamma': self.Ngamma}
 
-        poisson_solver = LinearSolver(poisson.wf_dict, ls_class=self.SOLVER,
-                                      region_key_int=('facet',
-                                                      self.tag_boundary_int),
-                                      region_key_ext=('facet',
-                                                      self.tag_boundary_ext))
-        poisson_solver.solve()
+        # Attributing a density only to the first cylinder
+        poisson_R1.set_wf_int(partial_args_dict_R1_int,
+                              {('subomega', self.tag_cyl_1): self.rho_1,
+                               ('subomega', self.tag_cyl_2): self.rho_domain,
+                               ('subomega', self.tag_domain_int): self.rho_domain})
+
+        partial_args_dict_R1_ext = {'dim': self.dim,
+                                    'name': 'wf_ext',
+                                    'pre_mesh': mesh_R1_ext,
+                                    'fem_order': self.FEM_ORDER,
+                                    'Ngamma': self.Ngamma}
+        partial_args_dict_R1_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_domain}
+        poisson_R1.set_wf_ext(partial_args_dict_R1_ext, density=None)
+
+        poisson_R1_solver = LinearSolver(poisson_R1.wf_dict, ls_class=self.SOLVER,
+                                         region_key_int=('facet',
+                                                         self.tag_boundary_int),
+                                         region_key_ext=('facet',
+                                                         self.tag_boundary_ext))
+        poisson_R1_solver.solve()
 
         ''' This part is here to ensure the result is correctly saved'''
 
         try:
-            poisson_solver.save_results(self.problemName + '_newton')
-            print('Result saved.\n')
+            poisson_R1_solver.save_results(self.problemName + '_R1_newton')
+            print("First framework's result saved.\n")
 
         except FileExistsError:
-            resultPath = RESULT_DIR / str(self.problemName + '_newton')
+            resultPath = RESULT_DIR / str(self.problemName + '_R1_newton')
             rmtree(resultPath)
-            poisson_solver.save_results(self.problemName + '_newton')
-            print('Result saved.\n')
+            poisson_R1_solver.save_results(self.problemName + '_R1_newton')
+            print("First framework's result saved.\n")
+
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
+
+        # Starting computation of the second framework
+        if self.VERBOSE:
+            print("== SECOND FRAMEWORK COMPUTATION ==")
+
+        poisson_R2 = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
+                             coorsys=self.coorsys)
+
+        partial_args_dict_R2_int = {'dim': self.dim,
+                                    'name': 'wf_int',
+                                    'pre_mesh': mesh_R2_int,
+                                    'fem_order': self.FEM_ORDER,
+                                    'Ngamma': self.Ngamma}
+
+        # Attributing a density only to the second cylinder
+        poisson_R2.set_wf_int(partial_args_dict_R2_int,
+                              {('subomega', self.tag_cyl_1): self.rho_domain,
+                               ('subomega', self.tag_cyl_2): self.rho_2,
+                               ('subomega', self.tag_domain_int): self.rho_domain})
+
+        partial_args_dict_R2_ext = {'dim': self.dim,
+                                    'name': 'wf_ext',
+                                    'pre_mesh': mesh_R2_ext,
+                                    'fem_order': self.FEM_ORDER,
+                                    'Ngamma': self.Ngamma}
+        partial_args_dict_R2_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_domain}
+        poisson_R2.set_wf_ext(partial_args_dict_R2_ext, density=None)
+
+        poisson_R2_solver = LinearSolver(poisson_R2.wf_dict, ls_class=self.SOLVER,
+                                         region_key_int=('facet',
+                                                         self.tag_boundary_int),
+                                         region_key_ext=('facet',
+                                                         self.tag_boundary_ext))
+        poisson_R2_solver.solve()
+
+        ''' This part is here to ensure the result is correctly saved'''
+
+        try:
+            poisson_R1_solver.save_results(self.problemName + '_R2_newton')
+            print("Second framework's result saved.\n")
+
+        except FileExistsError:
+            resultPath = RESULT_DIR / str(self.problemName + '_R2_newton')
+            rmtree(resultPath)
+            poisson_R2_solver.save_results(self.problemName + '_R2_newton')
+            print("Second framework's result saved.\n")
 
         # Manually collecting garbage because Python cannot do it himself
         # NOTE: this is important for memory usage
         gc.collect()
 
         if return_result:
-            return RPP.from_files(self.problemName + '_newton')
+            return np.array([RPP.from_files(self.problemName + '_R1_newton'), RPP.from_files(self.problemName + '_R2_newton')])
 
 
     def get_electrostatic_potential(self, mesh_int, mesh_ext, return_result=True):
@@ -274,6 +376,8 @@ class ForceOnTwoParallelCylinders:
             post-processing operations. Triggered by return_result parameter.
 
         """
+
+        raise NotImplementedError("Sorry, this is not ready yet!")
 
         if self.VERBOSE:
             print("=== ELECTROSTATIC FORCE COMPUTATION ===")
@@ -377,6 +481,8 @@ class ForceOnTwoParallelCylinders:
 
         """
 
+        raise NotImplementedError("Sorry, this is not ready yet!")
+
         if self.VERBOSE:
             print("=== YUKAWA FORCE COMPUTATION ===")
             print(" - FEM complexity: {}° order".format(self.FEM_ORDER))
@@ -443,8 +549,9 @@ class ForceOnTwoParallelCylinders:
             return RPP.from_files(self.problemName + '_yukawa')
 
 
-    def postprocess_force(self, postprocess_file, alpha=0, lmbda=1, rho_0=1,
-                          getNewton=False, getCoulomb=False, getYukawa=False):
+    def postprocess_force(self, postprocess_file_R1, postprocess_file_R2,
+                          alpha=0, lmbda=1, rho_0=1, getNewton=False,
+                          getCoulomb=False, getYukawa=False):
         """
         Computes the gravitational and electrostatic force between the two
         parallel hollow cylinders. For gravity, can compute Newton's or
@@ -452,8 +559,10 @@ class ForceOnTwoParallelCylinders:
 
         Parameters
         ----------
-        postprocess_file : ResultsPostProcessor
-            The results file that the user wants to compute.
+        postprocess_file_R1 : ResultsPostProcessor
+            The results file representing cylinder 1's framework.
+        postprocess_file_R2 : ResultsPostProcessor
+            The results file representing cylinder 2's framework.
         alpha : float, optional
             The scale factor used to compute the Yukawa potential, is useless
             for other computations. The default is 0.
@@ -518,12 +627,9 @@ class ForceOnTwoParallelCylinders:
             rho_domain = self.rho_q_domain
             k = (4 * np.pi * 8.8541878128e-12)**-1
 
-        # Extracting coordinates from results file
-        # NOTE: nodes' coordinates should match since it's the same mesh file
-        coors_int = postprocess_file.coors_int
-
 
         if getYukawa:
+            raise NotImplementedError("Sorry, coming soon! <3")
 
             # Informing the user about the characteristics of the K-G problem
             if self.VERBOSE:
@@ -607,25 +713,52 @@ class ForceOnTwoParallelCylinders:
                     print(" - rho_domain: {} [kg·m^-3]".format(rho_domain))
                     print("")
                 elif getCoulomb:
+                    raise NotImplementedError("Sorry, coming soon! <3")
                     print(" === Poisson problem - Electrostatic ===")
                     print(" - rho_1: {} [C·m^-3]".format(rho_1))
                     print(" - rho_2: {} [C·m^-3]".format(rho_2))
                     print(" - rho_domain: {} [C·m^-3]".format(rho_domain))
                     print("")
 
-            # Formatting the request for Sfepy
-            wf_int = postprocess_file.wf_int
-            param = FieldVariable('param', 'parameter', wf_int.field,
-                                  primary_var_name=wf_int.get_unknown_name('cst'))
-            param.set_data(coors_int[:, 0] * postprocess_file.sol_int)
 
-            expression_cylinder_1 = "ev_grad.{}.subomega300(param)".format(wf_int.integral.order)
-            grad_phi_cylinder_1 = -wf_int.pb_cst.evaluate(expression_cylinder_1,
-                                                          var_dict={'param': param}) * rho_1 * 2 * np.pi
 
-            expression_cylinder_2 = "ev_grad.{}.subomega301(param)".format(wf_int.integral.order)
-            grad_phi_cylinder_2 = -wf_int.pb_cst.evaluate(expression_cylinder_2,
-                                                          var_dict={'param': param}) * rho_2 * 2 * np.pi
+
+
+            # Taking the potential's gradient for the two cylinders in R1
+            wf_R1 = postprocess_file_R1.wf_int
+            param_R1 = FieldVariable('param', 'parameter', wf_R1.field,
+                                  primary_var_name=wf_R1.get_unknown_name('cst'))
+            pseudo_coors_int_R2 = postprocess_file_R1.coors_int + np.array([self.R_1, self.Z_1])
+            image_R2 = postprocess_file_R2.evaluate_at(pseudo_coors_int_R2,
+                                                       mode='val')
+            param_R1.set_data((postprocess_file_R1.coors_int[:, 0]* postprocess_file_R1.sol_int) + (pseudo_coors_int_R2[:, 0] * image_R2))
+
+            expression_cylinder_1_R1 = "ev_grad.{}.subomega300(param)".format(wf_R1.integral.order)
+            expression_cylinder_2_R1 = "ev_grad.{}.subomega301(param)".format(wf_R1.integral.order)
+
+            force_cylinder_1_R1 = -wf_R1.pb_cst.evaluate(expression_cylinder_1_R1,
+                                                         var_dict={'param': param_R1}) * rho_1 * 2 * np.pi
+            force_cylinder_2_R1 = -wf_R1.pb_cst.evaluate(expression_cylinder_2_R1,
+                                                         var_dict={'param': param_R1}) * rho_2 * 2 * np.pi
+
+            # Taking the potential's gradient for the two cylinders in R2
+            wf_R2 = postprocess_file_R2.wf_int
+            param_R2 = FieldVariable('param', 'parameter', wf_R2.field,
+                                  primary_var_name=wf_R2.get_unknown_name('cst'))
+            param_R2.set_data(postprocess_file_R2.coors_int[:, 0] * postprocess_file_R2.sol_int)
+
+            expression_cylinder_1_R2 = "ev_grad.{}.subomega300(param_R2)".format(wf_R2.integral.order)
+            expression_cylinder_2_R2 = "ev_grad.{}.subomega301(param_R2)".format(wf_R2.integral.order)
+
+            force_cylinder_1_R2 = -wf_R2.pb_cst.evaluate(expression_cylinder_1_R2,
+                                                         var_dict={'param': param_R2}) * rho_1 * 2 * np.pi
+            force_cylinder_2_R2 = -wf_R2.pb_cst.evaluate(expression_cylinder_2_R2,
+                                                         var_dict={'param': param_R2}) * rho_2 * 2 * np.pi
+
+
+
+
+            pass
 
             print("Force on cylinder 1:", str(grad_phi_cylinder_1[1]), "N")
             print("Force on cylinder 2:", str(grad_phi_cylinder_2[1]), "N")
@@ -685,7 +818,7 @@ def test():
     rho_1 = 19972
     rho_q_1 = 0
     Z_1 = -1e-5
-    R_1 = 0
+    R_1 = -1e-5
 
     # Second cylinder
     R_int_2 = 30.4e-3
@@ -695,7 +828,7 @@ def test():
     rho_q_2 = 0
 
     # Miscellaneous
-    FILENAME = 'parallel_hollow_cylinders_2D'
+    FILENAME = 'generic_hollow_cylinders_2D'
     VERBOSE = 0
     FEM_ORDER = 1
 
@@ -724,12 +857,14 @@ def test():
     FO2PHC.GEOMETRY_VERIFICATIONS()
 
     # Creating the meshes
-    mesh_int, mesh_ext = FO2PHC.mesh_generation()
+    mesh_R1_int, mesh_R1_ext, mesh_R2_int, mesh_R2_ext= FO2PHC.mesh_generation()
 
     print("\n === NEWTONIAN GRAVITY ===")
-    result_pp_newton = FO2PHC.get_newton_potential(mesh_int, mesh_ext)
-    F_N_1, F_N_2, F_N_ana, _, epsilon_N, _ = FO2PHC.postprocess_force(result_pp_newton,
-                                                              getNewton=True)
+    result_pp_newton = FO2PHC.get_newton_potential(mesh_R1_int, mesh_R1_ext,
+                                                   mesh_R2_int, mesh_R2_ext)
+    F_N_1, F_N_2, F_N_ana, _, epsilon_N, _ = FO2PHC.postprocess_force(result_pp_newton[0],
+                                                                      result_pp_newton[1],
+                                                                      getNewton=True)
 
     # print("\n === ELECTROSTATIC FORCE ===")
     # result_pp_elec = FO2PHC.get_electrostatic_potential(mesh_int, mesh_ext)
@@ -749,4 +884,4 @@ def test():
     #                                         getYukawa=True)
 
 
-#test()
+test()

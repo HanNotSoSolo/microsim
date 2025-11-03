@@ -6,6 +6,7 @@ R_int_1 = 0.0154; // internal radius of the first cylinder
 R_ext_1 = 0.0197; // external radius of the first cylinder
 h_1 = 0.04337; // height of the first cylinder
 Z_1 = -1e-05; // vertical displacement of the first cylinder
+R_1 = -1e-05; // radial displacement of the first cylinder
 R_int_2 = 0.0304; // internal radius of the second cylinder
 R_ext_2 = 0.0346975; // external radius of the second cylinder
 h_2 = 0.07983; // height of the second cylinder
@@ -16,10 +17,10 @@ maxSize = 0.001; // size of the elements far from the spheres
 d = 4.001; // distance between the centres of the spheres
 
 // First cylinder
-Point(1) = {R_int_1, -h_1/2 + Z_1, 0};
-Point(2) = {R_ext_1, -h_1/2 + Z_1, 0};
-Point(3) = {R_ext_1, h_1/2 + Z_1, 0};
-Point(4) = {R_int_1, h_1/2 + Z_1, 0};
+Point(1) = {R_int_1+R_1, -h_1/2 + Z_1, 0};
+Point(2) = {R_ext_1+R_1, -h_1/2 + Z_1, 0};
+Point(3) = {R_ext_1+R_1, h_1/2 + Z_1, 0};
+Point(4) = {R_int_1+R_1, h_1/2 + Z_1, 0};
 
 Line(1) = {1, 2};
 Line(2) = {2, 3};

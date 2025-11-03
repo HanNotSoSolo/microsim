@@ -5,10 +5,11 @@ SetFactory("OpenCASCADE");
 R_int_1 = 0.0154; // internal radius of the first cylinder
 R_ext_1 = 0.0197; // external radius of the first cylinder
 h_1 = 0.04337; // height of the first cylinder
-Z_1 = -1e-05; // vertical displacement of the first cylinder
 R_int_2 = 0.0304; // internal radius of the second cylinder
 R_ext_2 = 0.0346975; // external radius of the second cylinder
 h_2 = 0.07983; // height of the second cylinder
+Z_2 = -1e-05; // vertical displacement of the second cylinder
+R_2 = -1e-05; // radial displacement of the second cylinder
 R_Omega = 0.10577568210604932; // radius of the internal domain
 Ngamma = 332; // number of nodes on the domain boundary
 minSize = 0.0005; // size of the elements inside the spheres
@@ -16,10 +17,10 @@ maxSize = 0.001; // size of the elements far from the spheres
 d = 4.001; // distance between the centres of the spheres
 
 // First cylinder
-Point(1) = {R_int_1, -h_1/2 + Z_1, 0};
-Point(2) = {R_ext_1, -h_1/2 + Z_1, 0};
-Point(3) = {R_ext_1, h_1/2 + Z_1, 0};
-Point(4) = {R_int_1, h_1/2 + Z_1, 0};
+Point(1) = {R_int_1, -h_1/2, 0};
+Point(2) = {R_ext_1, -h_1/2, 0};
+Point(3) = {R_ext_1, h_1/2, 0};
+Point(4) = {R_int_1, h_1/2, 0};
 
 Line(1) = {1, 2};
 Line(2) = {2, 3};
@@ -33,10 +34,10 @@ Physical Surface("Hollow_cylinder_1", 300) = {1};
 
 
 // Second cylinder
-Point(5) = {R_int_2, -h_2/2, 0};
-Point(6) = {R_ext_2, -h_2/2, 0};
-Point(7) = {R_ext_2, h_2/2, 0};
-Point(8) = {R_int_2, h_2/2, 0};
+Point(5) = {R_int_2-R_2, -h_2/2 - Z_2, 0};
+Point(6) = {R_ext_2-R_2, -h_2/2 - Z_2, 0};
+Point(7) = {R_ext_2-R_2, h_2/2 - Z_2, 0};
+Point(8) = {R_int_2-R_2, h_2/2 - Z_2, 0};
 
 Line(5) = {5, 6};
 Line(6) = {6, 7};
