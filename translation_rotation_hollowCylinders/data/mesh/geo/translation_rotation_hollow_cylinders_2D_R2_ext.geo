@@ -7,9 +7,9 @@ SetFactory("OpenCASCADE");
 R_Omega = 0.10577568210604932;
 
 // Mesh caracteristics
-Ngamma = 66;
-minSize = 0.0005;
-maxSize = 0.005;
+Ngamma = 332;
+minSize = 0.0001;
+maxSize = 0.001;
 
 // === END OF VARIABLES DECLARATION ===
 

@@ -6,7 +6,7 @@ SetFactory("OpenCASCADE");
 R_int_1 = 0.0154; // Internal radius
 R_ext_1 = 0.0197;
 h_1 = 0.04337;
-R_1 = -1e-05;
+R_1 = 0;
 Z_1 = -1e-05;
 
 // Second cylinder
@@ -18,9 +18,9 @@ h_2 = 0.07983;
 R_Omega = 0.10577568210604932;
 
 // Mesh caracteristics
-Ngamma = 66;
-minSize = 0.0005;
-maxSize = 0.005;
+Ngamma = 332;
+minSize = 0.0001;
+maxSize = 0.001;
 
 // === END OF VARIABLES DEFINITION ===
 
@@ -115,7 +115,7 @@ Field[4] = Distance;
 Field[4].CurvesList = {5, 6, 7, 8};
 
 Field[5] = Threshold;
-Field[5].InField = 1;
+Field[5].InField = 4;
 Field[5].DistMin = 0;
 Field[5].DistMax = 6 * (R_ext_2 - R_int_2);
 Field[5].SizeMin = minSize;
@@ -123,7 +123,7 @@ Field[5].SizeMax = maxSize / 2;
 Field[5].StopAtDistMax = 1;
 
 Field[6] = Threshold;
-Field[6].InField = 1;
+Field[6].InField = 4;
 Field[6].DistMin = 6 * (R_ext_2 - R_int_2);
 Field[6].DistMax = R_Omega;
 Field[6].SizeMin = maxSize / 2;

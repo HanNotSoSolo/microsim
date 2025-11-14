@@ -217,8 +217,8 @@ class ForceOnTwoParallelCylinders:
                          "R_ext_2": self.R_ext_2,
                          "h_2": self.h_2,
                          "Z_2": self.Z_1,
-                         "R_1": self.R_1,
-                         "minSize": self.minSize*100
+                         "R_2": self.R_1,
+                         "minSize": self.minSize*5
                          }
         mesh_3D = generate_mesh_from_geo(self.problemName + '_3D_R1',
                                          show_mesh=SHOW_MESH,
@@ -385,45 +385,24 @@ class ForceOnTwoParallelCylinders:
 
     def vtk_generation(self, result_pp_R1: RPP, result_pp_R2: RPP):
 
-        # # Creation of a new directory where to store the 3D result
+        # Creation of a new directory where to store the 3D result
+        # # FIXME: this does not work when a folder is already present
         # dir_path = Path(RESULT_DIR / (self.problemName + "_3D"))
         # dir_path.mkdir()
-
-        # # Creation of the two pre_terms
-        # pre_term_c1 = PreTerm(name='dw_volume_integrate',
-        #                       region_key=('subomega', 300), tag='cst',
-        #                       prefactor=1.0, mat=None,
-        #                       mat_kwargs={'rho': self.rho_1, 'Rc': self.R_Omega})
-
-        # pre_term_c2 = PreTerm(name='dw_volume_integrate',
-        #                       region_key=('subomega', 301), tag='cst',
-        #                       prefactor=1.0, mat=None,
-        #                       mat_kwargs={'rho': self.rho_2, 'Rc': self.R_Omega})
-
-        # # Creation of the weak form
-        # args_dict = {'dim': 3,
-        #              'pre_mesh': str(Path(MESH_DIR / (self.problemName + '_3D_R1.vtk'))),
-        #              'name': 'wf',
-        #              'dim_func_entities': [],
-        #              'pre_ebc_dict': {},
-        #              'pre_epbc_dict': [],
-        #              'fem_order': 1,
-        #              'pre_term': [pre_term_c1, pre_term_c2],
-        #              'is_exterior': False}
-
-        # wf = WeakForm.from_scratch(args_dict=args_dict)
 
         # Creation of the vtk file
         mesh_3D = meshio.read(Path(MESH_DIR / (self.problemName + "_3D_R1.vtk")))
         coors = mesh_3D.points
-        cells_1 = create_connectivity_table(coors)
-        cells_2 = mesh_3D.cells
+        #cells_1 = create_connectivity_table(coors)  # FIXME: remove later
+        cells = mesh_3D.cells
+        node_groups = mesh_3D.point_data
         coors_2D = np.column_stack((np.sqrt(coors[:, 0]**2 + coors[:, 1]**2), coors[:, 2]))
         sol_int = result_pp_R1.evaluate_at(coors_2D) + result_pp_R2.evaluate_at(coors_2D + np.array([self.R_1, self.Z_1]))
-        vars_dict = {'sol_int': sol_int}
+        vars_dict = {'sol_int': sol_int,
+                     'physical_groups_nodes': node_groups['node_groups']}
         path_name = str(Path(RESULT_DIR / (self.problemName + '_3D') / (self.problemName + '_3D')))
 
-        create_structured_vtk(coors, vars_dict, cells, path_name=path_name)
+        create_structured_vtk(coors, vars_dict, cells[0][1], path_name=path_name)
 
 
 
@@ -450,25 +429,57 @@ class ForceOnTwoParallelCylinders:
         # new_mesh_3D.write(new_mesh_filename, file_format="vtk")
 
 
-    def pkl_generation(self, Rx="R1"):
+    def pkl_generation(self):
 
-        # Creation of the pseudo-pre_term
-        pre_term = PreTerm(name='dw_laplace', region_key=('omega', -1),
-                           tag='cst', prefactor=1.0, mat=None, mat_kwargs={})
+        # # Creation of the pseudo-pre_term
+        # pre_term = PreTerm(name='dw_laplace', region_key=('omega', -1),
+        #                    tag='cst', prefactor=1.0, mat=None, mat_kwargs={})
 
-        # Arguments for the creation of the pkl file
-        args_dict = {'dim': self.dim,
-                     'pre_mesh': '/home/mdellava/Documenti/ONERA - Ph.D/femtoscope/translation_rotation_hollowCylinders/data/result/translation_rotation_hollow_cylinders_3D_R1/translation_rotation_hollow_cylinders_3D_R1',
-                     'name': 'wf_int',
-                     'dim_func_entities': [],
-                     'pre_ebc_dict': {},
-                     'fem_order': self.FEM_ORDER,
-                     'pre_terms': [pre_term],
-                     'is_exterior': False}
+        # # Arguments for the creation of the pkl file
+        # args_dict = {'dim': self.dim,
+        #              'pre_mesh': '/home/mdellava/Documenti/ONERA - Ph.D/femtoscope/translation_rotation_hollowCylinders/data/result/translation_rotation_hollow_cylinders_3D_R1/translation_rotation_hollow_cylinders_3D_R1',
+        #              'name': 'wf_int',
+        #              'dim_func_entities': [],
+        #              'pre_ebc_dict': {},
+        #              'fem_order': self.FEM_ORDER,
+        #              'pre_terms': [pre_term],
+        #              'is_exterior': False}
 
-        # Writing the result pickle file
-        with open(Path(RESULT_DIR / ("translation_rotation_hollow_cylinders_3D_R1/translation_rotation_hollow_cylinders_3D" + "_" + Rx + ".pkl")),
-                  mode="wb") as f:
+        # # Writing the result pickle file
+        # with open(Path(RESULT_DIR / ("translation_rotation_hollow_cylinders_3D_R1/translation_rotation_hollow_cylinders_3D" + "_" + Rx + ".pkl")),
+        #           mode="wb") as f:
+        #     pickle.dump(args_dict, f)
+
+        # Creation of the two pre_terms
+        pre_term_c1 = PreTerm(name='dw_volume_integrate',
+                              region_key=('subomega', 300), tag='cst',
+                              prefactor=1.0, mat=None,
+                              mat_kwargs={'rho': self.rho_1,
+                                          'Rc': self.R_Omega})
+
+        pre_term_c2 = PreTerm(name='dw_volume_integrate',
+                              region_key=('subomega', 301), tag='cst',
+                              prefactor=1.0, mat=None,
+                              mat_kwargs={'rho': self.rho_2,
+                                          'Rc': self.R_Omega})
+
+        # Creation of the weak form
+        args_dict = {'dim': 3,
+                      'pre_mesh': str(Path(MESH_DIR / (self.problemName + '_3D_R1.vtk'))),
+                      'name': 'wf',
+                      'dim_func_entities': [],
+                      'pre_ebc_dict': {},
+                      'pre_epbc_dict': [],
+                      'fem_order': 1,
+                      'pre_term': [pre_term_c1, pre_term_c2],
+                      'is_exterior': False}
+
+        wf = WeakForm.from_scratch(args_dict=args_dict)
+        #wf = WeakForm().from_attr_dict(args_dict)
+
+        args_dict = wf.get_pickable_args_dict()
+
+        with open(Path(RESULT_DIR / (self.problemName + "_3D") / (self.problemName + "_3D.pkl")), mode='wb') as f:
             pickle.dump(args_dict, f)
 
 
@@ -495,7 +506,7 @@ h_1 = 43.37e-3
 rho_1 = 19972
 rho_q_1 = 0
 Z_1 = -1e-5
-R_1 = -1e-5
+R_1 = 0
 
 # Second cylinder
 R_int_2 = 30.4e-3
@@ -515,8 +526,8 @@ COORSYS = 'cylindrical'
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.0005
-maxSize = 0.005
+minSize = 0.0001
+maxSize = 0.001
 ''' === END OF VARIABLES DECLARATION === '''
 
 # Creating the problem
@@ -541,26 +552,18 @@ result_pp_newton = FO2PHC.get_newton_potential(mesh_R1_int, mesh_R1_ext,
                                                mesh_R2_int, mesh_R2_ext)
 
 FO2PHC.vtk_generation(result_pp_newton[0], result_pp_newton[1])
+#FO2PHC.pkl_generation()
 
-# FO2PHC.pkl_generation("R1")
+# # Creation of a simple vtk file with Meshio
+# mesh_3D = meshio.read(Path(MESH_DIR / (FILENAME + "_3D_R1.vtk")))
+# coors = mesh_3D.points
 
-# with open('data/result/translation_rotation_hollow_cylinders_3D_R1.pkl', mode='rb') as f:
-#     args_dict = pickle.load(f)
+# coors_2D = np.column_stack((np.sqrt(coors[:, 0]**2 + coors[:, 1]**2), coors[:, 2]))
+# sol_int = result_pp_newton[0].evaluate_at(coors_2D) + result_pp_newton[1].evaluate_at(coors_2D + np.array([R_1, Z_1]))
 
-# print(args_dict)
 
-# result_pp_3D = RPP.from_files('translation_rotation_hollow_cylinders_3D_R1')
-# coors = result_pp_3D.coors_int
-# sol_int = result_pp_3D.sol_int
 
-# wf = result_pp_3D.wf_int
-# param = FieldVariable('param', 'parameter', wf.field,
-#                       primary_var_name=wf.get_unknown_name('cst'))
-# param.set_data(np.sqrt(coors[:, 0]**2 + coors[:, 1]**2) * sol_int)
 
-# expression_C1 = "ev_grad.{}.subomega300(param)".format(wf.integral.order)
-
-# force_C1 = -wf.pb_cst.evaluate(expression_C1, var_dict={'param': param}) * rho_1
 
 
 

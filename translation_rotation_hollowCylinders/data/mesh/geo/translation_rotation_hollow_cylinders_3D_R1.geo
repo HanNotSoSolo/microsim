@@ -9,8 +9,8 @@ R_int_2 = 0.0304; // internal radius of the second cylinder
 R_ext_2 = 0.0346975; // external radius of the second cylinder
 h_2 = 0.07983; // height of the second cylinder
 Z_2 = -1e-05; // vertical displacement of the second cylinder
-R_2 = 5e-3; // radial displacement of the second cylinder
-minSize = 0.05; // size of the elements inside the cylinders
+R_2 = 0; // radial displacement of the second cylinder
+minSize = 0.0005; // size of the elements inside the cylinders
 
 // First cylinder
 Point(1) = {0, R_int_1, -h_1/2};
