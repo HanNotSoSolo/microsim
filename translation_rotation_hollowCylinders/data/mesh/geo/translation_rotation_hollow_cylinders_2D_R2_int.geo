@@ -18,9 +18,9 @@ h_2 = 0.07983;
 R_Omega = 0.10577568210604932;
 
 // Mesh caracteristics
-Ngamma = 332;
-minSize = 0.0001;
-maxSize = 0.001;
+Ngamma = 66;
+minSize = 0.0005;
+maxSize = 0.005;
 
 // === END OF VARIABLES DEFINITION ===
 

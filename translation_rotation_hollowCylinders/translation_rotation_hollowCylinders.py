@@ -10,11 +10,13 @@ from shutil import rmtree  # to remove the existing result
 
 # Maths and plot functions
 import numpy as np
+from scipy.spatial import cKDTree
 from sfepy.discrete import FieldVariable
 import gc
 import meshio
 import pickle
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 # Femtoscope functions
 from femtoscope import RESULT_DIR, MESH_DIR, GEO_DIR
@@ -98,7 +100,7 @@ class ForceOnTwoParallelCylinders:
             print("Geometry verifications: OK.\n")
 
 
-    def mesh_generation(self, SHOW_MESH=False):
+    def mesh_generation(self, mesh_3D=False, SHOW_MESH=False):
         """
         Generation of the geometrical files that will compose the system. Note
         that the .geo files must have the same name as the problem. Opposely to
@@ -109,6 +111,9 @@ class ForceOnTwoParallelCylinders:
 
         Parameters
         ----------
+        mesh_3D : bool, optional
+            If True, also meshes the 3D version of the system. Default is
+            False.
         SHOW_MESH : bool, optional
             If True, a window will appear to show the mesh and the program will
             pause until the window is closed. The default is False.
@@ -207,26 +212,32 @@ class ForceOnTwoParallelCylinders:
         if self.VERBOSE:
             print("OK.\n")
 
-        if self.VERBOSE:
-            print("=== 3D MESH GENERATION ===")
 
-        param_dict_3D = {"R_int_1": self.R_int_1,
-                         "R_ext_1": self.R_ext_1,
-                         "h_1": self.h_1,
-                         "R_int_2": self.R_int_2,
-                         "R_ext_2": self.R_ext_2,
-                         "h_2": self.h_2,
-                         "Z_2": self.Z_1,
-                         "R_2": self.R_1,
-                         "minSize": self.minSize*5
-                         }
-        mesh_3D = generate_mesh_from_geo(self.problemName + '_3D_R1',
-                                         show_mesh=SHOW_MESH,
-                                         param_dict=param_dict_3D,
-                                         verbose=self.SFEPY_VERBOSE)
+        # Meshing the 3D version of the system (if activated)
+        if mesh_3D:
+            if self.VERBOSE:
+                print("=== 3D MESH GENERATION ===")
 
-        if self.VERBOSE:
-            print("OK.\n")
+            param_dict_3D = {"R_int_1": self.R_int_1,
+                             "R_ext_1": self.R_ext_1,
+                             "h_1": self.h_1,
+                             "R_int_2": self.R_int_2,
+                             "R_ext_2": self.R_ext_2,
+                             "h_2": self.h_2,
+                             "Z_2": self.Z_1,
+                             "R_2": self.R_1,
+                             "minSize": self.minSize
+                             }
+            mesh_3D = generate_mesh_from_geo(self.problemName + '_3D_R1',
+                                             show_mesh=SHOW_MESH,
+                                             param_dict=param_dict_3D,
+                                             verbose=self.SFEPY_VERBOSE)
+
+            if self.VERBOSE:
+                print("OK.\n")
+
+        else:
+            mesh_3D = None
 
         # This function is not essential for 2D, but it's a redundancy that both boundary curves correspond
         adjust_boundary_nodes(mesh_R1_int, mesh_R1_ext, self.tag_boundary_int,
@@ -396,8 +407,9 @@ class ForceOnTwoParallelCylinders:
         #cells_1 = create_connectivity_table(coors)  # FIXME: remove later
         cells = mesh_3D.cells
         node_groups = mesh_3D.point_data
-        coors_2D = np.column_stack((np.sqrt(coors[:, 0]**2 + coors[:, 1]**2), coors[:, 2]))
-        sol_int = result_pp_R1.evaluate_at(coors_2D) + result_pp_R2.evaluate_at(coors_2D + np.array([self.R_1, self.Z_1]))
+        coors_2D_R1 = np.column_stack((np.sqrt(coors[:, 0]**2 + coors[:, 1]**2), coors[:, 2]))
+        coors_2D_R2 = np.column_stack((np.sqrt((coors[:, 0] - self.R_1)**2 + coors[:, 1]**2), coors[:, 2] - self.Z_1))
+        sol_int = result_pp_R1.evaluate_at(coors_2D_R1) + result_pp_R2.evaluate_at(coors_2D_R2)
         vars_dict = {'sol_int': sol_int,
                      'physical_groups_nodes': node_groups['node_groups']}
         path_name = str(Path(RESULT_DIR / (self.problemName + '_3D') / (self.problemName + '_3D')))
@@ -483,6 +495,128 @@ class ForceOnTwoParallelCylinders:
             pickle.dump(args_dict, f)
 
 
+    def invisible_postprocessing(self, result_pp_R1, result_pp_R2):
+        """
+        Gets the force vector on the internal test mass without using 3D
+        additional mesh files.
+
+        Parameters
+        ----------
+        result_pp_R1 : RPP
+            The first framework's result file.
+        result_pp_R2 : RPP
+            The second framework's result file.
+
+        Returns
+        -------
+        Force vector on the internal test mass.
+
+        """
+
+        if self.VERBOSE:
+            print(" == INVISIBLE POSTPROCESSING OPERATIONS ==")
+
+        # Defining the number of steps for each axis
+        Nr = int((self.R_ext_1 - self.R_int_1) / self.minSize)
+        Ntheta = 360
+        Nz = int(self.h_1 / self.minSize)
+
+        # Defining the vectors that will compose inner cylinder's coordinates
+        r = np.linspace(self.R_int_1, self.R_ext_1, Nr, endpoint=False)
+        theta = np.linspace(0, 2*np.pi, Ntheta, endpoint=False)
+        z = np.linspace(-self.h_1/2, self.h_1/2, Nz, endpoint=False)
+
+
+        # Creating the coordinates of the inner cylinder (calculation points)
+        if self.VERBOSE:
+            print("Creation of cylindrical grid...")
+        coors_3D_R1 = np.zeros((len(r)*len(theta)*len(z), 3))
+        l = 0
+        while l<len(coors_3D_R1):
+            for i in range(len(r)):
+                for j in range(len(theta)):
+                    print("\r" + str(i) + " " + str(j), end="")  # !!! this is for debug
+                    for k in range(len(z)):
+                        #coors_3D_R1[l] = [r[i], theta[j], z[k]]
+                        coors_3D_R1[l] = [r[i]*np.cos(theta[j]), r[i]*np.sin(theta[j]), z[k]]
+                        l+=1
+
+
+        if self.VERBOSE:
+            print("\nCylindrical grid\'s ready. Computing potential...")
+
+        # Computing the potential by exploiting the superposition theorem
+        coors_2D_R1 = np.column_stack((np.sqrt(coors_3D_R1[:, 0]**2 + coors_3D_R1[:, 1]**2), coors_3D_R1[:, 2]))
+        coors_2D_R2 = np.column_stack((np.sqrt((coors_3D_R1[:, 0] - self.R_1)**2 + coors_3D_R1[:, 1]**2), coors_3D_R1[:, 2] - self.Z_1))
+        grad_Phi = result_pp_R1.evaluate_at(coors_2D_R1, mode='grad')
+        grad_Phi += result_pp_R2.evaluate_at(coors_2D_R2, mode='grad')
+
+        # # DEBUG: to verify the coordinates, plot this. A hollow cylinder must come out.
+        # fig = plt.figure()
+        # ax = fig.add_subplot(projection='3d')
+        # scatter = ax.scatter(coors_3D_R1[:, 0], coors_3D_R1[:, 1], coors_3D_R1[:, 2], c=Phi)
+        # fig.colorbar(scatter, ax=ax)
+
+        # Computing the volume associated to each calculation point
+        dr = (self.R_ext_1 - self.R_int_1) / Nr  # it's basically the "resolution" of the axis
+        dtheta = 2 * np.pi / Ntheta
+        # dtheta = (np.max(theta) - np.min(theta)) / Ntheta
+        dz = self.h_1 / Nz
+        # dz = (np.max(z) - np.min(z)) / Nz
+        dV = (dtheta / 2) * dz * ((coors_2D_R1[:, 0] + dr)**2 - coors_2D_R1[:, 0]**2)  # sum of dV[i] gives IS1 volume
+
+
+        F_C1 = np.zeros_like(grad_Phi)
+
+        for i in range(len(grad_Phi)):
+            F_C1[i] = -grad_Phi[i] * dV[i] * coors_2D_R1[i, 0]
+
+        F_C1 = np.sum(F_C1, axis=0)
+
+        F_C1 *= self.rho_1# * np.sum(dV)
+
+        print(F_C1)
+
+
+
+        # # Calculating gradient using the cKD tree method
+        # if self.VERBOSE:
+        #     print("Potential computed. Calculating gradient...")
+
+        # # Construire un arbre KD
+        # tree = cKDTree(coors_3D_R1)
+
+        # # Trouver les voisins les plus proches
+        # k = 5  # Réduire k
+        # distances, indices = tree.query(coors_3D_R1, k=k+1)
+
+        # # Calculer le gradient en utilisant une pondération par distance
+        # gradients = np.zeros_like(coors_3D_R1)
+
+        # for i in range(len(coors_3D_R1)):
+        #     neighbor_indices = indices[i, 1:]
+        #     neighbor_coords = coors_3D_R1[neighbor_indices]
+        #     neighbor_potentials = Phi[neighbor_indices]
+
+        #     centered_coords = neighbor_coords - coors_3D_R1[i]
+        #     centered_potentials = neighbor_potentials - Phi[i]
+
+        #     A = centered_coords
+        #     b = centered_potentials
+        #     gradient, _, _, _ = np.linalg.lstsq(A, b, rcond=None)
+        #     gradients[i] = gradient
+
+        # for i in range(len(gradients)):
+        #     gradients[i] *= dV[i]
+
+        # F_C1 = -np.sum(gradients, axis=0) * self.rho_1
+
+
+        print(F_C1)
+        print("STOP.")
+
+
+
 #%% Testing the class
 
 #@profile
@@ -506,6 +640,7 @@ h_1 = 43.37e-3
 rho_1 = 19972
 rho_q_1 = 0
 Z_1 = -1e-5
+#Z_1 = 40e-3
 R_1 = 0
 
 # Second cylinder
@@ -518,7 +653,7 @@ rho_q_2 = 0
 # Miscellaneous
 FILENAME = 'translation_rotation_hollow_cylinders'
 VERBOSE = 1
-FEM_ORDER = 1
+FEM_ORDER = 2
 
 # Physical parameters
 DIM = 2
@@ -526,8 +661,8 @@ COORSYS = 'cylindrical'
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.0001
-maxSize = 0.001
+minSize = 0.0005
+maxSize = 0.005
 ''' === END OF VARIABLES DECLARATION === '''
 
 # Creating the problem
@@ -545,7 +680,7 @@ FO2PHC = ForceOnTwoParallelCylinders(problemName=FILENAME, R_int_1=R_int_1,
 FO2PHC.GEOMETRY_VERIFICATIONS()
 
 # Creating the meshes
-mesh_R1_int, mesh_R1_ext, mesh_R2_int, mesh_R2_ext, mesh_3D = FO2PHC.mesh_generation()
+mesh_R1_int, mesh_R1_ext, mesh_R2_int, mesh_R2_ext, mesh_3D = FO2PHC.mesh_generation(mesh_3D=False)
 
 print("\n === NEWTONIAN GRAVITY ===")
 result_pp_newton = FO2PHC.get_newton_potential(mesh_R1_int, mesh_R1_ext,
@@ -560,6 +695,8 @@ FO2PHC.vtk_generation(result_pp_newton[0], result_pp_newton[1])
 
 # coors_2D = np.column_stack((np.sqrt(coors[:, 0]**2 + coors[:, 1]**2), coors[:, 2]))
 # sol_int = result_pp_newton[0].evaluate_at(coors_2D) + result_pp_newton[1].evaluate_at(coors_2D + np.array([R_1, Z_1]))
+
+FO2PHC.invisible_postprocessing(result_pp_newton[0], result_pp_newton[1])
 
 
 
