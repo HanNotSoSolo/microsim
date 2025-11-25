@@ -6,8 +6,8 @@ SetFactory("OpenCASCADE");
 R_int_1 = 0.0154; // Internal radius
 R_ext_1 = 0.0197;
 h_1 = 0.04337;
-R_1 = 0;
-Z_1 = -1e-05;
+R_1 = 0.0;
+Z_1 = -0.01;
 
 // Second cylinder
 R_int_2 = 0.0304;
@@ -19,7 +19,7 @@ R_Omega = 0.10577568210604932;
 
 // Mesh caracteristics
 Ngamma = 66;
-minSize = 0.0005;
+minSize = 0.0001;
 maxSize = 0.005;
 
 // === END OF VARIABLES DEFINITION ===
@@ -27,10 +27,10 @@ maxSize = 0.005;
 
 // First cylinder
 // Setting the rectangle's points
-Point(1) = {R_int_1+R_1, -h_1/2+Z_1, 0};
-Point(2) = {R_ext_1+R_1, -h_1/2+Z_1, 0};
-Point(3) = {R_ext_1+R_1, h_1/2+Z_1, 0};
-Point(4) = {R_int_1+R_1, h_1/2+Z_1, 0};
+Point(1) = {R_int_1+R_1, -(h_1/2)+Z_1, 0};
+Point(2) = {R_ext_1+R_1, -(h_1/2)+Z_1, 0};
+Point(3) = {R_ext_1+R_1, (h_1/2)+Z_1, 0};
+Point(4) = {R_int_1+R_1, (h_1/2)+Z_1, 0};
 
 // Joining the points with lines
 Line(1) = {1, 2};

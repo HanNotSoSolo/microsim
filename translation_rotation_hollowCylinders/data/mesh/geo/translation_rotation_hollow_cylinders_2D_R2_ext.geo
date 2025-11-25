@@ -8,7 +8,7 @@ R_Omega = 0.10577568210604932;
 
 // Mesh caracteristics
 Ngamma = 66;
-minSize = 0.0005;
+minSize = 0.0001;
 maxSize = 0.005;
 
 // === END OF VARIABLES DECLARATION ===
@@ -48,7 +48,7 @@ Field[2] = Threshold;
 Field[2].InField = 1;
 Field[2].DistMin = 0;
 Field[2].DistMax = R_Omega;
-Field[2].SizeMax = minSize;
+Field[2].SizeMin = minSize;
 Field[2].SizeMax = maxSize;
 
 Background Field = 2;

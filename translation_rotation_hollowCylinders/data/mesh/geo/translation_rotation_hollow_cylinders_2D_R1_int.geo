@@ -11,15 +11,15 @@ h_1 = 0.04337;
 R_int_2 = 0.0304;
 R_ext_2 = 0.0346975;
 h_2 = 0.07983;
-R_2 = 0;
-Z_2 = -1e-05;
+R_2 = 0.0;
+Z_2 = -0.01;
 
 // Internal domain
 R_Omega = 0.10577568210604932;
 
 // Mesh caracteristics
 Ngamma = 66;
-minSize = 0.0005;
+minSize = 0.0001;
 maxSize = 0.005;
 
 // === END OF VARIABLES DEFINITION ===
@@ -48,10 +48,10 @@ Physical Surface("Internal_cylinder", 300) = {1};
 
 // Second cylinder
 
-Point(5) = {R_int_2-R_2, -h_2/2-Z_2, 0};
-Point(6) = {R_ext_2-R_2, -h_2/2-Z_2, 0};
-Point(7) = {R_ext_2-R_2, h_2/2-Z_2, 0};
-Point(8) = {R_int_2-R_2, h_2/2-Z_2, 0};
+Point(5) = {R_int_2-R_2, -(h_2/2)-Z_2, 0};
+Point(6) = {R_ext_2-R_2, -(h_2/2)-Z_2, 0};
+Point(7) = {R_ext_2-R_2, (h_2/2)-Z_2, 0};
+Point(8) = {R_int_2-R_2, (h_2/2)-Z_2, 0};
 
 Line(5) = {5, 6};
 Line(6) = {6, 7};
