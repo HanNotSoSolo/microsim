@@ -139,4 +139,4 @@ axs[1].set_ylim(top=2)
 axs[0].grid()
 axs[1].grid()
 
-plt.savefig("Spheres_2D_Yukawa.png", bbox_inches='tight', dpi=700)
+plt.savefig("Hollow_cylinders_2D_Newton.png", bbox_inches='tight', dpi=700)

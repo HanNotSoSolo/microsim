@@ -697,7 +697,7 @@ def test():
     # Miscellaneous
     FILENAME = 'parallel_hollow_cylinders_2D'
     VERBOSE = 0
-    FEM_ORDER = 1
+    FEM_ORDER = 2
 
     # Physical parameters
     DIM = 2
@@ -705,8 +705,8 @@ def test():
     SOLVER = 'ScipyDirect'
 
     # Mesh size
-    minSize = 0.0005
-    maxSize = 0.001
+    minSize = 0.0003
+    maxSize = 0.005
     ''' === END OF VARIABLES DECLARATION === '''
 
     # Creating the problem
@@ -749,4 +749,4 @@ def test():
     #                                         getYukawa=True)
 
 
-#test()
+test()
