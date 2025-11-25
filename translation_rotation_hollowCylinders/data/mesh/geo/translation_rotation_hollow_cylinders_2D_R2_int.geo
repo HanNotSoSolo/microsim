@@ -7,7 +7,7 @@ R_int_1 = 0.0154; // Internal radius
 R_ext_1 = 0.0197;
 h_1 = 0.04337;
 R_1 = 0.0;
-Z_1 = -0.01;
+Z_1 = -1e-05;
 
 // Second cylinder
 R_int_2 = 0.0304;
