@@ -378,7 +378,7 @@ class ForceOnTwoParallelCylinders:
         ''' This part is here to ensure the result is correctly saved'''
 
         try:
-            poisson_R1_solver.save_results(self.problemName + '_2D_R2_newton')
+            poisson_R2_solver.save_results(self.problemName + '_2D_R2_newton')
             print("Second framework's result saved.\n")
 
         except FileExistsError:
@@ -525,7 +525,7 @@ class ForceOnTwoParallelCylinders:
         # Defining the vectors that will compose inner cylinder's coordinates
         r = np.linspace(self.R_int_1, self.R_ext_1, Nr, endpoint=False)
         theta = np.linspace(0, 2*np.pi, Ntheta, endpoint=False)
-        z = np.linspace(-self.h_1/2, self.h_1/2, Nz, endpoint=False)
+        z = np.linspace(-self.h_1/2, self.h_1/2, Nz, endpoint=False) + (self.h_1 / (2 * Nz))
 
 
         # Creating the coordinates of the inner cylinder (calculation points)
@@ -536,7 +536,7 @@ class ForceOnTwoParallelCylinders:
         while l<len(coors_3D_R1):
             for i in range(len(r)):
                 for j in range(len(theta)):
-                    print("\r" + str(i) + " " + str(j), end="")  # !!! this is for debug
+                    #print("\r" + str(i) + " " + str(j), end="")  # !!! this is for debug
                     for k in range(len(z)):
                         #coors_3D_R1[l] = [r[i], theta[j], z[k]]
                         coors_3D_R1[l] = [r[i]*np.cos(theta[j]), r[i]*np.sin(theta[j]), z[k]]
@@ -550,7 +550,7 @@ class ForceOnTwoParallelCylinders:
         coors_2D_R1 = np.column_stack((np.sqrt(coors_3D_R1[:, 0]**2 + coors_3D_R1[:, 1]**2), coors_3D_R1[:, 2]))
         coors_2D_R2 = np.column_stack((np.sqrt((coors_3D_R1[:, 0] - self.R_1)**2 + coors_3D_R1[:, 1]**2), coors_3D_R1[:, 2] - self.Z_1))
         grad_Phi = result_pp_R1.evaluate_at(coors_2D_R1, mode='grad')
-        grad_Phi += result_pp_R2.evaluate_at(coors_2D_R2, mode='grad')
+        #grad_Phi += result_pp_R2.evaluate_at(coors_2D_R2, mode='grad')
 
         # DEBUG: to verify the coordinates, plot this. A hollow cylinder must come out.
         # Phi = result_pp_R1.evaluate_at(coors_2D_R1, mode='val')
@@ -574,13 +574,13 @@ class ForceOnTwoParallelCylinders:
         F_C1 = np.zeros_like(grad_Phi)
 
         for i in range(len(grad_Phi)):
-            F_C1[i] = grad_Phi[i] * dV[i]
+            F_C1[i] = -grad_Phi[i] * dV[i]# * coors_2D_R1[i, 0]
 
-        F_C1 = -np.sum(F_C1, axis=0)
+        F_C1 = np.sum(F_C1, axis=0)
 
-        F_C1 *= self.rho_1# * np.sum(dV)
+        F_C1 *= self.rho_1
 
-        print(F_C1)
+        print("Force on vertical (z) axis on IS1:", F_C1[1], "N.")
 
 
 
@@ -695,6 +695,7 @@ class ForceOnTwoParallelCylinders:
         # Drawing the result
         err_fig, err_ax = plt.subplots(nrows=1, ncols=1)
         im = err_ax.tricontourf(coors_R2[:, 0], coors_R2[:, 1], res, 500)
+        err_ax.axis('equal')
         plt.colorbar(im, label='Residual error')
 
         # Inserting visuals to see the test_masses
@@ -709,6 +710,11 @@ class ForceOnTwoParallelCylinders:
         err_ax.add_patch(IS2)
 
         err_ax.set_title("Relative error of the superposition method")
+        err_fig.suptitle("Mean relative error:" + str(np.mean(res)))
+
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
 
         if self.VERBOSE:
             print("Done.")
@@ -801,9 +807,9 @@ result_pp_newton = FO2PHC.get_newton_potential(mesh_R1_int, mesh_R1_ext,
 # coors_2D = np.column_stack((np.sqrt(coors[:, 0]**2 + coors[:, 1]**2), coors[:, 2]))
 # sol_int = result_pp_newton[0].evaluate_at(coors_2D) + result_pp_newton[1].evaluate_at(coors_2D + np.array([R_1, Z_1]))
 
-#FO2PHC.invisible_postprocessing(result_pp_newton[0], result_pp_newton[1])
+FO2PHC.invisible_postprocessing(result_pp_newton[0], result_pp_newton[1])
 
-FO2PHC._compare_potential(result_pp_newton[0], result_pp_newton[1])
+#FO2PHC._compare_potential(result_pp_newton[0], result_pp_newton[1])
 
 
 
