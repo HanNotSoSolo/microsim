@@ -279,26 +279,90 @@ class ForceOnTwoHollowCylinders:
 
 
         if self.VERBOSE:
+            print("=== FIRST FRAMEWORK COMPUTATION ===")
+            print("Setting R1 solver...", end="")
+
+        # Setting the physical caracteristics of the problem
+        poisson_R1 = Poisson({'alpha': ALPHA},
+                             dim=2,
+                             Rc=self.R_Omega,
+                             coorsys='cylindrical')
+
+        # Declaring the main parameters of R1 inner mesh
+        part_args_dict_R1_int = {'dim': 2,
+                                 'name': 'wf_int',
+                                 'pre_mesh': self.mesh_R1_int,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma}
+
+        # Declaring the densities of the elements in inner R2
+        density_dict_R1 = {('subomega', self.tag_cyl_1): self.rho_1,
+                           ('subomega', self.tag_cyl_2): self.rho_2,
+                           ('subomega', self.tag_domain_int): self.rho_domain}
+
+        # Setting R1's internal weak form
+        poisson_R1.set_wf_int(part_args_dict_R1_int, density_dict_R1)
+
+        # Declaring the parameters of outer R1
+        part_args_dict_R1_ext = {'dim': 2,
+                                 'name': 'wf_ext',
+                                 'pre_mesh': self.mesh_R1_ext,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma,
+                                 'pre_ebc_dict': {('vertex', 0): self.rho_domain}}
+
+        # Setting R1's external weak form
+        poisson_R1.set_wf_ext(part_args_dict_R1_ext, density=None)
+
+        # Creating the linear solver of the R1 framework
+        solver_R1 = LinearSolver(poisson_R1.wf_dict, ls_class=self.SOLVER,
+                                 region_key_int=('facet', self.tag_boundary_int),
+                                 region_key_ext=('facet', self.tag_boundary_ext))
+
+        if self.VERBOSE:
+            print("\rSolving R1...        ", end="")
+
+        # Launching the computation of R1 framework
+        solver_R1.solve()
+
+        # Saving the results in separate VTK files
+        try:
+            solver_R1.save_results(self.problem_name + '_2D_R1_newton')
+            print("\rDone.               \nResult saved.\n")
+
+        except FileExistsError:
+            result_path = RESULT_DIR / str(self.problem_name + '_2D_R1_newton')
+            rmtree(result_path)
+            solver_R1.save_results(self.problem_name + '_2D_R1_newton')
+            print("\rDone.               \nResult saved.\n")
+
+
+        if self.VERBOSE:
             print("=== SECOND FRAMEWORK COMPUTATION===")
             print("Setting R2 solver...", end="")
 
+        # Setting the physical caracteristics of the problem
         poisson_R2 = Poisson({'alpha': ALPHA},
                              dim=2,
                              Rc=self.R_Omega,
                              coorsys="cylindrical")
 
+        # Declaring the main parameters of R2 inner mesh
         part_args_dict_R2_int = {'dim': 2,
                                  'name': 'wf_int',
                                  'pre_mesh': self.mesh_R2_int,
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
 
+        # Declaring the densities of the elements in inner R2
         density_dict_R2 = {('subomega', self.tag_cyl_1): self.rho_1,
                            ('subomega', self.tag_cyl_2): self.rho_2,
                            ('subomega', self.tag_domain_int): self.rho_domain}
 
+        # Setting R2's internal weak form
         poisson_R2.set_wf_int(part_args_dict_R2_int, density_dict_R2)
 
+        # Declaring the parameters of outer R2
         part_args_dict_R2_ext = {'dim': 2,
                                  'name': 'wf_ext',
                                  'pre_mesh': self.mesh_R2_ext,
@@ -306,8 +370,10 @@ class ForceOnTwoHollowCylinders:
                                  'Ngamma': self.Ngamma,
                                  'pre_ebc_dict': {('vertex', 0): self.rho_domain}}
 
+        # Setting R2's external weak form
         poisson_R2.set_wf_ext(part_args_dict_R2_ext, density=None)
 
+        # Creating the solver of the R2 framework
         solver_R2 = LinearSolver(poisson_R2.wf_dict, ls_class=self.SOLVER,
                                  region_key_int=('facet', self.tag_boundary_int),
                                  region_key_ext=('facet', self.tag_boundary_ext))
@@ -316,9 +382,11 @@ class ForceOnTwoHollowCylinders:
         if self.VERBOSE:
             print("\rSolving R2...        ", end="")
 
+        # Launching the computation of R2 framework
         solver_R2.solve()
 
 
+        # Saving the results in separate VTK files
         try:
             solver_R2.save_results(self.problem_name + '_2D_R2_newton')
             print("\rDone.               \nResult saved.\n")
@@ -335,7 +403,8 @@ class ForceOnTwoHollowCylinders:
         gc.collect()
 
         if return_results:
-            return [None, RPP.from_files(self.problem_name + '_2D_R2_newton')]
+            return [RPP.from_files(self.problem_name + '_2D_R1_newton'),
+                    RPP.from_files(self.problem_name + '_2D_R2_newton')]
 
 
 
@@ -361,11 +430,7 @@ class ForceOnTwoHollowCylinders:
             print("\n=== INVISIBLE POST-PROCESSING ===")
 
 
-        """
-        Performing a regular post-process as if we were dealing with a
-        parallel-only system. This should be used as a test to see if the data
-        we are dealing with are good.
-        """
+
 
         # Using the R2 framework to obtain the vertical gradient
         coors_R2 = result_pp_R2.coors_int
