@@ -170,92 +170,80 @@ class ForceOnTwoHollowCylinders:
         if self.VERBOSE:
             print("\n=== INTERNAL MESHES GENERATION ===")
 
+        # Compiling the parameters for the R1 and R2 inner frameworks
+        # NOTE: R_X and Z_X are only used in respective geo files!
+        param_dict_int = {'R_int_1': self.R_int_1,
+                          'R_ext_1': self.R_ext_1,
+                          'h_1': self.h_1,
+                          'R_1': self.R_1,  # This is used in the R1 geo file
+                          'Z_1': self.Z_1,  # This too
+                          'R_int_2': self.R_int_2,
+                          'R_ext_2': self.R_ext_2,
+                          'h_2': self.h_2,
+                          'R_2': -self.R_1,  # And this one only in R2
+                          'Z_2': -self.Z_1,  # Same for this
+                          'R_Omega': self.R_Omega,
+                          'Ngamma': self.Ngamma,
+                          'minSize': self.minSize,
+                          'maxSize': self.maxSize}
+
         if self.VERBOSE:
             print("Generating R1...", end="")
 
-
-        # Parameters that describe the R1 framework
-        param_dict_R1_int = {'R_int_1': self.R_int_1,
-                             'R_ext_1': self.R_ext_1,
-                             'h_1': self.h_1,
-                             'R_int_2': self.R_int_2,
-                             'R_ext_2': self.R_ext_2,
-                             'h_2': self.h_2,
-                             'Z_2': -self.Z_1,
-                             'R_2': -self.R_1,
-                             'R_Omega': self.R_Omega,
-                             'minSize': self.minSize,
-                             'maxSize': self.maxSize,
-                             'Ngamma': self.Ngamma}
-
-        # Generating R1 framework's internal mesh
-        self.mesh_R1_int = generate_mesh_from_geo(self.problem_name + '_2D_R1_int',
+        # Generating inner R1 vtk mesh file
+        self.mesh_R1_int = generate_mesh_from_geo(self.problem_name+'_2D_R1_int',
                                                   show_mesh=SHOW_MESH,
-                                                  param_dict=param_dict_R1_int,
-                                                  verbose=self.SFEPY_VERBOSE)
-
+                                                  param_dict=param_dict_int,
+                                                  VERBOSE=self.SFEPY_VERBOSE)
 
         if self.VERBOSE:
-            print("\rGenerating R2...", end="")
+            print("\rR1 mesh is ready.\nGenerating R2...", end="")
 
-        # Parameters that describe the R2 framework
-        param_dict_R2_int = {'R_int_1': self.R_int_1,
-                             'R_ext_1': self.R_ext_1,
-                             'h_1': self.h_1,
-                             'Z_1': self.Z_1,
-                             'R_1': self.R_1,
-                             'R_int_2': self.R_int_2,
-                             'R_ext_2': self.R_ext_2,
-                             'h_2': self.h_2,
-                             'R_Omega': self.R_Omega,
-                             'minSize': self.minSize,
-                             'maxSize': self.maxSize,
-                             'Ngamma': self.Ngamma}
-
-        # Generating R2 framework's internal mesh
-        self.mesh_R2_int = generate_mesh_from_geo(self.problem_name + '_2D_R2_int',
+        # Generating inner R2 vtk mesh file
+        self.mesh_R2_int = generate_mesh_from_geo(self.problem_name+'_2D_R2_int',
                                                   show_mesh=SHOW_MESH,
-                                                  param_dict=param_dict_R2_int,
-                                                  verbose=self.SFEPY_VERBOSE)
+                                                  param_dict=param_dict_int,
+                                                  VERBOSE=self.SFEPY_VERBOSE)
 
         if self.VERBOSE:
-            print("\rDone.            ")
+            print("\rR2 mesh is ready.")
 
 
         if self.VERBOSE:
             print("\n=== EXTERNAL MESHES GENERATION ===")
 
+        # Compiling the parameters for R1 and R2 outer frameworks
+        # NOTE: R1 and R2 have similar external meshes, and parameters are shared
+        param_dict_ext = {'R_Omega': self.R_Omega,
+                          'Ngamma': self.Ngamma,
+                          'minSize': self.minSize,
+                          'maxSize': self.maxSize}
+
         if self.VERBOSE:
             print("Generating R1...", end="")
 
-        # Parameters that describe both R1 and R2 external frameworks
-        param_dict_ext = {'R_Omega': self.R_Omega,
-                             'minSize': self.minSize,
-                             'maxSize': self.maxSize,
-                             'Ngamma': self.Ngamma}
-
-
-        if self.VERBOSE:
-            print("Generating R1...", end='')
-
-        # Generating R1 external mesh
-        self.mesh_R1_ext = generate_mesh_from_geo(self.problem_name + '_2D_R1_ext',
-                                                  show_mesh=SHOW_MESH,
-                                                  param_dict=param_dict_ext,
-                                                  verbose=self.SFEPY_VERBOSE)
-
-
-        if self.VERBOSE:
-            print("\rGenerating R2...", end='')
-
-        # Generating R2 external mesh
-        self.mesh_R2_ext = generate_mesh_from_geo(self.problem_name + '_2D_R2_ext',
+        self.mesh_R1_ext = generate_mesh_from_geo(self.problem_name+'_2D_R1_ext',
                                                   show_mesh=SHOW_MESH,
                                                   param_dict=param_dict_ext,
                                                   verbose=self.SFEPY_VERBOSE)
 
         if self.VERBOSE:
-            print("Done.            ")
+            print("\rR1 mesh is ready.\nGenerating R2...", end="")
+
+        self.mesh_R2_ext = generate_mesh_from_geo(self.problem_name+'_2D_R2_ext',
+                                                  show_mesh=SHOW_MESH,
+                                                  param_dict=param_dict_ext,
+                                                  verbose=self.SFEPY_VERBOSE)
+
+        if self.VERBOSE:
+            print("\rR2 mesh is ready.")
+
+        # Adjusting the nodes between internal and external meshes
+        # NOTE: this should be unnecessary, but since it's not so long we'll keep it
+        adjust_boundary_nodes(self.mesh_R1_int, self.mesh_R1_ext,
+                              self.tag_boundary_int, self.tag_boundary_ext)
+        adjust_boundary_nodes(self.mesh_R2_int, self.mesh_R2_ext,
+                              self.tag_boundary_int, self.tag_boundary_ext)
 
 
     # Method to solve the system for newtonian gravity
@@ -291,133 +279,64 @@ class ForceOnTwoHollowCylinders:
 
 
         if self.VERBOSE:
-            print("\n=== FIRST FRAMEWORK COMPUTATION ===")
+            print("=== SECOND FRAMEWORK COMPUTATION===")
+            print("Setting R2 solver...", end="")
 
-        # Setting the solver's parameters
-        poisson_R1 = Poisson({'alpha': ALPHA}, dim=2, Rc=self.R_Omega,
-                             coorsys='cylindrical')
+        poisson_R2 = Poisson({'alpha': ALPHA},
+                             dim=2,
+                             Rc=self.R_Omega,
+                             coorsys="cylindrical")
 
-        # General internal R1 parameters
-        partial_args_dict_R1_int = {'dim': 2,
-                                    'name': 'wf_int',  # What is this?
-                                    'pre_mesh': self.mesh_R1_int,
-                                    'fem_order': self.FEM_ORDER,
-                                    'Ngamma': self.Ngamma}
+        part_args_dict_R2_int = {'dim': 2,
+                                 'name': 'wf_int',
+                                 'pre_mesh': self.mesh_R2_int,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma}
 
-        # Parameters of the cylinders in R1
-        density_dict_R1 = {('subomega', self.tag_cyl_1): self.rho_1,
-                           ('subomega', self.tag_cyl_2): self.rho_2,  # FIXME this should be rho_domain
-                           ('subomega', self.tag_domain_int): self.rho_domain}
-
-        # Setting internal R1 weak form
-        poisson_R1.set_wf_int(partial_args_dict_R1_int, density_dict_R1)
-
-        # External R1 parameters
-        partial_args_dict_R1_ext = {'dim': 2,
-                                    'name': 'wf_ext',  # no seriously, why this?
-                                    'pre_mesh': self.mesh_R1_ext,
-                                    'fem_order': self.FEM_ORDER,
-                                    'Ngamma': self.Ngamma,
-                                    'pre_ebc_dict': {('vertex', 0): self.rho_domain}}
-
-        # Setting external R1 weak form
-        poisson_R1.set_wf_ext(partial_args_dict=partial_args_dict_R1_ext,
-                              density=None)
-
-        # Defining the R1 framework's solver
-        poisson_solver_R1 = LinearSolver(poisson_R1.wf_dict,
-                                         ls_class=self.SOLVER,
-                                         region_key_int=('facet', self.tag_boundary_int),
-                                         region_key_ext=('facet', self.tag_boundary_ext))
-
-        # Launching system's solving
-        poisson_solver_R1.solve()
-
-
-        if self.VERBOSE:
-            print("Done.\nSaving results...", end="")
-
-        # Saving the results
-        try:
-            poisson_solver_R1.save_results(self.problem_name + '_2D_R1_newton')
-            if self.VERBOSE:
-                print("\rFirst framework\'s result saved correctly.")
-
-        except FileExistsError:  # <-- raised if the file already exists
-            resultPath = RESULT_DIR / str(self.problem_name + '_2D_R1_newton')
-            rmtree(resultPath)
-            poisson_solver_R1.save_results(self.problem_name + '_2D_R1_newton')
-            if self.VERBOSE:
-                print("\rFirst framework\'s result saved correctly.")
-
-
-        # Starting the resolution of the R2 framework
-        if self.VERBOSE:
-            print("\n=== SECOND FRAMEWORK COMPUTATION ===")
-
-        # Setting the solver's parameters
-        poisson_R2 = Poisson({'alpha': ALPHA}, dim=2, Rc=self.R_Omega,
-                             coorsys='cylindrical')
-
-        # General internal R2 parameters
-        partial_args_dict_R2_int = {'dim': 2,
-                                    'name': 'wf_int',
-                                    'pre_mesh': self.mesh_R2_int,
-                                    'fem_order': self.FEM_ORDER,
-                                    'Ngamma': self.Ngamma}
-
-        # Parameters of the cylinders in R2
-        density_dict_R2 = {('subomega', self.tag_cyl_1): self.rho_1,  # FIXME this should be rho_domain
+        density_dict_R2 = {('subomega', self.tag_cyl_1): self.rho_1,
                            ('subomega', self.tag_cyl_2): self.rho_2,
                            ('subomega', self.tag_domain_int): self.rho_domain}
 
-        # Setting internal R2 weak form
-        poisson_R2.set_wf_int(partial_args_dict_R2_int, density_dict_R2)
+        poisson_R2.set_wf_int(part_args_dict_R2_int, density_dict_R2)
 
-        # External R2 parameters
-        partial_args_dict_R2_ext = {'dim': 2,
-                                    'name': 'wf_ext',
-                                    'pre_mesh': self.mesh_R2_ext,
-                                    'fem_order': self.FEM_ORDER,
-                                    'Ngamma': self.Ngamma,
-                                    'pre_ebc_dict': {('vertex', 0): self.rho_domain}}
+        part_args_dict_R2_ext = {'dim': 2,
+                                 'name': 'wf_ext',
+                                 'pre_mesh': self.mesh_R2_ext,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma,
+                                 'pre_ebc_dict': {('vertex', 0): self.rho_domain}}
 
-        # Setting external R2 weak form
-        poisson_R2.set_wf_ext(partial_args_dict_R2_ext, density=None)
+        poisson_R2.set_wf_ext(part_args_dict_R2_ext, density=None)
 
-        # Setting R2 framework's solver
-        poisson_solver_R2 = LinearSolver(poisson_R2.wf_dict,
-                                         ls_class=self.SOLVER,
-                                         region_key_int=('facet', self.tag_boundary_int),
-                                         region_key_ext=('facet', self.tag_boundary_ext))
-
-        # Launching the system's solving
-        poisson_solver_R2.solve()
+        solver_R2 = LinearSolver(poisson_R2.wf_dict, ls_class=self.SOLVER,
+                                 region_key_int=('facet', self.tag_boundary_int),
+                                 region_key_ext=('facet', self.tag_boundary_ext))
 
 
         if self.VERBOSE:
-            print("Done.\nSaving results...", end="")
+            print("\rSolving R2...        ", end="")
 
-        # Saving the results
+        solver_R2.solve()
+
+
         try:
-            poisson_solver_R2.save_results(self.problem_name + '_2D_R2_newton')
-            if self.VERBOSE:
-                print("\rSecond framework\'s result saved correctly.")
+            solver_R2.save_results(self.problem_name + '_2D_R2_newton')
+            print("\rDone.               \nResult saved.\n")
 
         except FileExistsError:
-            resultPath = RESULT_DIR / str(self.problem_name + '_2D_R2_newton')
-            rmtree(resultPath)
-            poisson_solver_R2.save_results(self.problem_name + '_2D_R2_newton')
-            if self.VERBOSE:
-                print("\rSecond framework\'s result saved correctly.")
+            result_path = RESULT_DIR / str(self.problem_name + '_2D_R2_newton')
+            rmtree(result_path)
+            solver_R2.save_results(self.problem_name + '_2D_R2_newton')
+            print("\rDone.               \nResult saved.\n")
 
 
-        # Manually collecting garbage because Python cannot do it itself
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
         gc.collect()
 
         if return_results:
-            return np.array([RPP.from_files(self.problem_name + '_2D_R1_newton'),
-                             RPP.from_files(self.problem_name + '_2D_R2_newton')])
+            return [None, RPP.from_files(self.problem_name + '_2D_R2_newton')]
+
 
 
     # Post-processing phase
@@ -494,7 +413,7 @@ FEM_ORDER = 2
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.0003
+minSize = 0.0005
 maxSize = 0.005
 ''' === END OF VARIABLES DECLARATION === '''
 

@@ -355,7 +355,7 @@ class ForceOnTwoParallelCylinders:
 
         # Attributing a density only to the second cylinder
         poisson_R2.set_wf_int(partial_args_dict_R2_int,
-                              {('subomega', self.tag_cyl_1): self.rho_domain,
+                              {('subomega', self.tag_cyl_1): self.rho_1,  # FIXME this should be rho_domain
                                ('subomega', self.tag_cyl_2): self.rho_2,
                                ('subomega', self.tag_domain_int): self.rho_domain})
 
@@ -517,68 +517,17 @@ class ForceOnTwoParallelCylinders:
         if self.VERBOSE:
             print(" == INVISIBLE POSTPROCESSING OPERATIONS ==")
 
-        # Defining the number of steps for each axis
-        Nr = int((self.R_ext_1 - self.R_int_1) / self.minSize)
-        Ntheta = 360
-        Nz = int(self.h_1 / self.minSize)
+        # Using the R2 framework to obtain the vertical gradient
+        coors_R2 = result_pp_R2.coors_int
+        wf_R2 = result_pp_R2.wf_int
+        param = FieldVariable('param', 'parameter', wf_R2.field,
+                              primary_var_name=wf_R2.get_unknown_name('cst'))
+        param.set_data(coors_R2[:, 0] * result_pp_R2.sol_int)
 
-        # Defining the vectors that will compose inner cylinder's coordinates
-        r = np.linspace(self.R_int_1, self.R_ext_1, Nr, endpoint=False)
-        theta = np.linspace(0, 2*np.pi, Ntheta, endpoint=False)
-        z = np.linspace(-self.h_1/2, self.h_1/2, Nz, endpoint=False) + (self.h_1 / (2 * Nz))
-
-
-        # Creating the coordinates of the inner cylinder (calculation points)
-        if self.VERBOSE:
-            print("Creation of cylindrical grid...")
-        coors_3D_R1 = np.zeros((len(r)*len(theta)*len(z), 3))
-        l = 0
-        while l<len(coors_3D_R1):
-            for i in range(len(r)):
-                for j in range(len(theta)):
-                    #print("\r" + str(i) + " " + str(j), end="")  # !!! this is for debug
-                    for k in range(len(z)):
-                        #coors_3D_R1[l] = [r[i], theta[j], z[k]]
-                        coors_3D_R1[l] = [r[i]*np.cos(theta[j]), r[i]*np.sin(theta[j]), z[k]]
-                        l+=1
-
-
-        if self.VERBOSE:
-            print("\nCylindrical grid\'s ready. Computing potential...")
-
-        # Computing the potential by exploiting the superposition theorem
-        coors_2D_R1 = np.column_stack((np.sqrt(coors_3D_R1[:, 0]**2 + coors_3D_R1[:, 1]**2), coors_3D_R1[:, 2]))
-        coors_2D_R2 = np.column_stack((np.sqrt((coors_3D_R1[:, 0] - self.R_1)**2 + coors_3D_R1[:, 1]**2), coors_3D_R1[:, 2] - self.Z_1))
-        grad_Phi = result_pp_R1.evaluate_at(coors_2D_R1, mode='grad')
-        #grad_Phi += result_pp_R2.evaluate_at(coors_2D_R2, mode='grad')
-
-        # DEBUG: to verify the coordinates, plot this. A hollow cylinder must come out.
-        # Phi = result_pp_R1.evaluate_at(coors_2D_R1, mode='val')
-        # Phi += result_pp_R2.evaluate_at(coors_2D_R2, mode='val')
-        # fig = plt.figure()
-        # ax = fig.add_subplot(projection='3d')
-        # scatter = ax.scatter(coors_3D_R1[:, 0], coors_3D_R1[:, 1], coors_3D_R1[:, 2], c=Phi)
-        # fig.colorbar(scatter, ax=ax)
-
-        # Computing the volume associated to each calculation point
-        dr = (self.R_ext_1 - self.R_int_1) / Nr  # it's basically the "resolution" of the axis
-        dtheta = 2 * np.pi / Ntheta
-        # dtheta = (np.max(theta) - np.min(theta)) / Ntheta
-        dz = self.h_1 / Nz
-        # dz = (np.max(z) - np.min(z)) / Nz
-        dV = (dtheta / 2) * dz * ((coors_2D_R1[:, 0] + dr)**2 - coors_2D_R1[:, 0]**2)  # sum of dV[i] gives IS1 volume
-
-        # Computing the gradient manually
-
-
-        F_C1 = np.zeros_like(grad_Phi)
-
-        for i in range(len(grad_Phi)):
-            F_C1[i] = -grad_Phi[i] * dV[i]# * coors_2D_R1[i, 0]
-
-        F_C1 = np.sum(F_C1, axis=0)
-
-        F_C1 *= self.rho_1
+        expression_IS1_R2 = "ev_grad.{}.subomega300(param)".format(wf_R2.integral.order)
+        grad_Phi_IS1_R2 = wf_R2.pb_cst.evaluate(expression_IS1_R2,
+                                                var_dict={'param': param})
+        F_C1 = grad_Phi_IS1_R2 * self.rho_1 * 2 * np.pi
 
         print("Force on vertical (z) axis on IS1:", F_C1[1], "N.")
 
