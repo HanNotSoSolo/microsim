@@ -4,10 +4,10 @@ SetFactory("OpenCASCADE");
 
 // === VARIABLES DEFINITION ===
 // External domain
-R_Omega = 0.10577568210604932;
+R_Omega = 0.17408900489404838;
 
 // Mesh caracteristics
-Ngamma = 66;
+Ngamma = 109;
 minSize = 0.0003;
 maxSize = 0.005;
 

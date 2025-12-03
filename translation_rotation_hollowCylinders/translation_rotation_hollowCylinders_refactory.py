@@ -1,34 +1,22 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-(Re)Created on Tue Nov  27 15:13:30 2025
+# Core modules, useful to manipulate files in the computer
+from shutil import rmtree  # to remove the existing result
 
-@author: mdellava
-"""
-
-# Libraries and modules
-# Core modules for file manipulation in the system
-from shutil import rmtree
+# Maths and plot functions
+import numpy as np
+from sfepy.discrete import FieldVariable
 import gc
 
-# Math and plot modules
-import numpy as np
-import meshio
-from pathlib import Path
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from sfepy.discrete import FieldVariable
-
 # Femtoscope functions
-from femtoscope import RESULT_DIR, MESH_DIR, GEO_DIR
+from femtoscope import RESULT_DIR, GEO_DIR
 from femtoscope.inout.meshfactory import adjust_boundary_nodes
 from femtoscope.inout.meshfactory import generate_mesh_from_geo
 from femtoscope.inout.postprocess import ResultsPostProcessor as RPP
-from femtoscope.physics.physical_problems import LinearSolver
-from femtoscope.physics.physical_problems import Poisson
+from femtoscope.physics.physical_problems import Poisson, Yukawa, LinearSolver
+from cylinder_gravity.gravity.solids.cylinder import cylinder
+from cylinder_gravity.gravity.solids.solidsPair import cylinderPair
 
 
-# Main class creation
+
 class ForceOnTwoHollowCylinders:
     """
     Represents the physical system of two nested hollow cylinders. Each
@@ -51,60 +39,60 @@ class ForceOnTwoHollowCylinders:
     both frameworks.
     """
 
-
-    def __init__(self, problem_name: str, R_int_1: float, R_ext_1: float,
-                 h_1: float, rho_1: float, R_int_2: float, R_ext_2: float,
-                 h_2: float, rho_2: float, minSize: float, maxSize: float,
-                 Z_1=0, R_1=0, rho_domain=0., tag_cyl_1=300, tag_cyl_2=301,
+    def __init__(self, problem_name, R_int_1: float, R_ext_1: float,
+                 rho_1: float, h_1: float, R_int_2: float, R_ext_2: float,
+                 h_2: float, rho_2: float, minSize: float,
+                 maxSize: float, Z_1=0, R_1=0, dim=2, rho_domain=0, rho_q_1=0,
+                 rho_q_2=0, rho_q_domain=0, tag_cyl_1=300, tag_cyl_2=301,
                  tag_domain_int=302, tag_domain_ext=303, tag_boundary_int=200,
-                 tag_boundary_ext=201, FEM_ORDER=1, SOLVER='ScipyDirect',
-                 VERBOSE=1):
-
-        # Directly initializing the parameters given in the constructor
+                 tag_boundary_ext=201, coorsys='cylindrical', FEM_ORDER=1,
+                 SOLVER='ScipyDirect', VERBOSE=1):
         self.problem_name = problem_name
         self.R_int_1 = R_int_1
         self.R_ext_1 = R_ext_1
-        self.h_1 = h_1
         self.rho_1 = rho_1
+        self.h_1 = h_1
         self.R_int_2 = R_int_2
         self.R_ext_2 = R_ext_2
         self.h_2 = h_2
         self.rho_2 = rho_2
-        self.minSize = minSize
-        self.maxSize = maxSize
         self.Z_1 = Z_1
         self.R_1 = R_1
+        self.minSize = minSize
+        self.maxSize = maxSize
+        self.dim = dim
         self.rho_domain = rho_domain
+        self.rho_q_1 = rho_q_1
+        self.rho_q_2 = rho_q_2
+        self.rho_q_domain = rho_q_domain
         self.tag_cyl_1 = tag_cyl_1
         self.tag_cyl_2 = tag_cyl_2
         self.tag_domain_int = tag_domain_int
         self.tag_domain_ext = tag_domain_ext
         self.tag_boundary_int = tag_boundary_int
         self.tag_boundary_ext = tag_boundary_ext
+        self.coorsys = coorsys
         self.FEM_ORDER = FEM_ORDER
         self.SOLVER = SOLVER
         self.VERBOSE = VERBOSE
 
-        # Initializing the derived parameters
-        x_Omega = np.max((self.R_ext_2 + self.R_1, self.R_ext_2 - self.R_1))
-        z_Omega = np.max((np.abs((self.h_2 / 2) + self.Z_1), np.abs((self.h_2 / 2) - self.Z_1)))
-        self.R_Omega = np.sqrt(x_Omega**2 + z_Omega**2) * 2  # <-- Equivalent to "R_cut"
-        self.Ngamma = int(np.pi * self.R_Omega / self.maxSize)  # <-- Number of nodes on the boundary curve
+        # Derived parameters that are a function of the previous ones
+        self.R_Omega = np.sqrt(R_ext_2**2 + h_2**2) * 2
+        self.Ngamma = int(np.pi * self.R_Omega / self.maxSize)
 
-        # Defining verbosity of the script
-        if VERBOSE == 1:  # --> first party and Sfepy verbosity
-            self.SFEPY_VERBOSE = False
-            self.VERBOSE = True
-        elif VERBOSE == 2:  # --> only first party (me!) verbosity
-            self.SFEPY_VERBOSE = True
-            self.VERBOSE = True
-        else:  # --> no verbosity at all
+        # The verbosity instructions for the script
+        if VERBOSE == 0:  # --> no verbosity at all
             self.SFEPY_VERBOSE = False
             self.VERBOSE = False
+        elif VERBOSE == 1:  # --> only first party (me!) verbosity
+            self.SFEPY_VERBOSE = False
+            self.VERBOSE = True
+        elif VERBOSE == 2:  # --> first party and Sfepy verbosity
+            self.SFEPY_VERBOSE = True
+            self.VERBOSE = True
 
 
-    # Geometry verifications to ensure the geometrycal coherence of the system
-    def _geometry_verifications(self):
+    def GEOMETRY_VERIFICATIONS(self):
         """
         In order to ensure a proper geometrical file, some basic geometrical
         verifications (such as the masses are not entering each others) are
@@ -113,35 +101,34 @@ class ForceOnTwoHollowCylinders:
         Notes
         -----
         This function is private and should only be accessed by this specific
-        class, in this specific context, as another system may not use thesame
+        class, in this specific context, as another system may not use the same
         specifications.
 
         """
         raise NotImplementedError("To be implemented later, when the script works.")
 
 
-    # Generation of the geo files and the meshes
-    def mesh_generation(self, SHOW_MESH=False):
+
+    def mesh_generation(self, mesh_name: str, SHOW_MESH=False):
         """
         Generates the geometrical files that describes the problem and the
         respective mesh files in vtk format.
 
         Parameters
         ----------
+        mesh_path: str
+            The name to the geometrical internal and external mesh. Usually
+            it's problem_name, but can also have appendix like '_R1' or '_R2'.
         SHOW_MESH: bool, optional.
             Triggers peeking of the meshes as soon as they are completed.
             Default is False.
 
         Returns
         -------
-        mesh_R1_int : str
-            The path of the .vtk file of the internal mesh in the R1 framework.
-        mesh_R1_ext : TYPE
-            The path of the .vtk file of the external mesh of the R1 framework.
-        mesh_R2_int : str
-            The path of the .vtk file of the internal mesh of the R2 framework.
-        mesh_R2_ext : TYPE
-            The path of the .vtk file of the external mesh of the R2 framework.
+        mesh_int : str
+            The path of the .vtk file of the internal mesh.
+        mesh_ext : TYPE
+            The path of the .vtk file of the external mesh.
 
         Notes
         -----
@@ -152,12 +139,11 @@ class ForceOnTwoHollowCylinders:
 
         # Telling information about the mesh to the user if they want to
         if self.VERBOSE:
-            print("\n=== MESH CHARACTERISTICS ===")
+            print("=== MESH CHARACTERISTICS ===")
             print(" - R_int_1: {}".format(self.R_int_1))
             print(" - R_ext_1: {}".format(self.R_ext_1))
             print(" - h_1: {}".format(self.h_1))
             print(" - Vertical displacement: {}".format(self.Z_1))
-            print(" - Radial displacement: {}".format(self.R_1))
             print(" - R_int_2: {}".format(self.R_int_2))
             print(" - R_ext_2: {}".format(self.R_ext_2))
             print(" - h_2: {}".format(self.h_2))
@@ -165,316 +151,554 @@ class ForceOnTwoHollowCylinders:
             print(" - Distance between cylinders: {} m".format(self.R_int_2 - self.R_ext_1))
             print(" - Mesh's minimum size: {}".format(self.minSize))
             print(" - Mesh's maximum size: {}".format(self.maxSize))
-
+            print(" - Mesh type: {}D".format(self.dim))
+            print(" - Coordinates system: {} framework\n".format(self.coorsys))
 
         if self.VERBOSE:
-            print("\n=== INTERNAL MESHES GENERATION ===")
+            print("=== INNER MESH GENERATION ===")
 
-        # Compiling the parameters for the R1 and R2 inner frameworks
-        # NOTE: R_X and Z_X are only used in respective geo files!
         param_dict_int = {'R_int_1': self.R_int_1,
                           'R_ext_1': self.R_ext_1,
                           'h_1': self.h_1,
-                          'R_1': self.R_1,  # This is used in the R1 geo file
-                          'Z_1': self.Z_1,  # This too
+                          'R_1': self.R_1,
+                          'Z_1': self.Z_1,
                           'R_int_2': self.R_int_2,
                           'R_ext_2': self.R_ext_2,
+                          'R_2': -self.R_1,
+                          'Z_2': -self.Z_1,
                           'h_2': self.h_2,
-                          'R_2': self.R_1,  # And this one only in R2
-                          'Z_2': self.Z_1,  # Same for this
                           'R_Omega': self.R_Omega,
-                          'Ngamma': self.Ngamma,
                           'minSize': self.minSize,
-                          'maxSize': self.maxSize}
+                          'maxSize': self.maxSize,
+                          'Ngamma': self.Ngamma}
+        mesh_int = generate_mesh_from_geo(mesh_name + '_int',
+                                          show_mesh=SHOW_MESH,
+                                          param_dict=param_dict_int,
+                                          verbose=self.SFEPY_VERBOSE)
+        if self.VERBOSE:
+            print("OK.\n")
 
         if self.VERBOSE:
-            print("Generating R1...", end="")
+            print("=== OUTER MESH GENERATION ===")
 
-        # Generating inner R1 vtk mesh file
-        self.mesh_R1_int = generate_mesh_from_geo(self.problem_name+'_2D_R1_int',
-                                                  show_mesh=SHOW_MESH,
-                                                  param_dict=param_dict_int,
-                                                  VERBOSE=self.SFEPY_VERBOSE)
-
-        if self.VERBOSE:
-            print("\rR1 mesh is ready.\nGenerating R2...", end="")
-
-        # Generating inner R2 vtk mesh file
-        self.mesh_R2_int = generate_mesh_from_geo(self.problem_name+'_2D_R2_int',
-                                                  show_mesh=SHOW_MESH,
-                                                  param_dict=param_dict_int,
-                                                  VERBOSE=self.SFEPY_VERBOSE)
-
-        if self.VERBOSE:
-            print("\rR2 mesh is ready.")
-
-
-        if self.VERBOSE:
-            print("\n=== EXTERNAL MESHES GENERATION ===")
-
-        # Compiling the parameters for R1 and R2 outer frameworks
-        # NOTE: R1 and R2 have similar external meshes, and parameters are shared
         param_dict_ext = {'R_Omega': self.R_Omega,
-                          'Ngamma': self.Ngamma,
                           'minSize': self.minSize,
-                          'maxSize': self.maxSize}
-
+                          'maxSize': self.maxSize,
+                          'Ngamma': self.Ngamma}
+        mesh_ext = generate_mesh_from_geo(mesh_name + '_ext',
+                                          show_mesh=SHOW_MESH,
+                                          param_dict=param_dict_ext,
+                                          verbose=self.SFEPY_VERBOSE)
         if self.VERBOSE:
-            print("Generating R1...", end="")
+            print("OK.\n")
 
-        self.mesh_R1_ext = generate_mesh_from_geo(self.problem_name+'_2D_R1_ext',
-                                                  show_mesh=SHOW_MESH,
-                                                  param_dict=param_dict_ext,
-                                                  verbose=self.SFEPY_VERBOSE)
+        adjust_boundary_nodes(mesh_int, mesh_ext, self.tag_boundary_int,
+                              self.tag_boundary_ext)
 
-        if self.VERBOSE:
-            print("\rR1 mesh is ready.\nGenerating R2...", end="")
-
-        self.mesh_R2_ext = generate_mesh_from_geo(self.problem_name+'_2D_R2_ext',
-                                                  show_mesh=SHOW_MESH,
-                                                  param_dict=param_dict_ext,
-                                                  verbose=self.SFEPY_VERBOSE)
-
-        if self.VERBOSE:
-            print("\rR2 mesh is ready.")
-
-        # Adjusting the nodes between internal and external meshes
-        # NOTE: this should be unnecessary, but since it's not so long we'll keep it
-        adjust_boundary_nodes(self.mesh_R1_int, self.mesh_R1_ext,
-                              self.tag_boundary_int, self.tag_boundary_ext)
-        adjust_boundary_nodes(self.mesh_R2_int, self.mesh_R2_ext,
-                              self.tag_boundary_int, self.tag_boundary_ext)
+        return [mesh_int, mesh_ext]
 
 
-    # Method to solve the system for newtonian gravity
-    def get_newton_potential(self, return_results=True):
+    def get_newton_potential(self, res_name, mesh_int, mesh_ext,
+                             return_result=True):
         """
-        Calculates the newtonian gravitational potential on both R1 and R2
-        frameworks. Higher FEM_ORDER values improve the precision of the
-        final results, but also increase the solving time.
+        Calculates the newtonian gravitational potential on the .vtk file. The
+        potential is calculated on every node of the mesh, and interpolated
+        between the nodes with a FEM_ORDER-degree polynomial, depending on
+        what has been declared during the class creation.
 
         Parameters
         ----------
-        return_results: bool, optional
-            Triggers the return funtion. If False, only stores the results
-            files in the RESULT_DIR directory. Default is True.
+        mesh_int : str
+            The path of the .vtk internal mesh file.
+        mesh_ext : str
+            The path of the .vtk external mesh file.
+        return_result : bool, optional
+            If True, the function not only solves the system for every node and
+            saves it in the data/results/ directory, but also returns the
+            results file in a variable. The default is True.
 
         Returns
         -------
-        result_pp: array of RPP
-            Triggered by return_results, it's an array that contains the result
-            files ready to be post-processed.
+        result_pp : ResultsPostProcessor
+            When asked, returns the results file that will be used for
+            post-processing operations. Triggered by return_result parameter.
+
         """
 
         if self.VERBOSE:
-            print("\n=== NEWTONIAN FORCE COMPUTATION ===")
+            print("=== NEWTONIAN FORCE COMPUTATION ===")
+            print(" - FEM complexity: {}° order".format(self.FEM_ORDER))
+            print(" - Solver name: {}".format(self.SOLVER))
+            print("")
+
+        # Creating the constants that will caracterize the Newton's version of
+        # the Poisson's problem
+        G = 6.6743e-11
+        ALPHA = 4 * np.pi * G
+
+        poisson = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
+                          coorsys=self.coorsys)
+
+        partial_args_dict_int = {'dim': self.dim,
+                                 'name': 'wf_int',
+                                 'pre_mesh': mesh_int,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma}
+        poisson.set_wf_int(partial_args_dict_int,
+                           {('subomega', self.tag_cyl_1): self.rho_1,
+                            ('subomega', self.tag_cyl_2): self.rho_2,
+                            ('subomega', self.tag_domain_int): self.rho_domain})
+
+        partial_args_dict_ext = {'dim': self.dim,
+                                 'name': 'wf_ext',
+                                 'pre_mesh': mesh_ext,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma}
+        partial_args_dict_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_domain}
+        poisson.set_wf_ext(partial_args_dict_ext, density=None)
+
+        poisson_solver = LinearSolver(poisson.wf_dict, ls_class=self.SOLVER,
+                                      region_key_int=('facet',
+                                                      self.tag_boundary_int),
+                                      region_key_ext=('facet',
+                                                      self.tag_boundary_ext))
+        poisson_solver.solve()
+
+        ''' This part is here to ensure the result is correctly saved'''
+
+        try:
+            poisson_solver.save_results(res_name + '_newton')
+            print('Result saved.\n')
+
+        except FileExistsError:
+            resultPath = RESULT_DIR / str(res_name + '_newton')
+            rmtree(resultPath)
+            poisson_solver.save_results(res_name + '_newton')
+            print('Result saved.\n')
+
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
+
+        if return_result:
+            return RPP.from_files(self.problem_name + '_newton')
+
+
+    def get_electrostatic_potential(self, mesh_int, mesh_ext,
+                                    return_result=True):
+        """
+        Calculates the electrostatic potential on the .vtk file. The potential
+        is calculated on every node of the mesh, and interpolated between the
+        nodes with a FEM_ORDER-degree polynomial, depending on what has been
+        declared during the class creation.
+
+        Parameters
+        ----------
+        mesh_int : str
+            The path of the .vtk internal mesh file.
+        mesh_ext : str
+            The path of the .vtk external mesh file.
+        return_result : bool, optional
+            If True, the function not only solves the system for every node and
+            saves it in the data/results/ directory, but also returns the
+            results file in a variable. The default is True.
+
+        Returns
+        -------
+        result_pp : ResultsPostProcessor
+            When asked, returns the results file that will be used for
+            post-processing operations. Triggered by return_result parameter.
+
+        """
+
+        if self.VERBOSE:
+            print("=== ELECTROSTATIC FORCE COMPUTATION ===")
             print(" - FEM complexity: {}° order".format(self.FEM_ORDER))
             print(" - Solver name: {}".format(self.SOLVER))
             print("")
 
 
-        # Constant intervening in the newtonian potential's computation
-        G = 6.6743e-11  # [N*m²/kg²]
-        ALPHA = 4 * np.pi * G
+        # Creating the constants that will caracterize the Coulomb's version of
+        # the Poisson's problem
+        epsilon_void = 8.8541878128e-12  # [F / m]
+        ALPHA = epsilon_void**(-1)
 
+        poisson = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
+                          coorsys=self.coorsys)
 
-        if self.VERBOSE:
-            print("=== FIRST FRAMEWORK COMPUTATION ===")
-            print("Setting R1 solver...", end="")
-
-        # Setting the physical caracteristics of the problem
-        poisson_R1 = Poisson({'alpha': ALPHA},
-                             dim=2,
-                             Rc=self.R_Omega,
-                             coorsys='cylindrical')
-
-        # Declaring the main parameters of R1 inner mesh
-        part_args_dict_R1_int = {'dim': 2,
+        partial_args_dict_int = {'dim': self.dim,
                                  'name': 'wf_int',
-                                 'pre_mesh': self.mesh_R1_int,
+                                 'pre_mesh': mesh_int,
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
+        poisson.set_wf_int(partial_args_dict_int,
+                           {('subomega', self.tag_cyl_1): self.rho_q_1,
+                            ('subomega', self.tag_cyl_2): self.rho_q_2,
+                            ('subomega', self.tag_domain_int): self.rho_q_domain})
 
-        # Declaring the densities of the elements in inner R1
-        density_dict_R1 = {('subomega', self.tag_cyl_1): self.rho_1,
-                           ('subomega', self.tag_cyl_2): self.rho_2,
-                           ('subomega', self.tag_domain_int): self.rho_domain}
-
-        # Setting R1's internal weak form
-        poisson_R1.set_wf_int(part_args_dict_R1_int, density_dict_R1)
-
-        # Declaring the parameters of outer R1
-        part_args_dict_R1_ext = {'dim': 2,
+        partial_args_dict_ext = {'dim': self.dim,
                                  'name': 'wf_ext',
-                                 'pre_mesh': self.mesh_R1_ext,
+                                 'pre_mesh': mesh_ext,
                                  'fem_order': self.FEM_ORDER,
-                                 'Ngamma': self.Ngamma,
-                                 'pre_ebc_dict': {('vertex', 0): self.rho_domain}}
+                                 'Ngamma': self.Ngamma}
+        partial_args_dict_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_q_domain}
+        poisson.set_wf_ext(partial_args_dict_ext, density=None)
 
-        # Setting R1's external weak form
-        poisson_R1.set_wf_ext(part_args_dict_R1_ext, density=None)
+        poisson_solver = LinearSolver(poisson.wf_dict, ls_class=self.SOLVER,
+                                      region_key_int=('facet',
+                                                      self.tag_boundary_int),
+                                      region_key_ext=('facet',
+                                                      self.tag_boundary_ext))
 
-        # Creating the linear solver of the R1 framework
-        solver_R1 = LinearSolver(poisson_R1.wf_dict, ls_class=self.SOLVER,
-                                 region_key_int=('facet', self.tag_boundary_int),
-                                 region_key_ext=('facet', self.tag_boundary_ext))
+        poisson_solver.solve()
 
-        if self.VERBOSE:
-            print("\rSolving R1...        ", end="")
+        ''' This part is here to ensure the result is correctly saved'''
 
-        # Launching the computation of R1 framework
-        solver_R1.solve()
-
-        # Saving the results in separate VTK files
         try:
-            solver_R1.save_results(self.problem_name + '_2D_R1_newton')
-            print("\rDone.               \nResult saved.\n")
+            poisson_solver.save_results(self.problem_name + '_electrostatic')
+            print('Result saved.\n')
 
         except FileExistsError:
-            result_path = RESULT_DIR / str(self.problem_name + '_2D_R1_newton')
-            rmtree(result_path)
-            solver_R1.save_results(self.problem_name + '_2D_R1_newton')
-            print("\rDone.               \nResult saved.\n")
+            resultPath = RESULT_DIR / str(self.problem_name + '_electrostatic')
+            rmtree(resultPath)
+            poisson_solver.save_results(self.problem_name + '_electrostatic')
+            print('Result saved.\n')
 
         # Manually collecting garbage because Python cannot do it himself
         # NOTE: this is important for memory usage
         gc.collect()
 
-
-        if self.VERBOSE:
-            print("=== SECOND FRAMEWORK COMPUTATION===")
-            print("Setting R2 solver...", end="")
-
-        # Setting the physical caracteristics of the problem
-        poisson_R2 = Poisson({'alpha': ALPHA},
-                             dim=2,
-                             Rc=self.R_Omega,
-                             coorsys="cylindrical")
-
-        # Declaring the main parameters of R2 inner mesh
-        part_args_dict_R2_int = {'dim': 2,
-                                 'name': 'wf_int',
-                                 'pre_mesh': self.mesh_R2_int,
-                                 'fem_order': self.FEM_ORDER,
-                                 'Ngamma': self.Ngamma}
-
-        # Declaring the densities of the elements in inner R2
-        density_dict_R2 = {('subomega', self.tag_cyl_1): self.rho_1,
-                           ('subomega', self.tag_cyl_2): self.rho_2,
-                           ('subomega', self.tag_domain_int): self.rho_domain}
-
-        # Setting R2's internal weak form
-        poisson_R2.set_wf_int(part_args_dict_R2_int, density_dict_R2)
-
-        # Declaring the parameters of outer R2
-        part_args_dict_R2_ext = {'dim': 2,
-                                 'name': 'wf_ext',
-                                 'pre_mesh': self.mesh_R2_ext,
-                                 'fem_order': self.FEM_ORDER,
-                                 'Ngamma': self.Ngamma,
-                                 'pre_ebc_dict': {('vertex', 0): self.rho_domain}}
-
-        # Setting R2's external weak form
-        poisson_R2.set_wf_ext(part_args_dict_R2_ext, density=None)
-
-        # Creating the solver of the R2 framework
-        solver_R2 = LinearSolver(poisson_R2.wf_dict, ls_class=self.SOLVER,
-                                 region_key_int=('facet', self.tag_boundary_int),
-                                 region_key_ext=('facet', self.tag_boundary_ext))
+        if return_result:
+            return RPP.from_files(self.problem_name + '_electrostatic')
 
 
-        if self.VERBOSE:
-            print("\rSolving R2...        ", end="")
-
-        # Launching the computation of R2 framework
-        solver_R2.solve()
-
-
-        # Saving the results in separate VTK files
-        try:
-            solver_R2.save_results(self.problem_name + '_2D_R2_newton')
-            print("\rDone.               \nResult saved.\n")
-
-        except FileExistsError:
-            result_path = RESULT_DIR / str(self.problem_name + '_2D_R2_newton')
-            rmtree(result_path)
-            solver_R2.save_results(self.problem_name + '_2D_R2_newton')
-            print("\rDone.               \nResult saved.\n")
-
-
-        # Manually collecting garbage because Python cannot do it himself
-        # NOTE: this is important for memory usage
-        gc.collect()
-
-        if return_results:
-            return [RPP.from_files(self.problem_name + '_2D_R1_newton'),
-                    RPP.from_files(self.problem_name + '_2D_R2_newton')]
-
-
-
-    # Post-processing phase
-    def sfepy_postprocessing(self, result_pp_R1: RPP, result_pp_R2: RPP):
+    def get_yukawa_potential(self, mesh_int, mesh_ext, alpha: float,
+                             lmbda: float, L_0=1, rho_0=1, return_result=True):
         """
-        Post-process already used for parallel hollow cylinders case, and that
-        worked. This is meant to be used as a test for the case where the only
-        movement is along z-axis: the output results should be as close (and
-        opposite) as possible.
+        Solves the Klein-Gordon equation applied to the internal and external
+        meshes according to the (alpha, lambda) couple given by the user.
+        The equation that this method solves is as follows:
+            ƔΔU = U + ρ
+        !!! NOT SURE ANYMORE ABOUT GAMMA AND L_0, REFER TO -SOMEONE- FOR HELP
 
         Parameters
         ----------
-        result_pp_R1 : RPP
-            More or less obvious. Don't put R2 in here.
-        result_pp_R2 : RPP
-            Same. They are not optional.
+        mesh_int : str
+            The address of the internal domain's mesh. It's usually located in
+            the femtoscope.GEO_DIR directory.
+        mesh_ext : str
+            The address of the external domain's mesh. It's usually located in
+            the femtoscope.GEO_DIR directory.
+        alpha : float
+            The α parameter, representing the intensity of the Yukawa
+            contribution to the gravitational interaction.
+        lmbda : float
+            The Ⲗ parameter, representing the range of the Yukawa interaction.
+        L_0 : float, optional
+            The caracteristic lenght of the problem, useful simplify the
+            computation for the computer. The default is 1.
+        rho_0 : float, optional
+            The caracteristic mass density of the problem, useful to simplify
+            the computation for the computer. The default is 1.
+        return_result : bool, optional
+            If True, the method not only solves the problem and stores the
+            result but also returns a file that will be used for
+            post-processing. The default is False.
 
         Returns
         -------
-        None.
-
-        Notes
-        -----
-        Really, this only should be used for test purposes: it can only
-        calculate the force along z-axis when the cylinders are parallel and
-        coaxial. If there is a vertical displacement, there is no reason for
-        the output to reflect the real physical behaviour of the system.
+        result_pp : ResultsPostProcessor
+            When asked, returns the results file that will be used for
+            post-processing operations. Triggered by return_result parameter.
 
         """
 
         if self.VERBOSE:
-            print("\n=== SFEPY POST-PROCESSING ===")
+            print("=== YUKAWA FORCE COMPUTATION ===")
+            print(" - FEM complexity: {}° order".format(self.FEM_ORDER))
+            print(" - Solver name: {}".format(self.SOLVER))
+            print(" - scale factor α: {}".format(alpha))
+            print(" - range factor Ⲗ: {}".format(lmbda))
+            print(" - characteristic lenght: {}m".format(L_0))
+            print(" - characteristic density: {} [kg·m^-3]".format(rho_0))
+            print("")
 
-        # Using the R1 framework to obtain the vertical gradient
-        coors_R1 = result_pp_R1.coors_int
-        wf_R1 = result_pp_R1.wf_int
-        param_R1 = FieldVariable('param_R1', 'parameter', wf_R1.field,
-                                 primary_var_name=wf_R1.get_unknown_name('cst'))
-        param_R1.set_data(coors_R1[:, 0] * result_pp_R1.sol_int)
+        # Creating the gamma parameter
+        gamma = lmbda**2 / L_0**2
 
-        expression_IS1_R1 = "ev_grad.{}.subomega300(param_R1)".format(wf_R1.integral.order)
-        grad_Phi_IS1_R1 = wf_R1.pb_cst.evaluate(expression_IS1_R1,
-                                                var_dict={'param_R1': param_R1})
-        F_R1 = -grad_Phi_IS1_R1 * self.rho_1 * 2 * np.pi
+        # Defining the problem and its metadata
+        yukawa = Yukawa({'gamma': gamma}, dim=self.dim, Rc=self.R_Omega,
+                        coorsys=self.coorsys)
 
+        # Internal domain caracteristics
+        partial_args_dict_int = {'dim': self.dim,
+                                 'name': 'wf_int',
+                                 'pre_mesh': mesh_int,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma}
+        yukawa.set_wf_int(partial_args_dict_int,
+                           {('subomega', self.tag_cyl_1): self.rho_1 / rho_0,
+                            ('subomega', self.tag_cyl_2): self.rho_2 / rho_0,
+                            ('subomega', self.tag_domain_int): self.rho_domain / rho_0})
 
-        # Using the R2 framework to obtain the vertical gradient
-        coors_R2 = result_pp_R2.coors_int
-        wf_R2 = result_pp_R2.wf_int
-        param_R2 = FieldVariable('param_R2', 'parameter', wf_R2.field,
-                                 primary_var_name=wf_R2.get_unknown_name('cst'))
-        param_R2.set_data(coors_R2[:, 0] * result_pp_R2.sol_int)
-
-        expression_IS1_R2 = "ev_grad.{}.subomega300(param_R2)".format(wf_R2.integral.order)
-        grad_Phi_IS1_R2 = wf_R2.pb_cst.evaluate(expression_IS1_R2,
-                                                var_dict={'param_R2': param_R2})
-        F_R2 = -grad_Phi_IS1_R2 * self.rho_1 * 2 * np.pi
-
-
-        print("Vertical force on IS1 cylinder.\nForce in R1 framework:",
-              F_R1[1], "\nForce in R2 framework:", F_R2[1],
-              "\nIf these two results are close, the test is passed.")
+        # External domain caracteristics
+        partial_args_dict_ext = {'dim': self.dim,
+                                 'name': 'wf_ext',
+                                 'pre_mesh': mesh_ext,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma}
+        partial_args_dict_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_domain / rho_0}
+        yukawa.set_wf_ext(partial_args_dict_ext, density=None)
 
 
-#%%
+        # Setting up the solver
+        yukawa_solver = LinearSolver(yukawa.wf_dict, ls_class='ScipyDirect',
+                                     region_key_int=('facet',
+                                                     self.tag_boundary_int),
+                                     region_key_ext=('facet',
+                                                     self.tag_boundary_ext))
+        yukawa_solver.solve()
+
+        ''' This part is here to ensure the result is correctly saved'''
+
+        try:
+            yukawa_solver.save_results(self.problem_name + '_yukawa')
+            print('Result saved.\n')
+
+        except FileExistsError:
+            resultPath = RESULT_DIR / str(self.problem_name + '_yukawa')
+            rmtree(resultPath)
+            yukawa_solver.save_results(self.problem_name + '_yukawa')
+            print('Result saved.\n')
+
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
+
+        if return_result:
+            return RPP.from_files(self.problem_name + '_yukawa')
+
+
+    def postprocess_force(self, postprocess_file, alpha=0, lmbda=1, rho_0=1,
+                          getNewton=False, getCoulomb=False, getYukawa=False):
+        """
+        Computes the gravitational and electrostatic force between the two
+        parallel hollow cylinders. For gravity, can compute Newton's or
+        Yukawa's potential.
+
+        Parameters
+        ----------
+        postprocess_file : ResultsPostProcessor
+            The results file that the user wants to compute.
+        alpha : float, optional
+            The scale factor used to compute the Yukawa potential, is useless
+            for other computations. The default is 0.
+        lmbda : float, optional
+            The range factor used to compute the Yukawa potential, is useless
+            for the other computations. The default is 1.
+        rho_o : float, optional
+            The caracteristic density of the problem, it's used for the
+            rescaling of the Yukawa potential's result. NOTE that this value
+            must be equal to the one declared for the resolution function!. The
+            default is 1.
+        getNewton : bool, optional
+            When True, activates the post-processing of newton's gravitational
+            potential. The default is False.
+        getCoulomb : bool, optional
+            When True, activates the post-processing of the electrostatic
+            potential. The default is False.
+        getYukawa : bool, optional
+            When True, activates the post-processing of yukawa's gravitational
+            potential. The default is False.
+        compare : bool, optional
+            When True, performs an additional analytical calculation that will
+            compute the relative error. The analytical calculation is the one
+            that has been used for MICROSCOPE mission (see [1]). The default is
+            True.
+
+        Returns
+        -------
+        grad_phi_cyl_1[1]: float
+            The vertical force applied on the first hollow cylinder.
+        grad_phi_cyl_2[1]: float
+            The vertical force applied on the second hollow cylinder.
+        F_ana: float
+            The analytically calculated vertical force.
+        epsilon: float
+            The relative error of the method compared with analytical method.
+
+        References
+        ----------
+        [1] Bergé, J.
+            (2023).
+            MICROSCOPE’s view at gravitation.
+            Reports on Progress in Physics, 86(6), 066901.
+
+        """
+
+        #  Asserting that we have exactly one force to calculate
+        A = getNewton and not getCoulomb and not getYukawa
+        B = not getNewton and getCoulomb and not getYukawa
+        C = not getNewton and not getCoulomb and getYukawa
+        assert A or B or C, "Please select exactly one force for post-process!"
+
+
+        if getNewton or getYukawa:
+            rho_1 = self.rho_1
+            rho_2 = self.rho_2
+            rho_domain = self.rho_domain
+            k = 6.6743e-11
+        elif getCoulomb:
+            rho_1 = self.rho_q_1
+            rho_2 = self.rho_q_2
+            rho_domain = self.rho_q_domain
+            k = (4 * np.pi * 8.8541878128e-12)**-1
+
+        # Extracting coordinates from results file
+        # NOTE: nodes' coordinates should match since it's the same mesh file
+        coors_int = postprocess_file.coors_int
+
+
+        if getYukawa:
+
+            # Informing the user about the characteristics of the K-G problem
+            if self.VERBOSE:
+                print(" === Linear Klein-Gordon problem ===")
+                print(" - scale factor α: {}".format(alpha))
+                print(" - range factor Ⲗ: {}".format(lmbda))
+                print(" - rho_1: {} [kg·m^-3]".format(self.rho_1))
+                print(" - rho_2: {} [kg·m^-3]".format(self.rho_2))
+                print(" - rho_domain: {} [kg·m^-3]".format(self.rho_domain))
+                print("")
+
+            # Computing nondimensioning term U_0
+            U_0 = 4 * np.pi * k * lmbda**2 * alpha * rho_0
+
+            # Extractign the weak form
+            wf_int_yukawa = postprocess_file.wf_int
+
+            # Setting the FieldVariable for the potential integration
+            param_yukawa = FieldVariable('param', 'parameter',
+                                         wf_int_yukawa.field,
+                                         primary_var_name=wf_int_yukawa.get_unknown_name('cst'))
+
+            # Setting the weight of the potential's value according to r
+            param_yukawa.set_data(coors_int[:, 0] * postprocess_file.sol_int)
+
+            # Integrating the potential on the whole surface - Yukawa S1
+            expression_yukawa_C1 = "ev_grad.{}.subomega300(param)".format(wf_int_yukawa.integral.order)
+            grad_yukawa_C1 = -wf_int_yukawa.pb_cst.evaluate(expression_yukawa_C1,
+                                                            var_dict={'param': param_yukawa}) * rho_1 * 2 * np.pi * U_0
+
+            # Integrating the potential on the whole surface - Yukawa S2
+            expression_yukawa_C2 = "ev_grad.{}.subomega301(param)".format(wf_int_yukawa.integral.order)
+            grad_yukawa_C2 = -wf_int_yukawa.pb_cst.evaluate(expression_yukawa_C2,
+                                                            var_dict={'param': param_yukawa}) * rho_2 * 2 * np.pi * U_0
+
+            # Communicating the results to the user
+            print("Force on cylinder 1:", str(grad_yukawa_C1[1]), "N")
+
+            print("Force on cylinder 2:", str(grad_yukawa_C2[1]), "N")
+
+            # Analytical calculation and comparison
+            if self.VERBOSE:
+                print("Computing analytical force...", end="")
+
+            # Creating the two cylinders to compute analitically
+            ana_c1 = cylinder(radius=self.R_ext_1, height=self.h_1,
+                              density=self.rho_1, innerRadius=self.R_int_1)
+            ana_c2 = cylinder(radius=self.R_ext_2, height=self.h_2,
+                              density=self.rho_2, innerRadius=self.R_int_2)
+
+            # Creating the interaction between the two cylinders
+            c1_c2 = cylinderPair(ana_c1, ana_c2)
+
+            # Computing the force on the Z axis of the cylinder
+            ana_Fz_1 = c1_c2.cmpAnaFz([self.R_1, 0, self.Z_1], [0, 0, 0],
+                                      _dir='2->1', yukawa=True, lmbda=lmbda,
+                                      alpha=alpha)
+            ana_Fz_2 = c1_c2.cmpAnaFz([self.R_1, 0, self.Z_1], [0, 0, 0],
+                                      _dir='1->2', yukawa=True, lmbda=lmbda,
+                                      alpha=alpha)
+
+            # Computing relative error
+            epsilon_1 = (grad_yukawa_C1[1] - ana_Fz_1) / grad_yukawa_C1[1]
+            epsilon_2 = (grad_yukawa_C2[1] - ana_Fz_2) / grad_yukawa_C2[1]
+
+            # Communicating the results
+            print("\r                             ", end="")  # <-- this is here to make everything prettier
+            print("\rAnalytical force:", str(ana_Fz_1), "N")
+            print("Relative error:", str(epsilon_1))
+
+            return grad_yukawa_C1[1], grad_yukawa_C2[1], ana_Fz_1, ana_Fz_2, epsilon_1, epsilon_2
+
+        else:
+
+            # Informing the user about the characteristics of the Poisson problem
+            if self.VERBOSE:
+                if getNewton:
+                    print(" === Poisson problem - Newtonian ===")
+                    print(" - rho_1: {} [kg·m^-3]".format(rho_1))
+                    print(" - rho_2: {} [kg·m^-3]".format(rho_2))
+                    print(" - rho_domain: {} [kg·m^-3]".format(rho_domain))
+                    print("")
+                elif getCoulomb:
+                    print(" === Poisson problem - Electrostatic ===")
+                    print(" - rho_1: {} [C·m^-3]".format(rho_1))
+                    print(" - rho_2: {} [C·m^-3]".format(rho_2))
+                    print(" - rho_domain: {} [C·m^-3]".format(rho_domain))
+                    print("")
+
+            # Formatting the request for Sfepy
+            wf_int = postprocess_file.wf_int
+            param = FieldVariable('param', 'parameter', wf_int.field,
+                                  primary_var_name=wf_int.get_unknown_name('cst'))
+            param.set_data(coors_int[:, 0] * postprocess_file.sol_int)
+
+            expression_cylinder_1 = "ev_grad.{}.subomega300(param)".format(wf_int.integral.order)
+            grad_phi_cylinder_1 = -wf_int.pb_cst.evaluate(expression_cylinder_1,
+                                                          var_dict={'param': param}) * rho_1 * 2 * np.pi
+
+            expression_cylinder_2 = "ev_grad.{}.subomega301(param)".format(wf_int.integral.order)
+            grad_phi_cylinder_2 = -wf_int.pb_cst.evaluate(expression_cylinder_2,
+                                                          var_dict={'param': param}) * rho_2 * 2 * np.pi
+
+            print("Force on cylinder 1:", str(grad_phi_cylinder_1[1]), "N")
+            print("Force on cylinder 2:", str(grad_phi_cylinder_2[1]), "N")
+
+            # Analytical calculation and comparison
+            if self.VERBOSE:
+                print("Computing analytical force...", end="")
+
+            # Creating the two cylinders to compute analitically
+            ana_c1 = cylinder(radius=self.R_ext_1, height=self.h_1,
+                              density=self.rho_1, innerRadius=self.R_int_1)
+            ana_c2 = cylinder(radius=self.R_ext_2, height=self.h_2,
+                              density=self.rho_2, innerRadius=self.R_int_2)
+
+            # Creating the interaction between the two cylinders
+            c1_c2 = cylinderPair(ana_c1, ana_c2)
+
+            # Computing the force on the Z axis of the cylinder
+            ana_Fz_1 = c1_c2.cmpAnaFz([self.R_1, 0, self.Z_1], [0, 0, 0],
+                                    _dir='2->1')
+            ana_Fz_2 = c1_c2.cmpAnaFz([self.R_1, 0, self.Z_1], [0, 0, 0],
+                                    _dir='1->2')
+
+            # Computing relative error
+            epsilon_1 = np.abs((grad_phi_cylinder_1[1] - ana_Fz_1) / grad_phi_cylinder_1[1])
+            epsilon_2 = np.abs((grad_phi_cylinder_2[1] - ana_Fz_2) / grad_phi_cylinder_2[1])
+
+            # Communicating the results
+            print("\r                             ", end="")  # <-- this is here to make everything prettier
+            print("\rAnalytical force:", str(ana_Fz_1), "N")
+            print("Relative error:", str(epsilon_1))
+
+            # Returning the results
+            return grad_phi_cylinder_1[1], grad_phi_cylinder_2[1], ana_Fz_1, ana_Fz_2, epsilon_1, epsilon_2
+
+
+#%% Testing the class
 
 ''' === VARIABLES DEFINITION === '''
 # All the values are given in standard units
@@ -516,9 +740,20 @@ FO2PHC = ForceOnTwoHollowCylinders(problem_name=FILENAME, R_int_1=R_int_1,
                                    VERBOSE=VERBOSE,
                                    FEM_ORDER=FEM_ORDER, SOLVER=SOLVER)
 
-FO2PHC.mesh_generation(SHOW_MESH=False)
+mesh_R1 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R1', SHOW_MESH=False)
+mesh_R2 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R2', SHOW_MESH=False)
 
 print("\n===NEWTONIAN GRAVITY ===")
-results_pp_newton = FO2PHC.get_newton_potential(return_results=True)
+results_pp_newton_R1 = FO2PHC.get_newton_potential(res_name=FILENAME+'_2D_R1',
+                                                    mesh_int=mesh_R1[0],
+                                                    mesh_ext=mesh_R1[1],
+                                                    return_result=True)
 
-FO2PHC.sfepy_postprocessing(results_pp_newton[0], results_pp_newton[1])
+results_pp_newton_R2 = FO2PHC.get_newton_potential(res_name=FILENAME+"_2D_R2",
+                                                   mesh_int=mesh_R2[0],
+                                                   mesh_ext=mesh_R2[1],
+                                                   return_result=True)
+
+results_R1 = FO2PHC.postprocess_force(results_pp_newton_R1, getNewton=True)
+
+results_R2 = FO2PHC.postprocess_force(results_pp_newton_R2, getNewton=True)
