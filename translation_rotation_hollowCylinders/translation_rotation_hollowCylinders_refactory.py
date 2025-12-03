@@ -336,6 +336,7 @@ class ForceOnTwoHollowCylinders:
             solver_R1.save_results(self.problem_name + '_2D_R1_newton')
             print("\rDone.               \nResult saved.\n")
 
+        gc.collect()
 
         if self.VERBOSE:
             print("=== SECOND FRAMEWORK COMPUTATION===")
@@ -409,9 +410,12 @@ class ForceOnTwoHollowCylinders:
 
 
     # Post-processing phase
-    def invisible_postprocessing(self, result_pp_R1: RPP, result_pp_R2: RPP):
+    def sfepy_postprocessing(self, result_pp_R1: RPP, result_pp_R2: RPP):
         """
-        Trying to generate something good from what I've done.
+        Post-process already used for parallel hollow cylinders case, and that
+        worked. This is meant to be used as a test for the case where the only
+        movement is along z-axis: the output results should be as close (and
+        opposite) as possible.
 
         Parameters
         ----------
@@ -424,30 +428,47 @@ class ForceOnTwoHollowCylinders:
         -------
         None.
 
+        Notes
+        -----
+        Really, this only should be used for test purposes: it can only
+        calculate the force along z-axis when the cylinders are parallel and
+        coaxial. If there is a vertical displacement, there is no reason for
+        the output to reflect the real physical behaviour of the system.
+
         """
 
         if self.VERBOSE:
-            print("\n=== INVISIBLE POST-PROCESSING ===")
+            print("\n=== SFEPY POST-PROCESSING ===")
 
+        # Using the R1 framework to obtain the vertical gradient
+        coors_R1 = result_pp_R1.coors_int
+        wf_R1 = result_pp_R1.wf_int
+        param_R1 = FieldVariable('param_R1', 'parameter', wf_R1.field,
+                                 primary_var_name=wf_R1.get_unknown_name('cst'))
+        param_R1.set_data(coors_R1[:, 0] * result_pp_R1.sol_int)
 
+        expression_IS1_R1 = "ev_grad.{}.subomega300(param_R1)".format(wf_R1.integral.order)
+        grad_Phi_IS1_R1 = wf_R1.pb_cst.evaluate(expression_IS1_R1,
+                                                var_dict={'param_R1': param_R1})
+        F_R1 = -grad_Phi_IS1_R1 * self.rho_1 * 2 * np.pi
 
 
         # Using the R2 framework to obtain the vertical gradient
         coors_R2 = result_pp_R2.coors_int
         wf_R2 = result_pp_R2.wf_int
-        param = FieldVariable('param', 'parameter', wf_R2.field,
-                              primary_var_name=wf_R2.get_unknown_name('cst'))
-        param.set_data(coors_R2[:, 0] * result_pp_R2.sol_int)
+        param_R2 = FieldVariable('param_R2', 'parameter', wf_R2.field,
+                                 primary_var_name=wf_R2.get_unknown_name('cst'))
+        param_R2.set_data(coors_R2[:, 0] * result_pp_R2.sol_int)
 
-        expression_IS1_R2 = "ev_grad.{}.subomega300(param)".format(wf_R2.integral.order)
+        expression_IS1_R2 = "ev_grad.{}.subomega300(param_R2)".format(wf_R2.integral.order)
         grad_Phi_IS1_R2 = wf_R2.pb_cst.evaluate(expression_IS1_R2,
-                                                var_dict={'param': param})
-        F_C1 = -grad_Phi_IS1_R2 * self.rho_1 * 2 * np.pi
+                                                var_dict={'param_R2': param_R2})
+        F_R2 = -grad_Phi_IS1_R2 * self.rho_1 * 2 * np.pi
 
 
-
-        print("Force on vertical (z) axis on IS1 - R2:", F_C1[1])
-        print("Stop.")
+        print("Vertical force on IS1 cylinder.\nForce in R1 framework:",
+              F_R1[1], "\nForce in R2 framework:", F_R2[1],
+              "\nIf these two results are close, the test is passed.")
 
 
 #%%
@@ -478,7 +499,7 @@ FEM_ORDER = 2
 SOLVER = 'ScipyDirect'
 
 # Mesh size
-minSize = 0.0005
+minSize = 0.0003
 maxSize = 0.005
 ''' === END OF VARIABLES DECLARATION === '''
 
@@ -497,4 +518,4 @@ FO2PHC.mesh_generation(SHOW_MESH=False)
 print("\n===NEWTONIAN GRAVITY ===")
 results_pp_newton = FO2PHC.get_newton_potential(return_results=True)
 
-FO2PHC.invisible_postprocessing(results_pp_newton[0], results_pp_newton[1])
+FO2PHC.sfepy_postprocessing(results_pp_newton[0], results_pp_newton[1])

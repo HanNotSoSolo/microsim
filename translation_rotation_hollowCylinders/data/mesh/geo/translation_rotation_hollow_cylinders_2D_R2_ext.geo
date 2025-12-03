@@ -8,7 +8,7 @@ R_Omega = 0.10579077712636391;
 
 // Mesh caracteristics
 Ngamma = 66;
-minSize = 0.0005;
+minSize = 0.0003;
 maxSize = 0.005;
 
 // === END OF VARIABLES DECLARATION ===
