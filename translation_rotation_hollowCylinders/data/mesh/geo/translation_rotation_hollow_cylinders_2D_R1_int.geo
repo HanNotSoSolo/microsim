@@ -12,10 +12,10 @@ R_int_2 = 0.0304;
 R_ext_2 = 0.0346975;
 h_2 = 0.07983;
 R_2 = 0;
-Z_2 = 1e-05;
+Z_2 = 0;
 
 // Internal domain
-R_Omega = 0.10579077712636391;
+R_Omega = 0.10577568210604932;
 
 // Mesh caracteristics
 Ngamma = 66;

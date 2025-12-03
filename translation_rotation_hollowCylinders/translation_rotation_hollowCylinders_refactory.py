@@ -180,8 +180,8 @@ class ForceOnTwoHollowCylinders:
                           'R_int_2': self.R_int_2,
                           'R_ext_2': self.R_ext_2,
                           'h_2': self.h_2,
-                          'R_2': -self.R_1,  # And this one only in R2
-                          'Z_2': -self.Z_1,  # Same for this
+                          'R_2': self.R_1,  # And this one only in R2
+                          'Z_2': self.Z_1,  # Same for this
                           'R_Omega': self.R_Omega,
                           'Ngamma': self.Ngamma,
                           'minSize': self.minSize,
@@ -295,7 +295,7 @@ class ForceOnTwoHollowCylinders:
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
 
-        # Declaring the densities of the elements in inner R2
+        # Declaring the densities of the elements in inner R1
         density_dict_R1 = {('subomega', self.tag_cyl_1): self.rho_1,
                            ('subomega', self.tag_cyl_2): self.rho_2,
                            ('subomega', self.tag_domain_int): self.rho_domain}
@@ -336,7 +336,10 @@ class ForceOnTwoHollowCylinders:
             solver_R1.save_results(self.problem_name + '_2D_R1_newton')
             print("\rDone.               \nResult saved.\n")
 
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
         gc.collect()
+
 
         if self.VERBOSE:
             print("=== SECOND FRAMEWORK COMPUTATION===")

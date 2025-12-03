@@ -7,7 +7,7 @@ R_int_1 = 0.0154; // Internal radius
 R_ext_1 = 0.0197;
 h_1 = 0.04337;
 R_1 = 0;
-Z_1 = -1e-05;
+Z_1 = 0;
 
 // Second cylinder
 R_int_2 = 0.0304;
@@ -15,7 +15,7 @@ R_ext_2 = 0.0346975;
 h_2 = 0.07983;
 
 // Internal domain
-R_Omega = 0.10579077712636391;
+R_Omega = 0.10577568210604932;
 
 // Mesh caracteristics
 Ngamma = 66;
