@@ -198,8 +198,8 @@ class ForceOnTwoHollowCylinders:
         return [mesh_int, mesh_ext]
 
 
-    def get_newton_potential(self, res_name, mesh_int, mesh_ext,
-                             return_result=True):
+    def get_newton_potential_R1(self, mesh_int, mesh_ext,
+                                return_result=True):
         """
         Calculates the newtonian gravitational potential on the .vtk file. The
         potential is calculated on every node of the mesh, and interpolated
@@ -267,13 +267,99 @@ class ForceOnTwoHollowCylinders:
         ''' This part is here to ensure the result is correctly saved'''
 
         try:
-            poisson_solver.save_results(res_name + '_newton')
+            poisson_solver.save_results(self.problem_name + '_R1_newton')
             print('Result saved.\n')
 
         except FileExistsError:
-            resultPath = RESULT_DIR / str(res_name + '_newton')
+            resultPath = RESULT_DIR / str(self.problem_name + '_R1_newton')
             rmtree(resultPath)
-            poisson_solver.save_results(res_name + '_newton')
+            poisson_solver.save_results(self.problem_name + '_R1_newton')
+            print('Result saved.\n')
+
+        # Manually collecting garbage because Python cannot do it himself
+        # NOTE: this is important for memory usage
+        gc.collect()
+
+        if return_result:
+            return RPP.from_files(self.problem_name + '_newton')
+
+
+    def get_newton_potential_R2(self, mesh_int, mesh_ext,
+                                return_result=True):
+        """
+        Calculates the newtonian gravitational potential on the .vtk file. The
+        potential is calculated on every node of the mesh, and interpolated
+        between the nodes with a FEM_ORDER-degree polynomial, depending on
+        what has been declared during the class creation.
+
+        Parameters
+        ----------
+        mesh_int : str
+            The path of the .vtk internal mesh file.
+        mesh_ext : str
+            The path of the .vtk external mesh file.
+        return_result : bool, optional
+            If True, the function not only solves the system for every node and
+            saves it in the data/results/ directory, but also returns the
+            results file in a variable. The default is True.
+
+        Returns
+        -------
+        result_pp : ResultsPostProcessor
+            When asked, returns the results file that will be used for
+            post-processing operations. Triggered by return_result parameter.
+
+        """
+
+        if self.VERBOSE:
+            print("=== NEWTONIAN FORCE COMPUTATION ===")
+            print(" - FEM complexity: {}° order".format(self.FEM_ORDER))
+            print(" - Solver name: {}".format(self.SOLVER))
+            print("")
+
+        # Creating the constants that will caracterize the Newton's version of
+        # the Poisson's problem
+        G = 6.6743e-11
+        ALPHA = 4 * np.pi * G
+
+        poisson = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
+                          coorsys=self.coorsys)
+
+        partial_args_dict_int = {'dim': self.dim,
+                                 'name': 'wf_int',
+                                 'pre_mesh': mesh_int,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma}
+        poisson.set_wf_int(partial_args_dict_int,
+                           {('subomega', self.tag_cyl_1): self.rho_1,
+                            ('subomega', self.tag_cyl_2): self.rho_2,
+                            ('subomega', self.tag_domain_int): self.rho_domain})
+
+        partial_args_dict_ext = {'dim': self.dim,
+                                 'name': 'wf_ext',
+                                 'pre_mesh': mesh_ext,
+                                 'fem_order': self.FEM_ORDER,
+                                 'Ngamma': self.Ngamma}
+        partial_args_dict_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_domain}
+        poisson.set_wf_ext(partial_args_dict_ext, density=None)
+
+        poisson_solver = LinearSolver(poisson.wf_dict, ls_class=self.SOLVER,
+                                      region_key_int=('facet',
+                                                      self.tag_boundary_int),
+                                      region_key_ext=('facet',
+                                                      self.tag_boundary_ext))
+        poisson_solver.solve()
+
+        ''' This part is here to ensure the result is correctly saved'''
+
+        try:
+            poisson_solver.save_results(self.problem_name + '_R2_newton')
+            print('Result saved.\n')
+
+        except FileExistsError:
+            resultPath = RESULT_DIR / str(self.problem_name + '_R2_newton')
+            rmtree(resultPath)
+            poisson_solver.save_results(self.problem_name + '_R2_newton')
             print('Result saved.\n')
 
         # Manually collecting garbage because Python cannot do it himself
@@ -744,15 +830,13 @@ mesh_R1 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R1', SHOW_MESH=False)
 mesh_R2 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R2', SHOW_MESH=False)
 
 print("\n===NEWTONIAN GRAVITY ===")
-results_pp_newton_R1 = FO2PHC.get_newton_potential(res_name=FILENAME+'_2D_R1',
-                                                    mesh_int=mesh_R1[0],
-                                                    mesh_ext=mesh_R1[1],
-                                                    return_result=True)
+results_pp_newton_R1 = FO2PHC.get_newton_potential_R1(mesh_int=mesh_R1[0],
+                                                      mesh_ext=mesh_R1[1],
+                                                      return_result=True)
 
-results_pp_newton_R2 = FO2PHC.get_newton_potential(res_name=FILENAME+"_2D_R2",
-                                                   mesh_int=mesh_R2[0],
-                                                   mesh_ext=mesh_R2[1],
-                                                   return_result=True)
+results_pp_newton_R2 = FO2PHC.get_newton_potential_R2(mesh_int=mesh_R2[0],
+                                                      mesh_ext=mesh_R2[1],
+                                                      return_result=True)
 
 results_R1 = FO2PHC.postprocess_force(results_pp_newton_R1, getNewton=True)
 
