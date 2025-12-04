@@ -236,18 +236,18 @@ class ForceOnTwoHollowCylinders:
         G = 6.6743e-11
         ALPHA = 4 * np.pi * G
 
-        poisson = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
-                          coorsys=self.coorsys)
+        poisson_R1 = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
+                             coorsys=self.coorsys)
 
         partial_args_dict_int = {'dim': self.dim,
                                  'name': 'wf_int',
                                  'pre_mesh': mesh_int,
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
-        poisson.set_wf_int(partial_args_dict_int,
-                           {('subomega', self.tag_cyl_1): self.rho_1,
-                            ('subomega', self.tag_cyl_2): self.rho_2,
-                            ('subomega', self.tag_domain_int): self.rho_domain})
+        poisson_R1.set_wf_int(partial_args_dict_int,
+                              {('subomega', self.tag_cyl_1): self.rho_1,
+                               ('subomega', self.tag_cyl_2): self.rho_2,
+                               ('subomega', self.tag_domain_int): self.rho_domain})
 
         partial_args_dict_ext = {'dim': self.dim,
                                  'name': 'wf_ext',
@@ -255,25 +255,25 @@ class ForceOnTwoHollowCylinders:
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
         partial_args_dict_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_domain}
-        poisson.set_wf_ext(partial_args_dict_ext, density=None)
+        poisson_R1.set_wf_ext(partial_args_dict_ext, density=None)
 
-        poisson_solver = LinearSolver(poisson.wf_dict, ls_class=self.SOLVER,
-                                      region_key_int=('facet',
-                                                      self.tag_boundary_int),
-                                      region_key_ext=('facet',
-                                                      self.tag_boundary_ext))
-        poisson_solver.solve()
+        poisson_R1_solver = LinearSolver(poisson_R1.wf_dict, ls_class=self.SOLVER,
+                                         region_key_int=('facet',
+                                                         self.tag_boundary_int),
+                                         region_key_ext=('facet',
+                                                         self.tag_boundary_ext))
+        poisson_R1_solver.solve()
 
         ''' This part is here to ensure the result is correctly saved'''
 
         try:
-            poisson_solver.save_results(self.problem_name + '_R1_newton')
+            poisson_R1_solver.save_results(self.problem_name + '_R1_newton')
             print('Result saved.\n')
 
         except FileExistsError:
             resultPath = RESULT_DIR / str(self.problem_name + '_R1_newton')
             rmtree(resultPath)
-            poisson_solver.save_results(self.problem_name + '_R1_newton')
+            poisson_R1_solver.save_results(self.problem_name + '_R1_newton')
             print('Result saved.\n')
 
         # Manually collecting garbage because Python cannot do it himself
@@ -322,7 +322,7 @@ class ForceOnTwoHollowCylinders:
         G = 6.6743e-11
         ALPHA = 4 * np.pi * G
 
-        poisson = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
+        poisson_R2 = Poisson({'alpha': ALPHA}, dim=self.dim, Rc=self.R_Omega,
                           coorsys=self.coorsys)
 
         partial_args_dict_int = {'dim': self.dim,
@@ -330,7 +330,7 @@ class ForceOnTwoHollowCylinders:
                                  'pre_mesh': mesh_int,
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
-        poisson.set_wf_int(partial_args_dict_int,
+        poisson_R2.set_wf_int(partial_args_dict_int,
                            {('subomega', self.tag_cyl_1): self.rho_1,
                             ('subomega', self.tag_cyl_2): self.rho_2,
                             ('subomega', self.tag_domain_int): self.rho_domain})
@@ -341,25 +341,25 @@ class ForceOnTwoHollowCylinders:
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
         partial_args_dict_ext['pre_ebc_dict'] = {('vertex', 0): self.rho_domain}
-        poisson.set_wf_ext(partial_args_dict_ext, density=None)
+        poisson_R2.set_wf_ext(partial_args_dict_ext, density=None)
 
-        poisson_solver = LinearSolver(poisson.wf_dict, ls_class=self.SOLVER,
-                                      region_key_int=('facet',
-                                                      self.tag_boundary_int),
-                                      region_key_ext=('facet',
-                                                      self.tag_boundary_ext))
-        poisson_solver.solve()
+        poisson_R2_solver = LinearSolver(poisson_R2.wf_dict, ls_class=self.SOLVER,
+                                         region_key_int=('facet',
+                                                         self.tag_boundary_int),
+                                         region_key_ext=('facet',
+                                                         self.tag_boundary_ext))
+        poisson_R2_solver.solve()
 
         ''' This part is here to ensure the result is correctly saved'''
 
         try:
-            poisson_solver.save_results(self.problem_name + '_R2_newton')
+            poisson_R2_solver.save_results(self.problem_name + '_R2_newton')
             print('Result saved.\n')
 
         except FileExistsError:
             resultPath = RESULT_DIR / str(self.problem_name + '_R2_newton')
             rmtree(resultPath)
-            poisson_solver.save_results(self.problem_name + '_R2_newton')
+            poisson_R2_solver.save_results(self.problem_name + '_R2_newton')
             print('Result saved.\n')
 
         # Manually collecting garbage because Python cannot do it himself
@@ -842,6 +842,6 @@ results_pp_newton_R2 = FO2PHC.get_newton_potential_R2(mesh_int=mesh_R2[0],
 
 gc.collect()
 
-# results_R1 = FO2PHC.postprocess_force(results_pp_newton_R1, getNewton=True)
+results_R1 = FO2PHC.postprocess_force(results_pp_newton_R1, getNewton=True)
 
 results_R2 = FO2PHC.postprocess_force(results_pp_newton_R2, getNewton=True)
