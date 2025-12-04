@@ -281,7 +281,7 @@ class ForceOnTwoHollowCylinders:
         gc.collect()
 
         if return_result:
-            return RPP.from_files(self.problem_name + '_newton')
+            return RPP.from_files(self.problem_name + '_R1_newton')
 
 
     def get_newton_potential_R2(self, mesh_int, mesh_ext,
@@ -367,7 +367,7 @@ class ForceOnTwoHollowCylinders:
         gc.collect()
 
         if return_result:
-            return RPP.from_files(self.problem_name + '_newton')
+            return RPP.from_files(self.problem_name + '_R2_newton')
 
 
     def get_electrostatic_potential(self, mesh_int, mesh_ext,
@@ -793,7 +793,7 @@ R_int_1 = 15.4e-3
 R_ext_1 = 19.7e-3
 h_1 = 43.37e-3
 rho_1 = 19972
-Z_1 = -1e-5
+Z_1 = 1e-5
 R_1 = 0
 
 # Second cylinder
@@ -827,17 +827,17 @@ FO2PHC = ForceOnTwoHollowCylinders(problem_name=FILENAME, R_int_1=R_int_1,
                                    FEM_ORDER=FEM_ORDER, SOLVER=SOLVER)
 
 mesh_R1 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R1', SHOW_MESH=False)
-mesh_R2 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R2', SHOW_MESH=False)
+# mesh_R2 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R2', SHOW_MESH=False)
 
 print("\n===NEWTONIAN GRAVITY ===")
 results_pp_newton_R1 = FO2PHC.get_newton_potential_R1(mesh_int=mesh_R1[0],
                                                       mesh_ext=mesh_R1[1],
                                                       return_result=True)
 
-results_pp_newton_R2 = FO2PHC.get_newton_potential_R2(mesh_int=mesh_R2[0],
-                                                      mesh_ext=mesh_R2[1],
-                                                      return_result=True)
+# results_pp_newton_R2 = FO2PHC.get_newton_potential_R2(mesh_int=mesh_R2[0],
+#                                                       mesh_ext=mesh_R2[1],
+#                                                       return_result=True)
 
 results_R1 = FO2PHC.postprocess_force(results_pp_newton_R1, getNewton=True)
 
-results_R2 = FO2PHC.postprocess_force(results_pp_newton_R2, getNewton=True)
+# results_R2 = FO2PHC.postprocess_force(results_pp_newton_R2, getNewton=True)
