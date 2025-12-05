@@ -246,7 +246,7 @@ class ForceOnTwoHollowCylinders:
                                  'Ngamma': self.Ngamma}
         poisson_R1.set_wf_int(partial_args_dict_int,
                               {('subomega', self.tag_cyl_1): self.rho_1,
-                               ('subomega', self.tag_cyl_2): self.rho_2,
+                               ('subomega', self.tag_cyl_2): self.rho_domain,
                                ('subomega', self.tag_domain_int): self.rho_domain})
 
         partial_args_dict_ext = {'dim': self.dim,
@@ -267,13 +267,13 @@ class ForceOnTwoHollowCylinders:
         ''' This part is here to ensure the result is correctly saved'''
 
         try:
-            poisson_R1_solver.save_results(self.problem_name + '_R1_newton')
+            poisson_R1_solver.save_results(self.problem_name + '_2D_R1_newton')
             print('Result saved.\n')
 
         except FileExistsError:
-            resultPath = RESULT_DIR / str(self.problem_name + '_R1_newton')
+            resultPath = RESULT_DIR / str(self.problem_name + '_2D_R1_newton')
             rmtree(resultPath)
-            poisson_R1_solver.save_results(self.problem_name + '_R1_newton')
+            poisson_R1_solver.save_results(self.problem_name + '_2D_R1_newton')
             print('Result saved.\n')
 
         # Manually collecting garbage because Python cannot do it himself
@@ -281,7 +281,7 @@ class ForceOnTwoHollowCylinders:
         gc.collect()
 
         if return_result:
-            return RPP.from_files(self.problem_name + '_R1_newton')
+            return RPP.from_files(self.problem_name + '_2D_R1_newton')
 
 
     def get_newton_potential_R2(self, mesh_int, mesh_ext,
@@ -331,7 +331,7 @@ class ForceOnTwoHollowCylinders:
                                  'fem_order': self.FEM_ORDER,
                                  'Ngamma': self.Ngamma}
         poisson_R2.set_wf_int(partial_args_dict_int,
-                           {('subomega', self.tag_cyl_1): self.rho_1,
+                           {('subomega', self.tag_cyl_1): self.rho_domain,
                             ('subomega', self.tag_cyl_2): self.rho_2,
                             ('subomega', self.tag_domain_int): self.rho_domain})
 
@@ -353,13 +353,13 @@ class ForceOnTwoHollowCylinders:
         ''' This part is here to ensure the result is correctly saved'''
 
         try:
-            poisson_R2_solver.save_results(self.problem_name + '_R2_newton')
+            poisson_R2_solver.save_results(self.problem_name + '_2D_R2_newton')
             print('Result saved.\n')
 
         except FileExistsError:
-            resultPath = RESULT_DIR / str(self.problem_name + '_R2_newton')
+            resultPath = RESULT_DIR / str(self.problem_name + '_2D_R2_newton')
             rmtree(resultPath)
-            poisson_R2_solver.save_results(self.problem_name + '_R2_newton')
+            poisson_R2_solver.save_results(self.problem_name + '_2D_R2_newton')
             print('Result saved.\n')
 
         # Manually collecting garbage because Python cannot do it himself
@@ -367,7 +367,7 @@ class ForceOnTwoHollowCylinders:
         gc.collect()
 
         if return_result:
-            return RPP.from_files(self.problem_name + '_R2_newton')
+            return RPP.from_files(self.problem_name + '_2D_R2_newton')
 
 
     def get_electrostatic_potential(self, mesh_int, mesh_ext,
@@ -784,6 +784,77 @@ class ForceOnTwoHollowCylinders:
             return grad_phi_cylinder_1[1], grad_phi_cylinder_2[1], ana_Fz_1, ana_Fz_2, epsilon_1, epsilon_2
 
 
+    def invisible_postprocessing(self, result_pp_R1, result_pp_R2):
+        """
+        The function we are interested in.
+        """
+
+        if self.VERBOSE:
+            print(" == INVISIBLE POSTPROCESSING OPERATIONS ==")
+
+        # Defining the number of steps for each axis
+        Nr = int((self.R_ext_1 - self.R_int_1) / self.minSize)
+        Ntheta = 360
+        Nz = int(self.h_1 / self.minSize) * 10
+
+        # Defining the vectors that will compose inner cylinder's coordinates
+        r = np.linspace(self.R_int_1, self.R_ext_1, Nr, endpoint=False)
+        theta = np.linspace(0, 2*np.pi, Ntheta, endpoint=False)
+        z = np.linspace(-self.h_1/2, self.h_1/2, Nz, endpoint=False) + (self.h_1 / (2 * Nz))
+
+
+        # Creating the coordinates of the inner cylinder (calculation points)
+        if self.VERBOSE:
+            print("Creation of cylindrical grid...")
+        coors_3D_R1 = np.zeros((len(r)*len(theta)*len(z), 3))
+        l = 0
+        while l<len(coors_3D_R1):
+            for i in range(len(r)):
+                for j in range(len(theta)):
+                    print("\r" + str(i) + " " + str(j), end="")  # !!! this is for debug
+                    for k in range(len(z)):
+                        #coors_3D_R1[l] = [r[i], theta[j], z[k]]
+                        coors_3D_R1[l] = [r[i]*np.cos(theta[j]), r[i]*np.sin(theta[j]), z[k]]
+                        l+=1
+
+
+        if self.VERBOSE:
+            print("\nCylindrical grid\'s ready. Computing potential...")
+
+        # Computing the potential by exploiting the superposition theorem
+        coors_2D_R1 = np.column_stack((np.sqrt(coors_3D_R1[:, 0]**2 + coors_3D_R1[:, 1]**2), coors_3D_R1[:, 2]))
+        coors_2D_R2 = np.column_stack((np.sqrt((coors_3D_R1[:, 0] + self.R_1)**2 + coors_3D_R1[:, 1]**2), coors_3D_R1[:, 2] + self.Z_1))
+        grad_Phi = result_pp_R1.evaluate_at(coors_2D_R1, mode='grad')
+        grad_Phi += result_pp_R2.evaluate_at(coors_2D_R2, mode='grad')
+
+        # # DEBUG: to verify the coordinates, plot this. A hollow cylinder must come out.
+        # fig = plt.figure()
+        # ax = fig.add_subplot(projection='3d')
+        # scatter = ax.scatter(coors_3D_R1[:, 0], coors_3D_R1[:, 1], coors_3D_R1[:, 2], c=Phi)
+        # fig.colorbar(scatter, ax=ax)
+
+        # Computing the volume associated to each calculation point
+        dr = (self.R_ext_1 - self.R_int_1) / Nr  # it's basically the "resolution" of the axis
+        dtheta = 2 * np.pi / Ntheta
+        # dtheta = (np.max(theta) - np.min(theta)) / Ntheta
+        dz = self.h_1 / Nz
+        # dz = (np.max(z) - np.min(z)) / Nz
+        dV = (dtheta / 2) * dz * ((coors_2D_R1[:, 0] + dr)**2 - coors_2D_R1[:, 0]**2)  # sum of dV[i] gives IS1 volume
+
+
+        F_C1 = np.zeros_like(grad_Phi)
+
+        for i in range(len(grad_Phi)):
+            F_C1[i] = -grad_Phi[i] * dV[i]# * coors_2D_R1[i, 0]
+
+        F_C1 = np.sum(F_C1, axis=0)
+
+        F_C1 *= self.rho_1# * np.sum(dV)
+
+        print(F_C1)
+        print("Stop!")
+
+
 #%% Testing the class
 
 ''' === VARIABLES DEFINITION === '''
@@ -793,7 +864,7 @@ R_int_1 = 15.4e-3
 R_ext_1 = 19.7e-3
 h_1 = 43.37e-3
 rho_1 = 19972
-Z_1 = -1e-5
+Z_1 = 1e-5
 R_1 = 0
 
 # Second cylinder
@@ -826,22 +897,27 @@ FO2PHC = ForceOnTwoHollowCylinders(problem_name=FILENAME, R_int_1=R_int_1,
                                    VERBOSE=VERBOSE,
                                    FEM_ORDER=FEM_ORDER, SOLVER=SOLVER)
 
-mesh_R1 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R1', SHOW_MESH=False)
-mesh_R2 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R2', SHOW_MESH=False)
+# mesh_R1 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R1', SHOW_MESH=False)
+# mesh_R2 = FO2PHC.mesh_generation(mesh_name=FILENAME+'_2D_R2', SHOW_MESH=False)
 
 print("\n===NEWTONIAN GRAVITY ===")
-results_pp_newton_R1 = FO2PHC.get_newton_potential_R1(mesh_int=mesh_R1[0],
-                                                      mesh_ext=mesh_R1[1],
-                                                      return_result=True)
+# FO2PHC.get_newton_potential_R1(mesh_int=mesh_R1[0],
+#                                 mesh_ext=mesh_R1[1],
+#                                 return_result=False)
+
+# FO2PHC.get_newton_potential_R2(mesh_int=mesh_R2[0],
+#                               mesh_ext=mesh_R2[1],
+#                               return_result=False)
 
 gc.collect()
 
-results_pp_newton_R2 = FO2PHC.get_newton_potential_R2(mesh_int=mesh_R2[0],
-                                                      mesh_ext=mesh_R2[1],
-                                                      return_result=True)
+result_pp_newton_R1 = RPP.from_files(FILENAME + '_2D_R1_newton')
+result_pp_newton_R2 = RPP.from_files(FILENAME + '_2D_R2_newton')
+
+results_R1 = FO2PHC.postprocess_force(result_pp_newton_R1, getNewton=True)
+
+results_R2 = FO2PHC.postprocess_force(result_pp_newton_R2, getNewton=True)
 
 gc.collect()
 
-results_R1 = FO2PHC.postprocess_force(results_pp_newton_R1, getNewton=True)
-
-results_R2 = FO2PHC.postprocess_force(results_pp_newton_R2, getNewton=True)
+FO2PHC.invisible_postprocessing(result_pp_newton_R1, result_pp_newton_R2)
