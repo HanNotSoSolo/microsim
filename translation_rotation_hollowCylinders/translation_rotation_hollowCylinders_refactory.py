@@ -790,10 +790,10 @@ class ForceOnTwoHollowCylinders:
         """
 
         if self.VERBOSE:
-            print(" == INVISIBLE POSTPROCESSING OPERATIONS ==")
+            print("== INVISIBLE POSTPROCESSING OPERATIONS ==")
 
         # Defining the number of steps for each axis
-        Nr = int((self.R_ext_1 - self.R_int_1) / self.minSize)
+        Nr = int((self.R_ext_1 - self.R_int_1) / self.minSize) * 3
         Ntheta = 360
         Nz = int(self.h_1 / self.minSize) * 10
 
@@ -808,14 +808,17 @@ class ForceOnTwoHollowCylinders:
             print("Creation of cylindrical grid...")
         coors_3D_R1 = np.zeros((len(r)*len(theta)*len(z), 3))
         l = 0
-        while l<len(coors_3D_R1):
-            for i in range(len(r)):
-                for j in range(len(theta)):
-                    print("\r" + str(i) + " " + str(j), end="")  # !!! this is for debug
-                    for k in range(len(z)):
-                        #coors_3D_R1[l] = [r[i], theta[j], z[k]]
-                        coors_3D_R1[l] = [r[i]*np.cos(theta[j]), r[i]*np.sin(theta[j]), z[k]]
-                        l+=1
+        for i in range(len(r)):
+            # This counter was initially for debug, but looks good in the end
+            print("\r" + str(i) + "/" + str(len(r) - 1), end="")
+            for j in range(len(z)):
+                for k in range(len(theta)):
+                    #coors_3D_R1[l] = [r[i], theta[j], z[k]]
+                    coors_3D_R1[l] = [r[i]*np.cos(theta[k]),
+                                      r[i]*np.sin(theta[k]),
+                                      z[j]]
+                    l+=1
+        print("\rDone.")
 
 
         if self.VERBOSE:
@@ -826,6 +829,9 @@ class ForceOnTwoHollowCylinders:
         coors_2D_R2 = np.column_stack((np.sqrt((coors_3D_R1[:, 0] + self.R_1)**2 + coors_3D_R1[:, 1]**2), coors_3D_R1[:, 2] + self.Z_1))
         grad_Phi = result_pp_R1.evaluate_at(coors_2D_R1, mode='grad')
         grad_Phi += result_pp_R2.evaluate_at(coors_2D_R2, mode='grad')
+
+        if self.VERBOSE:
+            print("Potential ready. Final post-processing phase...")
 
         # # DEBUG: to verify the coordinates, plot this. A hollow cylinder must come out.
         # fig = plt.figure()
@@ -845,14 +851,15 @@ class ForceOnTwoHollowCylinders:
         F_C1 = np.zeros_like(grad_Phi)
 
         for i in range(len(grad_Phi)):
-            F_C1[i] = -grad_Phi[i] * dV[i]# * coors_2D_R1[i, 0]
+            F_C1[i] = -(grad_Phi[i] * dV[i]) * [np.cos(theta[i % len(theta)]), 1]
 
         F_C1 = np.sum(F_C1, axis=0)
 
-        F_C1 *= self.rho_1# * np.sum(dV)
+        F_C1 *= self.rho_1
 
-        print(F_C1)
-        print("Stop!")
+        F_C1 = [str(F_C1[0]) + " N", str(F_C1[1]) + " N"]
+
+        print("Force on IS1 along axis [x, z]:", F_C1)
 
 
 #%% Testing the class
@@ -864,8 +871,8 @@ R_int_1 = 15.4e-3
 R_ext_1 = 19.7e-3
 h_1 = 43.37e-3
 rho_1 = 19972
-Z_1 = 1e-5
-R_1 = 0
+Z_1 = -1e-5
+R_1 = 1e-5
 
 # Second cylinder
 R_int_2 = 30.4e-3
@@ -876,7 +883,7 @@ rho_2 = 4420
 
 # Miscellaneous
 FILENAME = 'translation_rotation_hollow_cylinders'
-VERBOSE = 0
+VERBOSE = 1
 FEM_ORDER = 2
 
 # Physical parameters
@@ -914,9 +921,9 @@ gc.collect()
 result_pp_newton_R1 = RPP.from_files(FILENAME + '_2D_R1_newton')
 result_pp_newton_R2 = RPP.from_files(FILENAME + '_2D_R2_newton')
 
-results_R1 = FO2PHC.postprocess_force(result_pp_newton_R1, getNewton=True)
+# results_R1 = FO2PHC.postprocess_force(result_pp_newton_R1, getNewton=True)
 
-results_R2 = FO2PHC.postprocess_force(result_pp_newton_R2, getNewton=True)
+# results_R2 = FO2PHC.postprocess_force(result_pp_newton_R2, getNewton=True)
 
 gc.collect()
 
